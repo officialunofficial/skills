@@ -1,0 +1,109 @@
+name: release
+
+# CalVer releases: vYYYY.M.MICRO (for example v2026.7.0, v2026.7.1, v2026.8.0).
+# MICRO resets to 0 each calendar month and increments per release within it.
+# Manual: run this workflow from the Actions tab. Use dry-run to preview the
+# version and notes without tagging.
+
+on:
+  workflow_dispatch:
+    inputs:
+      dry_run:
+        description: Compute the next version and notes without committing or tagging
+        type: boolean
+        default: false
+
+permissions:
+  contents: write
+
+concurrency:
+  group: release
+  cancel-in-progress: false
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          fetch-tags: true
+
+      - name: Compute CalVer version
+        id: ver
+        run: |
+          set -euo pipefail
+          ym=$(date -u +%Y.%-m)                                  # e.g. 2026.7
+          ymre=${ym//./\\.}                                       # escape dots for the regex
+          # Highest existing MICRO for this year.month, or -1 if none.
+          highest=$(git tag -l "v${ym}.*" \
+            | grep -E "^v${ymre}\.[0-9]+$" \
+            | sed "s/^v${ym}\.//" \
+            | sort -n | tail -1 || true)                          # empty on the first release
+          micro=$(( ${highest:--1} + 1 ))
+          version="${ym}.${micro}"
+          tag="v${version}"
+          if git rev-parse -q --verify "refs/tags/${tag}" >/dev/null; then
+            echo "::error::tag ${tag} already exists"; exit 1
+          fi
+          prev=$(git describe --tags --abbrev=0 2>/dev/null || true)
+          {
+            echo "version=${version}"
+            echo "tag=${tag}"
+            echo "prev=${prev}"
+            echo "date=$(date -u +%Y-%m-%d)"
+          } >> "$GITHUB_OUTPUT"
+          echo "Next release: ${tag} (previous: ${prev:-none})"
+
+      - name: Build release notes
+        id: notes
+        run: |
+          set -euo pipefail
+          prev='${{ steps.ver.outputs.prev }}'
+          range=${prev:+${prev}..HEAD}
+          subjects=$(git log --no-merges --pretty=format:'%s' "${range:-HEAD}")
+          feats=$(printf '%s\n' "$subjects" | sed -n 's/^feat[:(].*/&/p'   | sed -E 's/^feat(\([^)]*\))?!?: */- /' || true)
+          fixes=$(printf '%s\n' "$subjects" | sed -n 's/^fix[:(].*/&/p'    | sed -E 's/^fix(\([^)]*\))?!?: */- /' || true)
+          other=$(printf '%s\n' "$subjects" | grep -vE '^(feat|fix|chore\(release\))[:(]' | sed -E 's/^([a-z]+)(\([^)]*\))?!?: */- /' | sed '/^$/d' || true)
+          notes="notes.md"
+          {
+            echo "## ${{ steps.ver.outputs.tag }} (${{ steps.ver.outputs.date }})"
+            echo
+            [ -n "$feats" ] && { echo "### Features"; echo; echo "$feats"; echo; }
+            [ -n "$fixes" ] && { echo "### Fixes"; echo; echo "$fixes"; echo; }
+            [ -n "$other" ] && { echo "### Other"; echo; echo "$other"; echo; }
+            [ -z "$feats$fixes$other" ] && { echo "Maintenance release."; echo; }
+          } > "$notes"
+          echo "file=${notes}" >> "$GITHUB_OUTPUT"
+          echo "----- release notes -----"; cat "$notes"
+
+      - name: Tag and publish
+        if: ${{ !inputs.dry_run }}
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          version='${{ steps.ver.outputs.version }}'
+          tag='${{ steps.ver.outputs.tag }}'
+
+          # Bump package.json (the manifest of record for this repo).
+          node -e "const fs=require('fs'),p=require('./package.json');p.version='${version}';fs.writeFileSync('package.json',JSON.stringify(p,null,2)+'\n')"
+
+          # Prepend the notes to CHANGELOG.md.
+          [ -f CHANGELOG.md ] || printf '# Changelog\n\n' > CHANGELOG.md
+          { head -n 2 CHANGELOG.md; cat '${{ steps.notes.outputs.file }}'; tail -n +3 CHANGELOG.md; } > CHANGELOG.new
+          mv CHANGELOG.new CHANGELOG.md
+
+          git config user.name  'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add package.json CHANGELOG.md
+          git commit -m "chore(release): ${tag}"
+          git tag -a "${tag}" -m "${tag}"
+          git push origin HEAD:"${GITHUB_REF_NAME}"
+          git push origin "${tag}"
+
+          gh release create "${tag}" --title "${tag}" --notes-file '${{ steps.notes.outputs.file }}'
+
+      - name: Dry-run summary
+        if: ${{ inputs.dry_run }}
+        run: echo "Dry run — would release ${{ steps.ver.outputs.tag }}. No changes made."

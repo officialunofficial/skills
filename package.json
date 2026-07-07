@@ -1,0 +1,11 @@
+{
+  "name": "officialunofficial-skills",
+  "version": "0.0.0",
+  "description": "Small, composable agent skills for real engineering.",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/officialunofficial/skills"
+  },
+  "license": "(MIT OR Apache-2.0)",
+  "private": false
+}
