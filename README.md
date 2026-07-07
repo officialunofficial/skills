@@ -147,6 +147,11 @@ ln -s "$PWD/skills/skills/engineering/to-invariants" ~/.claude/skills/to-invaria
 
 Then invoke a skill by name (for example `/to-invariants`, optionally with an output path).
 
+Every `SKILL.md` here follows the [Agent Skills](https://agentskills.io) open standard, so the same
+file works unmodified on other agents that support it &mdash; for Codex CLI, symlink into
+`.agents/skills/<name>` (project-local) or `~/.agents/skills/<name>` (personal) instead of
+`~/.claude/skills/<name>`.
+
 ## Adding a skill
 
 1. Create the skill directory `skills/<category>/<name>/` with a `SKILL.md` inside.
