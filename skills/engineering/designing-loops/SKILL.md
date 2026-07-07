@@ -1,6 +1,6 @@
 ---
 name: designing-loops
-description: Reference for designing agent loops — cycles of work that repeat until a stop condition is met. Covers the four loop shapes, writing completion criteria, and managing token usage across a loop's lifetime.
+description: Reference for designing agent loops — cycles of work that repeat until a stop condition is met. Covers the four loop shapes, writing completion criteria, carrying state and isolating work across cycles, and what running unattended still leaves on you.
 disable-model-invocation: true
 ---
 
@@ -25,7 +25,7 @@ Turn-based is the default — it's just talking to the agent. The other three tr
 
 **Time-based** is for work that either recurs on a fixed schedule (summarize overnight activity every morning) or watches something whose state changes on its own — a build, a review queue, a deploy. Reacting to an external system on an interval is usually simpler than wiring a webhook, provided the interval isn't tighter than the thing you're watching actually changes.
 
-**Proactive** loops compose the other primitives: a recurring trigger picks up a *stream* of same-shaped work (bug reports, dependency bumps, migration units), a goal defines done for each item, and the agent runs without stopping to ask permission on each one. This is where /triage and /implement-style skills earn their keep — the loop's job is routing items to them, not reinventing the procedure each cycle.
+**Proactive** loops compose the other primitives: a recurring trigger picks up a *stream* of same-shaped work (bug reports, dependency bumps, migration units), a goal defines done for each item, and the agent runs without stopping to ask permission on each one. This is where /triage and /implement-style skills earn their keep — the loop's job is routing items to them, not reinventing the procedure each cycle. A proactive loop also needs a way to act on the outside world — open a PR, move a tracker card, post a notification — so wire up those integrations before you wire up the schedule; a loop that can only read is a report generator, not a loop.
 
 ## Writing a completion criterion
 
@@ -33,9 +33,17 @@ A loop is only as good as its stop condition. Rank criteria by how directly they
 
 1. **Deterministic** — a test suite passes, a build exits 0, a count reaches a target, a score clears a threshold. The agent can't rationalize "close enough" against a binary gate. Prefer this whenever the work has one.
 2. **Structural** — a file exists with the expected shape, every item in a list has been visited, a diff touches the files it should. Checkable but requires the agent to enumerate rather than just observe a pass/fail.
-3. **Judged** — a second, fresher-context pass decides if the output is good. Use only when 1 and 2 aren't available; a judge with no criteria just repeats the first agent's blind spots, so give it something concrete to check even here (a rubric, a set of examples, a diff to compare against).
+3. **Judged** — a second, fresher-context pass decides if the output is good. This is the **maker/checker split**: the agent that wrote the thing is a bad judge of it, not because it's careless but because it already believes its own reasoning. Use a judged criterion only when 1 and 2 aren't available, and even then give the checker something concrete to check (a rubric, a set of examples, a diff to compare against) — a judge with no criteria just repeats the maker's blind spots.
 
 Whatever the criterion, make it **specific enough that the agent reaches it, not so loose it stops early and not so vague it never stops.** "Tests pass" beats "the code looks right"; "zero P0/P1 findings" beats "no major issues."
+
+## Carrying state across cycles
+
+A time-based or proactive loop's cycles are largely independent — each firing may start from a clean slate, with no memory of what the last cycle found. If the loop's job is "report only what changed" or "don't redo settled work," that comparison needs something to compare *against*, and the loop itself won't remember it: the agent forgets, the record doesn't. Give the loop an external place to write down what it did and what's still open — a state file, a tracker board, a running doc in the repo — and have every cycle read it before acting and update it before stopping. Without this, a delta-reporting loop either re-announces the same status forever or silently loses track of what it already handled.
+
+## Isolating concurrent work
+
+The moment a loop runs more than one agent against the same repo at the same time — a fan-out over several items, or a cycle overlapping with the next one — they can collide on the same working copy: one agent's uncommitted edit clobbers another's, or a build artifact from one poisons the other's run. Give each concurrent agent its own working directory on its own branch, sharing the repo's history rather than its live checkout. Reach for this whenever "at the same time" and "same repo" are both true; a loop that only ever runs one agent at a time doesn't need it.
 
 ## Managing token usage
 
@@ -54,5 +62,15 @@ A loop's output quality depends on the system around it, not the loop itself:
 
 - Keep the codebase (or whatever surface the loop edits) in a state where "follow the existing pattern" is actually a coherent instruction.
 - Give the agent a way to check its own work — a skill encoding your manual verification steps end-to-end, ideally against something quantitative it can see or measure, not just read.
-- Put a second, fresh-context pass between "the agent thinks it's done" and "it ships" — a reviewer that never saw the first agent's reasoning catches things the first agent is blind to.
+- Put the maker/checker split between "the agent thinks it's done" and "it ships" — a reviewer that never saw the first agent's reasoning catches things the maker is blind to.
 - When one cycle's output falls short, don't just patch that instance — fold the fix into the skill or check so every future cycle benefits, not just this one.
+
+## What running unattended doesn't remove from you
+
+A loop takes the prompting off your plate. It doesn't take verification off your plate — a loop running unattended is also a loop making mistakes unattended, just at whatever cadence you set it. Three things to actively guard against once a loop is running well enough that you stop watching it closely:
+
+- **Comprehension debt.** The gap between what's shipping and what you actually understand about it grows quietly when nothing forces you to look. Read the diffs periodically even when the loop's own checks are green, not just when something breaks.
+- **Cognitive surrender.** Once a loop has been right ten times in a row, the pull is to stop evaluating its output and just accept it — that's exactly when a wrong result slips through. The checker in the maker/checker split exists to make this structural, not to make it optional for you to skip.
+- **Silent scope creep.** A loop with a loose completion criterion can satisfy the letter of the goal while drifting from what you actually wanted. Revisit the criterion itself on a schedule, not only when the output looks wrong.
+
+Design a loop like you intend to stay the engineer responsible for what it ships, not like you're handing off the job.
