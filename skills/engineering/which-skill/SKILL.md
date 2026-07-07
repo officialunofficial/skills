@@ -41,6 +41,13 @@ A starting situation that generates work, then merges onto the main flow.
 
 - **Something's broken** → **`/diagnosing-bugs`**. Built for the stubborn ones: the bug that shrugs off a first look, the intermittent flake, the regression that slipped in between two known-good points. It won't theorise until it holds a **tight feedback loop** — one command that already goes red on *this* bug — then lands the fix behind a regression test. Its post-mortem hands off to **`/improve-codebase-architecture`** when the real lesson is that no clean seam exists to pin the bug down.
 
+## Loops
+
+Recurring work, or the main flow with nobody watching in real time.
+
+- **`/designing-loops`** — reference for the four loop shapes and how to write a completion criterion that actually stops the loop. Read this before wiring up any of the below.
+- **`/dependency-update-loop`**, **`/stacked-pr-loop`**, **`/deploy-verify-loop`** — ready-to-hand-to-a-schedule recipes for the recurring maintenance that piles up around shipped code: bot PRs, PR stacks, and the window right after a deploy.
+
 ## Codebase health
 
 Not feature work — upkeep.

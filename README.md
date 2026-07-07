@@ -55,6 +55,15 @@ Daily code work. The backbone is a single **idea → ship** flow &mdash; `/which
 | [`implement`](skills/engineering/implement/SKILL.md) | user | Build a piece of work from a PRD or issue, driving `/tdd` then `/code-review`. |
 | [`triage`](skills/engineering/triage/SKILL.md) | user | Move incoming issues and external PRs through a state machine of triage roles. |
 
+**Loops** &mdash; cycles of work that repeat until a stop condition is met, instead of a single turn.
+
+| Skill | | What it does |
+| --- | --- | --- |
+| [`designing-loops`](skills/engineering/designing-loops/SKILL.md) | user | Reference for the four loop shapes (turn/goal/time/proactive), writing completion criteria, and managing token usage across a loop's lifetime. |
+| [`dependency-update-loop`](skills/engineering/dependency-update-loop/SKILL.md) | user | Recurring pass over automated dependency-bump PRs: rebase, relock, verify, report what's ready. |
+| [`stacked-pr-loop`](skills/engineering/stacked-pr-loop/SKILL.md) | user | Recurring check-in on a stack of dependent PRs: rebase children, surface CI state, flag human-only gates. |
+| [`deploy-verify-loop`](skills/engineering/deploy-verify-loop/SKILL.md) | user | Post-deploy loop: poll the rollout to healthy, then run one smoke check against a real user path. |
+
 **Verification** &mdash; turn a design or spec into checks that keep an implementation honest. They compound: invariants become fuzz oracles; both sharpen the conformance suite.
 
 | Skill | | What it does |
