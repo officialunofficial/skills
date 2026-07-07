@@ -1,0 +1,14 @@
+{
+  "name": "officialunofficial-skills",
+  "description": "Small, composable agent skills for real engineering.",
+  "owner": {
+    "name": "Official Unofficial, Inc."
+  },
+  "plugins": [
+    {
+      "name": "officialunofficial-skills",
+      "source": ".",
+      "description": "Small, composable agent skills for real engineering."
+    }
+  ]
+}
