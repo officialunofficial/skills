@@ -2,6 +2,15 @@
 
 [![skills.sh](https://skills.sh/b/officialunofficial/skills)](https://skills.sh/officialunofficial/skills)
 
+**In Claude Code**, run:
+
+```
+/plugin marketplace add officialunofficial/skills
+/plugin install officialunofficial-skills@officialunofficial-skills
+```
+
+Or from any shell:
+
 ```sh
 npx skills@latest add officialunofficial/skills
 ```
@@ -128,8 +137,19 @@ Ed25519-signed VCS. Two for *using* mkit, three for *developing* it.
 
 ## Installing
 
-The quickest path is the [skills.sh](https://www.skills.sh) installer &mdash; pick the skills and the
-agents (Claude Code, Cursor, Copilot, and more) to install them on:
+**In Claude Code**, this repo is a plugin marketplace &mdash; add it once, then install the whole
+collection as a single plugin:
+
+```
+/plugin marketplace add officialunofficial/skills
+/plugin install officialunofficial-skills@officialunofficial-skills
+```
+
+`/plugin update officialunofficial-skills` pulls new skills as they land.
+
+Working in another agent, or want to pick individual skills instead of the whole set? Use the
+[skills.sh](https://www.skills.sh) installer &mdash; pick the skills and the agents (Claude Code,
+Cursor, Copilot, and more) to install them on:
 
 ```sh
 npx skills@latest add officialunofficial/skills
