@@ -1,12 +1,12 @@
 ---
-name: audit-issue-tree
+name: audit-issue
 description: Audit an issue tree (issue + epic + siblings) for continued relevance — verify its claims against HEAD, then recommend keep, rescope, or close, with drafted comments the user can apply.
 disable-model-invocation: true
 ---
 
-# Audit issue tree
+# Audit issue
 
-Assess whether an issue tree is still relevant, and end in recommendations the user can act on. The user must **understand the issues before being asked to judge them** — the sequencing below is deliberate: product focus captured as context at intake, research next, teach-back after, verdicts last. Never propose a verdict or ask about closure before delivering the digest.
+Assess whether an issue — and the tree around it, when it has one (parent epic, siblings); a lone issue is a tree of one — is still relevant, and end in recommendations the user can act on. The user must **understand the issues before being asked to judge them** — the sequencing below is deliberate: product focus captured as context at intake, research next, teach-back after, verdicts last. Never propose a verdict or ask about closure before delivering the digest.
 
 This skill takes **no tracker actions**: its output is analysis plus drafted comments and rewrites, ready for the user to apply (or hand back for execution as a separate, explicit request). It earns its cost on issues old enough to have drifted from the code — epics and long-lived plans. Fresh, never-triaged issues belong to `/triage`; don't point this at an incoming bug report.
 
