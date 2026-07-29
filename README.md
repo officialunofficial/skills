@@ -63,6 +63,7 @@ Daily code work. The backbone is a single **idea → ship** flow &mdash; `/which
 | [`to-issues`](skills/engineering/to-issues/SKILL.md) | user | Break a plan, spec, or PRD into independently-grabbable issues via vertical slices. |
 | [`implement`](skills/engineering/implement/SKILL.md) | user | Build a piece of work from a PRD or issue, driving `/tdd` then `/code-review`. |
 | [`triage`](skills/engineering/triage/SKILL.md) | user | Move incoming issues and external PRs through a state machine of triage roles. |
+| [`audit-issue`](skills/engineering/audit-issue/SKILL.md) | user | Audit an issue tree against HEAD: verify its claims, teach back what it affords, then recommend keep / rescope / close with drafted comments. |
 
 **Loops** &mdash; cycles of work that repeat until a stop condition is met, instead of a single turn.
 
@@ -90,6 +91,7 @@ Daily code work. The backbone is a single **idea → ship** flow &mdash; `/which
 | [`diagnosing-bugs`](skills/engineering/diagnosing-bugs/SKILL.md) | model | Diagnosis loop for hard bugs and regressions: reproduce → minimize → hypothesize → instrument → fix → regression-test. |
 | [`codebase-design`](skills/engineering/codebase-design/SKILL.md) | model | Vocabulary and principles for designing deep modules: a lot of behavior behind a small interface. |
 | [`domain-modeling`](skills/engineering/domain-modeling/SKILL.md) | model | Build and refine a project's domain language; keep **CONTEXT.md** and ADRs current. |
+| [`to-primitives`](skills/engineering/to-primitives/SKILL.md) | model | Abstract a feature into behavior-named capability primitives, graded against the codebase (exists / partial / missing), with a build-order graph. |
 | [`improve-codebase-architecture`](skills/engineering/improve-codebase-architecture/SKILL.md) | user | Scan for deepening opportunities, present them as a visual report, then grill the one you pick. |
 | [`resolving-merge-conflicts`](skills/engineering/resolving-merge-conflicts/SKILL.md) | model | Work through an in-progress git merge or rebase conflict. |
 
