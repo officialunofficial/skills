@@ -19,7 +19,8 @@ The route most work takes. You have an idea; you want it built.
    - **`/handoff`** out, then start a clean session against that file,
    - **`/prototype`** to settle the question with disposable code,
    - **`/handoff`** the findings back, and cite them from the original idea thread.
-3. **Branch — is this a multi-session build?**
+3. **Branch — do you know what the feature actually rests on?** If it's unclear which capabilities the idea needs versus what the codebase already provides, run **`/to-primitives`**: it grades every capability against HEAD (`exists` / `partial` / `missing`, cited) and leaves a design doc with a build-order graph that `/to-prd` and `/to-issues` can draw on. Skip it when the ground is already obvious.
+4. **Branch — is this a multi-session build?**
    - **Yes** → **`/to-prd`** (fold the thread into a PRD) → **`/to-issues`** (cut the PRD into issues anyone can grab independently). Since the issues stand alone, **reset context between them**: open a fresh session per issue and start **`/implement`** with the PRD plus the one issue to work on.
    - **No** → **`/implement`** right here, without leaving this context window.
 
@@ -27,7 +28,7 @@ The route most work takes. You have an idea; you want it built.
 
 ### Context hygiene
 
-Hold steps 1–3 inside **one continuous context window** — don't compact or clear until `/to-issues` is done — so the grilling, the PRD, and the issues all rest on the same line of thinking. Each `/implement` then begins clean, taking the issue as its starting point.
+Hold steps 1–4 inside **one continuous context window** — don't compact or clear until `/to-issues` is done — so the grilling, the PRD, and the issues all rest on the same line of thinking. Each `/implement` then begins clean, taking the issue as its starting point.
 
 What bounds this is the **smart zone**: the window (roughly 120k tokens on current frontier models) inside which the model still reasons crisply. If a session nears that edge before `/to-issues`, don't grind on through degraded reasoning — `/handoff` and pick up in a fresh thread.
 
@@ -38,6 +39,8 @@ A starting situation that generates work, then merges onto the main flow.
 - **Bugs and requests stacking up** → **`/triage`**. It walks issues through their triage roles and turns out agent-ready issues, which **`/implement`** later collects.
 
   Triage is for issues **you didn't author** — bug reports, incoming feature requests, whatever lands raw. Issues that `/to-issues` produced are already agent-ready, so **skip triage for those**.
+
+- **Backlog gone stale** → **`/audit-issue`**. Point it at an old issue or epic and it verifies every claim against HEAD, teaches back what the tree affords, and recommends keep / rescope / close — with drafted closing comments so the research survives the closure. Issues it recommends rescoping feed `/to-issues`; ones worth keeping feed `/implement`.
 
 - **Something's broken** → **`/diagnosing-bugs`**. Built for the stubborn ones: the bug that shrugs off a first look, the intermittent flake, the regression that slipped in between two known-good points. It won't theorise until it holds a **tight feedback loop** — one command that already goes red on *this* bug — then lands the fix behind a regression test. Its post-mortem hands off to **`/improve-codebase-architecture`** when the real lesson is that no clean seam exists to pin the bug down.
 
