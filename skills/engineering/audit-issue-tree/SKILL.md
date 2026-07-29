@@ -1,14 +1,14 @@
 ---
-name: audit-issue
+name: audit-issue-tree
 description: Audit an issue tree (issue + epic + siblings) for continued relevance — verify its claims against HEAD, then recommend keep, rescope, or close, with drafted comments the user can apply.
 disable-model-invocation: true
 ---
 
-# Audit issue
+# Audit issue tree
 
-Assess whether an issue tree is still relevant, and end in recommendations the user can act on. The user must **understand the issues before being asked to judge them** — the sequencing below is deliberate: research first, teach-back second, product-focus question third, verdicts last. Never ask about product focus or closure before delivering the digest.
+Assess whether an issue tree is still relevant, and end in recommendations the user can act on. The user must **understand the issues before being asked to judge them** — the sequencing below is deliberate: product focus captured as context at intake, research next, teach-back after, verdicts last. Never propose a verdict or ask about closure before delivering the digest.
 
-This skill takes **no tracker actions**: its output is analysis plus drafted comments and rewrites, ready for the user to apply (or hand back for execution as a separate, explicit request). It earns its cost on epics and long-lived issues; don't point it at a fresh bug report.
+This skill takes **no tracker actions**: its output is analysis plus drafted comments and rewrites, ready for the user to apply (or hand back for execution as a separate, explicit request). It earns its cost on issues old enough to have drifted from the code — epics and long-lived plans. Fresh, never-triaged issues belong to `/triage`; don't point this at an incoming bug report.
 
 Grading discipline comes from `/to-primitives`. Tracker conventions (labels, milestones, auth quirks) come from whatever the repo documents — contributing docs, tracker docs, or the configuration `/setup-skills` established; read them first, and where the repo documents nothing, use the tracker's defaults and skip decoration advice.
 
@@ -18,7 +18,9 @@ Grading discipline comes from `/to-primitives`. Tracker conventions (labels, mil
 
 ### 1. Intake
 
-The argument is an issue number or URL. If none was given, ask which issue to audit — that is the only question allowed before the digest.
+The argument is an issue number or URL. If none was given, ask which issue to audit.
+
+Capture the **product focus** as context: read it from the repo's roadmap or planning docs where they exist, else ask the user for it in one sentence. It is the fulcrum every verdict will turn on, so it must be stated, not improvised later. It scopes nothing before the verdicts — research stays comprehensive regardless — and it does not license early judgment: the sequencing rule above still holds. These are the only questions allowed before the digest.
 
 ### 2. Map the tree (tracker only)
 
@@ -47,7 +49,7 @@ Present to the user, in this order — this is the deliverable of the first half
 The delivery rule applies. End the digest with two gating questions in plain prose, then stop and wait for the reply:
 
 - Any part of the digest to go deeper on?
-- **What is the current product focus?** (one sentence — the fulcrum every verdict turns on)
+- **Confirm the product focus** — restate the focus captured at intake and ask whether, now that the user has seen what the tree actually affords, it still stands as the fulcrum for the verdicts.
 
 ### 5. Recommend verdicts
 

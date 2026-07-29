@@ -40,7 +40,7 @@ A starting situation that generates work, then merges onto the main flow.
 
   Triage is for issues **you didn't author** — bug reports, incoming feature requests, whatever lands raw. Issues that `/to-issues` produced are already agent-ready, so **skip triage for those**.
 
-- **Backlog gone stale** → **`/audit-issue`**. Point it at an old issue or epic and it verifies every claim against HEAD, teaches back what the tree affords, and recommends keep / rescope / close — with drafted closing comments so the research survives the closure. Issues it recommends rescoping feed `/to-issues`; ones worth keeping feed `/implement`.
+- **Backlog gone stale** → **`/audit-issue-tree`**. Point it at an old issue or epic and it verifies every claim against HEAD, teaches back what the tree affords, and recommends keep / rescope / close — with drafted closing comments so the research survives the closure. Issues it recommends rescoping feed `/to-issues`; ones worth keeping feed `/implement`.
 
 - **Something's broken** → **`/diagnosing-bugs`**. Built for the stubborn ones: the bug that shrugs off a first look, the intermittent flake, the regression that slipped in between two known-good points. It won't theorise until it holds a **tight feedback loop** — one command that already goes red on *this* bug — then lands the fix behind a regression test. Its post-mortem hands off to **`/improve-codebase-architecture`** when the real lesson is that no clean seam exists to pin the bug down.
 
