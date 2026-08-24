@@ -101,6 +101,8 @@ Daily code work. The backbone is a single **idea → ship** flow &mdash; `/which
 | --- | --- | --- |
 | [`prototype`](skills/engineering/prototype/SKILL.md) | model | Build a throwaway prototype to answer one design question: a runnable terminal app, or several UI variations. |
 | [`research`](skills/engineering/research/SKILL.md) | model | Background agent that investigates a question against primary sources and leaves a cited Markdown file. |
+| [`best-practices`](skills/engineering/best-practices/SKILL.md) | model | Foreground check of a stack's current idiomatic patterns against its own docs; answer or review code against them. |
+| [`latest-docs`](skills/engineering/latest-docs/SKILL.md) | model | Foreground check of a library's current docs and changelog against what training data or code assumes. |
 
 ### Productivity
 
