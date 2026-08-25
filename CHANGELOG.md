@@ -1,5 +1,15 @@
 # Changelog
 
+## v2026.8.0 (2026-08-25)
+
+### Features
+
+- add best-practices and latest-docs skills (#5)
+
+### Other
+
+Add audit-issue and to-primitives skills (#4)
+
 ## v2026.7.0 (2026-07-07)
 
 ### Features
