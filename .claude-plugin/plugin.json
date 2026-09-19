@@ -28,6 +28,7 @@
     "./skills/engineering/to-prd",
     "./skills/engineering/to-primitives",
     "./skills/engineering/triage",
+    "./skills/engineering/typesafe-ai",
     "./skills/engineering/which-skill",
     "./skills/misc/git-guardrails-claude-code",
     "./skills/misc/migrate-to-shoehorn",

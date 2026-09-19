@@ -103,6 +103,7 @@ Daily code work. The backbone is a single **idea → ship** flow &mdash; `/which
 | [`research`](skills/engineering/research/SKILL.md) | model | Background agent that investigates a question against primary sources and leaves a cited Markdown file. |
 | [`best-practices`](skills/engineering/best-practices/SKILL.md) | model | Foreground check of a stack's current idiomatic patterns against its own docs; answer or review code against them. |
 | [`latest-docs`](skills/engineering/latest-docs/SKILL.md) | model | Foreground check of a library's current docs and changelog against what training data or code assumes. |
+| [`typesafe-ai`](skills/engineering/typesafe-ai/SKILL.md) | model | Build with TypeSafe's Jev decision model: turn a prompt-and-parse step into typed judgments code can compose. Vendored from [typesafe-ai/skills](https://github.com/typesafe-ai/skills), MIT. |
 
 ### Productivity
 
