@@ -6,7 +6,7 @@ disable-model-invocation: true
 
 # Plan and execute
 
-Two phases, two model tiers when your harness has them — a fast model plans, your primary model builds.
+Two phases, two model tiers when your harness has them — a fast, cheap model plans; your most capable model builds. Never run the build phase in a fast or economy mode.
 
 ## Plan
 
@@ -20,7 +20,10 @@ Stop here. A plan is done when every file, seam, and test pairing is named and n
 
 ## Execute
 
-Hand the plan to your primary model.
+Hand the plan to your most capable model — never a fast or economy mode,
+even if your harness offers one. The plan phase spent cheap tokens on
+throwaway exploration; this phase writes the code that ships, so it
+gets your best model, full stop.
 
 - Drive `/tdd` at each seam, one vertical slice at a time.
 - Typecheck and run touched tests as you go; the full suite once, at the end.
