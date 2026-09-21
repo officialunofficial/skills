@@ -62,6 +62,7 @@ Daily code work. The backbone is a single **idea → ship** flow &mdash; `/which
 | [`to-prd`](skills/engineering/to-prd/SKILL.md) | user | Turn the conversation into a PRD and publish it to the issue tracker &mdash; no interview. |
 | [`to-issues`](skills/engineering/to-issues/SKILL.md) | user | Break a plan, spec, or PRD into independently-grabbable issues via vertical slices. |
 | [`implement`](skills/engineering/implement/SKILL.md) | user | Build a piece of work from a PRD or issue, driving `/tdd` then `/code-review`. |
+| [`plan-and-execute`](skills/engineering/plan-and-execute/SKILL.md) | user | Research and plan on a fast model tier, then implement and verify on your primary one &mdash; for a task that wants a written plan but not full `/to-prd` ceremony. |
 | [`triage`](skills/engineering/triage/SKILL.md) | user | Move incoming issues and external PRs through a state machine of triage roles. |
 | [`audit-issue`](skills/engineering/audit-issue/SKILL.md) | user | Audit an issue tree against HEAD: verify its claims, teach back what it affords, then recommend keep / rescope / close with drafted comments. |
 
