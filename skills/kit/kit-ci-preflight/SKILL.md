@@ -1,21 +1,21 @@
 ---
-name: mkit-ci-preflight
+name: kit-ci-preflight
 description: >-
-  Verify an mkit PR is genuinely green across its real CI surface — the GitHub
-  Actions gates AND the Google Cloud Build `mkit-*-pr` checks — before merging.
-  Use when preparing to merge a PR into mkit's `main`, when a PR looks green but
+  Verify a kit PR is genuinely green across its real CI surface — the GitHub
+  Actions gates AND the Google Cloud Build `kit-*-pr` checks — before merging.
+  Use when preparing to merge a PR into kit's `main`, when a PR looks green but
   you want to confirm the expected workflows actually ran, when a rustdoc/docs
-  or codegen change might slip past the GitHub rollup, or when reviving CI on a
+  or codegen change might slip past the GitHub gates, or when reviving CI on a
   stale branch.
 ---
 
-# mkit CI preflight
+# kit CI preflight
 
-mkit splits its CI across **two systems**: GitHub Actions and **Google Cloud
-Build** (GCB). A green GitHub rollup is *not* proof the PR is mergeable — the
-Linux Rust gate, docs-lint, supply-chain, codegen-freshness, and unsafe-ceiling
-checks all live on GCB and post their own commit statuses named `mkit-*-pr`.
-Path filters, fork gating, and stale merge-refs can each leave a required check
+kit splits its CI across **two systems**: GitHub Actions and **Google Cloud
+Build** (GCB). A green `Rust CI gate` is *not* proof the PR is mergeable — docs,
+golden vectors, generated code, writing rules, unsafe policy, wasm, fuzz smoke,
+and the supply checks all run in the GCB `kit-ci-pr` build, which posts its own
+check. Path filters, `/gcbrun` gating, and stale merge-refs can each leave a check
 silently absent while the PR still shows green.
 
 This skill is a pre-merge preflight: enumerate the checks that must pass, confirm
@@ -27,8 +27,9 @@ The check names and gates below are the current design, but CI configs move.
 Before trusting this list, reconcile it against the repo:
 
 - GitHub workflows: `.github/workflows/*.yml`
-- GCB configs + trigger table: `cloudbuild/*.yaml`, `cloudbuild/README.md`
-- Stated merge bar: `CONTRIBUTING.md` ("What to expect in review")
+- GCB configs + trigger table: `cloudbuild/*.yaml`, `cloudbuild/README.md`,
+  `scripts/setup-cloud-build.sh`
+- Stated merge bar: `CONTRIBUTING.md`, `GOVERNANCE.md`
 
 If a name here isn't found in those files, trust the files and note the drift.
 
@@ -39,78 +40,78 @@ Get the actual per-check results, not a rollup summary. For PR number `<N>`:
 ```sh
 gh pr checks <N> --watch        # live table of every check + status
 gh pr view <N> --json statusCheckRollup \
-  --jq '.statusCheckRollup[] | {name:.name, status:.status, conclusion:.conclusion, ctx:.context}'
+  --jq '.statusCheckRollup[] | {name:.name, status:.status, conclusion:.conclusion}'
 ```
 
-**Done when** you have a flat list of every check with its conclusion. GCB posts
-**commit statuses** (the `context` field, e.g. `mkit-ci-pr`), while GitHub
-Actions posts **check runs** (the `name` field, e.g. `Rust CI gate`) — your list
-must include both shapes. If `statusCheckRollup` shows only Actions check-runs
-and no `mkit-*` contexts, query statuses directly:
+**Done when** you have a flat list of every check with its conclusion. GCB and
+GitHub Actions both post **check runs**. A GCB check shows as `<trigger> (<project>)`,
+e.g. `kit-ci-pr (official-unofficial)`; an Actions check shows its job name, e.g.
+`Rust CI gate`. Your list must include both. If it shows no `kit-*` check, query
+the head commit directly:
 
 ```sh
-gh api repos/{owner}/{repo}/commits/$(gh pr view <N> --json headRefOid -q .headRefOid)/status \
-  --jq '.statuses[] | {context:.context, state:.state, target:.target_url}'
+gh api repos/{owner}/{repo}/commits/$(gh pr view <N> --json headRefOid -q .headRefOid)/check-runs \
+  --jq '.check_runs[] | {name:.name, status:.status, conclusion:.conclusion}'
 ```
 
 ## Step 2 — Confirm the GitHub Actions gates are green AND present
 
-Each Actions workflow exposes a stable **gate job** that is the required check.
-The gate is designed to fail (not skip) when its core job didn't run, so a
-present-and-success gate is trustworthy — but confirm the gate is *present*, not
-just not-failing.
-
-| Workflow (`name:`) | Required gate check | Runs on every PR? | Covers |
+| Workflow (`name:`) | Check | Runs on every PR? | Covers |
 |---|---|---|---|
-| `CI: Rust` | `Rust CI gate` | Yes (macOS leg always) | macOS build/test/clippy/fmt/doctests/version-contract; keystore matrix is approval-gated |
-| `CI: Web` | `Web CI gate` | Yes (gate always; heavy job path-filtered) | wasm build, typecheck, vitest, lint, fmt, prod build, bundler smoke |
-| `CI: MCP` | `MCP CI gate` | Yes (gate always; heavy job path-filtered) | MCP corpus index, typecheck, test |
-| `Meta: actionlint` | `Lint workflows` | Only if `.github/**` changed | workflow + shellcheck lint |
+| `CI: Rust` | `Rust CI gate` | Yes | Linux `fmt`, `clippy`, `msrv`, `build and test`, `nextest` |
+| `CI: Proto` | `buf lint + buf breaking`, `generated code is fresh` | Yes | proto lint, breaking check against the base branch, generated code |
+| `CI: Third-party notices` | `Third-party notices gate` | Yes (gate always; `cargo about generate` path-filtered) | license attribution of the dependency graph |
+| `CI: Mutation testing` | `cargo-mutants (changed lines)` | Yes | mutants on the changed lines |
+| `CI: Semver` | `cargo semver-checks` | Only if `rust/**` or the workflow changed | public API against the latest release tag |
+| `CI: Reproducible build` | `Build twice and compare` | Only if `rust/**`, `scripts/toolchain-version.sh`, `release.yml`, or the workflow changed | two release builds of one commit agree |
+| `Meta: docs lint` | `Docs checks` | Only if `**/*.md`, `docs/**`, its check scripts, or the workflow changed | spec status, doc paths, writing rules |
+| `Meta: actionlint` | `Lint workflows` | Only if `.github/workflows/**` or `.github/actions/**` changed | workflow lint |
 
-**Done when** `Rust CI gate`, `Web CI gate`, and `MCP CI gate` are all present
-and `success`. If any gate is missing entirely (not even pending), the workflow
-never triggered — treat that as a red flag and investigate before proceeding.
+**Done when** `Rust CI gate`, both `CI: Proto` checks, `Third-party notices gate`,
+and `cargo-mutants (changed lines)` are all present and `success`, and each
+path-filtered check is `success` or legitimately absent. If an every-PR check is
+missing entirely (not even pending), the workflow never triggered — treat that as
+a red flag and investigate before proceeding.
 
 Notes that prevent false confidence:
-- The `web`/`mcp` heavy jobs legitimately **skip** when the PR touches no
-  `apps/web/**` / `apps/mcp/**` (etc.) paths; the gate still reports `success`.
-  That's expected — the gate, not the heavy job, is the signal.
-- `Lint workflows` is **absent** on PRs that don't touch `.github/**`. Absent is
-  correct there; only demand it when the PR edits workflows or actions.
-- `Security: Rust` and `Nightly: Fuzz` are **scheduled/dispatch only** — they do
-  NOT run per-PR (the per-PR supply-chain gate moved to GCB, see Step 3). Don't
-  wait on them for a PR.
+- `Rust CI gate` runs with `if: always()` and fails unless every job it needs
+  succeeded, so a present-and-success gate is trustworthy. The GitHub job to read
+  is the gate, not the jobs under it.
+- `cargo about generate` legitimately **skips** when the PR touches no dependency
+  input; `Third-party notices gate` still reports `success`. The gate, not the
+  heavy job, is the signal.
+- `Enable auto-merge` (Dependabot PRs only) and `cargo-mutants (full sweep, …)`
+  (schedule and dispatch only) show as `skipped` on a normal PR. That is correct.
+- `CI: macOS` runs on pushes to `main` and on demand, **never** on a PR. `Security:
+  Rust`, `Nightly: Fuzz`, and `Nightly: Formal verification` are **scheduled/dispatch
+  only**. Don't wait on any of them for a PR.
 
-## Step 3 — Confirm the GCB `mkit-*-pr` checks ran AND passed (the big gap)
+## Step 3 — Confirm the GCB `kit-*-pr` checks ran AND passed (the big gap)
 
-This is where GitHub-green PRs are actually broken. The entire Linux Rust suite,
-rustdoc-lint, supply-chain, codegen-freshness, and unsafe-ceiling live here.
-Enumerate each expected `mkit-*-pr` context **by name** and confirm its state:
+This is where GitHub-green PRs are actually broken. Every Linux gate lives here,
+including rustdoc-lint, golden vectors, and the writing rules. Enumerate each
+expected `kit-*-pr` check **by name** and confirm its state:
 
-| GCB context | Config | Covers | Path-gated? |
+| GCB check | Config | Covers | Path-gated? |
 |---|---|---|---|
-| `mkit-ci-pr` | `cloudbuild/ci.yaml` | Linux fmt/clippy/build/signers/nextest/ignored-lane/fuzz-unit/doctests/version-contract/enc-transport/**MSRV**/`cargo check --all-targets` | No (runs unless change is web/docs/md-only) |
-| `mkit-docs-pr` | `cloudbuild/docs.yaml` | `cargo doc` with `RUSTDOCFLAGS=-D warnings`, both workspaces | No (unless web/docs-only) |
-| `mkit-security-pr` | `cloudbuild/security.yaml` | `cargo audit` (both workspaces) + `cargo deny` | **Yes** — only `**/Cargo.toml`, `**/Cargo.lock`, `rust/deny.toml` |
-| `mkit-codegen-pr` | `cloudbuild/codegen.yaml` | vendored buffa/connectrpc codegen freshness | **Yes** — protos / `build.rs` / `scripts/regen-*.sh` / `**/generated/**` |
-| `mkit-geiger-pr` | `cloudbuild/geiger.yaml` | unsafe-expression ceiling (`cargo geiger`) | No |
+| `kit-ci-pr` | `cloudbuild/ci.yaml` | steps `fmt`, `lint` (+ MSRV), `docs`, `nextest-archive`, `nextest-1`..`3`, `ignored-lane`, `tests-misc`, `version`, `cli-baseline`, `wasm`, `fuzz-smoke`, `golden`, `generated`, `writing`, `unsafe`, `supply`, `workflows`, `ci-gates` | No — runs on every PR, docs-only included |
+| `kit-supply-pr` | `cloudbuild/supply.yaml` | `third-party-notices`, `release-artifact-check`, `publish-dry-run` | **Yes** — `rust/Cargo.lock`, `rust/Cargo.toml`, `rust/crates/**/Cargo.toml`, `rust/crates/kit-bin/**`, `rust/about.*`, `rust/rust-toolchain.toml`, `scripts/check-release-artifact-features.sh`, `scripts/check-publish.sh`, `scripts/release/**`, `.github/workflows/release.yml`, `cloudbuild/supply.yaml` |
+| `kit-connect-pr` | `cloudbuild/connect-latest.yaml` | latest-release probe of the Connect stack | **Yes** — `**/Cargo.toml`, `**/Cargo.lock`, `scripts/check-connect-latest.sh`, `cloudbuild/connect-latest.yaml` |
 
-**Done when** every non-path-gated GCB check (`mkit-ci-pr`, `mkit-docs-pr`,
-`mkit-geiger-pr`) is present and `success`, and each path-gated check
-(`mkit-security-pr`, `mkit-codegen-pr`) is either `success` or legitimately
-absent because the PR changed none of its trigger paths (verify with
+**Done when** `kit-ci-pr` is present and `success`, and each path-gated check
+(`kit-supply-pr`, `kit-connect-pr`) is either `success` or legitimately absent
+because the PR changed none of its trigger paths (verify with
 `gh pr diff <N> --name-only`).
 
 Two traps to clear here:
 
-- **docs-lint gap.** `cargo doc -D warnings` runs ONLY on `mkit-docs-pr`, never
-  on the macOS `Rust CI gate`. A broken intra-doc link or bad docstring passes
-  GitHub-green and lands on `main`. If the PR touches any Rust source or doc
-  comment, `mkit-docs-pr` must be present and green — do not merge on the GitHub
-  rollup alone.
+- **docs-lint gap.** `cargo doc -Dwarnings` runs ONLY in the `docs` step of
+  `kit-ci-pr`, never in `Rust CI gate`. A broken intra-doc link or bad docstring
+  passes the GitHub gate. The `writing` step also scans new commit messages, and
+  `Rust CI gate` sees neither. Do not merge on `Rust CI gate` alone.
 - **fork/`gcbrun` gating.** GCB PR triggers auto-run for org collaborators but
   require a maintainer **`/gcbrun`** comment for external/fork PRs
-  (`cloudbuild/README.md`). On a fork PR with no `mkit-*` statuses at all, the
+  (`cloudbuild/README.md`). On a fork PR with no `kit-*` checks at all, the
   GCB side never ran — request `/gcbrun` and wait, rather than reading absence
   as pass.
 
@@ -125,10 +126,11 @@ green rollup does not mean the right things ran.
    is *absent*, name the path-filter reason it legitimately skipped.
 
 **Done when** every check is either present-and-green or has a stated, verified
-skip reason — no check is unexplained-absent. Common legitimate absences: a
-Rust-only PR skips `mkit-security-pr` (no `Cargo.*` change) and the web/mcp heavy
-jobs; a docs-only PR skips `mkit-ci-pr`. An *unexplained* absence means the
-trigger didn't fire — resolve it before merging.
+skip reason — no check is unexplained-absent. Common legitimate absences: a PR
+with no manifest change skips `kit-connect-pr`; a Rust-only PR with no Markdown
+change skips `Docs checks`; a docs-only PR skips `cargo semver-checks` and `Build
+twice and compare`. `kit-ci-pr` has no path filter. An *unexplained* absence means
+the trigger didn't fire — resolve it before merging.
 
 ## Step 5 — Distrust CI on a stale branch; refresh the ref
 
@@ -147,62 +149,53 @@ head SHA.
 **Done when** the checks you trusted in Steps 1–4 ran against the branch's
 current head SHA with `main` merged in — not an older or auto-generated ref.
 
-## Step 6 — Confirm the branch-protection bar
+## Step 6 — Confirm the review bar
 
-`main` requires code-owner approval (CODEOWNERS routes to
-`@officialunofficial/makechain`), and the merge bar in `CONTRIBUTING.md` includes
-items CI can't fully see: a regression test for bug fixes, a CHANGELOG entry
-under "Unreleased" for user-visible changes, a spec + golden-vector update for
-format changes, and a second reviewer + threat-model note for crypto/keystore
-changes.
+CODEOWNERS routes every path to `@officialunofficial/officialunofficial`. Check
+what GitHub actually enforces on `main` rather than assuming it:
 
-**Done when** the PR has the required approving review, and any
+```sh
+gh api repos/{owner}/{repo}/branches/main/protection   # 404 "Branch not protected" means GitHub enforces nothing
+gh api repos/{owner}/{repo}/rulesets
+```
+
+`cloudbuild/README.md` names `kit-ci-pr` as the required check and `Rust CI gate`
+as the GitHub job a maintainer can require; when GitHub enforces neither, this
+preflight is the bar. `CONTRIBUTING.md` and `GOVERNANCE.md` add items CI can't
+fully see: a test for each new behavior, a test that fails without the fix for bug
+fixes, a fuzz target for each parser, a spec + golden-vector update in the same
+commit for format changes, signed commits, and review from a second maintainer
+(when one exists) for a change to a format, a signing rule, a trust rule, or the
+release pipeline.
+
+**Done when** the PR has the review its change class needs, and any
 CONTRIBUTING-mandated artifact for this PR's change class is present in the diff.
 
 ## Subsystem traps to check when the PR touches these areas
 
-- **Vendored buffa/connectrpc codegen** (`rust/crates/mkit-rpc/generated/**`,
-  `rust/crates/mkit-repo-client/**`, `apps/repo-worker/**`, or the shared
-  `.proto`): a version bump or `.proto` edit needs a **regen + commit**, not a
-  version-only change. Run `scripts/regen-rpc-proto.sh` and
-  `scripts/regen-repo-proto.sh` (both need `protoc >= 27` + the
-  `wasm32-unknown-unknown` target), then commit the refreshed `generated/` dirs
-  and the affected lockfiles — the vendored consumers span `rust/Cargo.lock`,
-  `contrib/signers/Cargo.lock` (its buffa runtime stays in lockstep), and
-  `apps/repo-worker/Cargo.lock`. `mkit-codegen-pr` fails on any drift. Dependabot
-  **ignores `buffa*`/`connectrpc*` by design** (`.github/dependabot.yml`), so
-  these never arrive as an automated bump. Watch the `json` default-feature
-  gotcha noted in the buffa vendoring.
-- **Codecov via Cloud Build** (`cloudbuild/coverage.yaml`, `mkit-coverage-main`):
-  coverage runs on **main push only**, not on PRs (it's informational —
-  `require_ci_to_pass: false`, patch/project statuses non-blocking), so don't
-  wait on it pre-merge. If you edit that config, reference the secret with
-  `printenv CODECOV_TOKEN` into a lowercase var — never `${CODECOV_TOKEN}` or a
-  brace-wrapped `$$`-escape, which `dynamicSubstitutions` rejects at config time
-  and crashes the build before it starts.
-- **Cloudflare Workers Builds (web + MCP + Rust workers)**: `apps/web` (mkit.sh)
-  and `apps/mcp` deploy on **merge to `main`** via CF Workers Builds' git
-  integration — there is **no GitHub Action for the deploy**, so it will not show
-  as a PR check; `mcp.yml`/`web.yml` only *validate*. The Rust workers
-  (`apps/repo-worker`, `apps/keys-worker`) need a CF dashboard root-dir + a build
-  command that installs rustup + worker-build, because the CF build image has no
-  Rust toolchain, and CF build logs aren't readable via the OAuth token. Treat a
-  post-merge deploy as unverified by PR CI: watch the CF dashboard after merge
-  rather than assuming the green PR proves the deploy.
-- **Release pipeline** (`.github/workflows/release.yml`, `crates-publish.yml`,
-  `mcp-release.yml`): none of these run on PRs — a signed `v*.*.*` tag drives
-  them (GitHub release archives + cosign-keyless + the `MKIT_RELEASE_ATTEST_KEY`
-  DSSE attestation in `release.yml`; crates.io in `crates-publish.yml`; the
-  `@makechain/mkit-wasm` npm publish job in `release.yml`; the MCP corpus seed in
-  `mcp-release.yml`). Per CONTRIBUTING, changes to `release.yml`/`docs/RELEASE.md`
-  require a follow-up dry-run; confirm current release/publish state in
-  `docs/RELEASE.md` and the workflows rather than trusting any snapshot.
+- **Generated buffa/connectrpc code** (`rust/crates/kit-rpc/generated/**`,
+  `rust/crates/kit-rpc/proto/**`, or the shared `proto/` tree): a version bump or
+  `.proto` edit needs a **regen + commit**, not a version-only change. Run
+  `scripts/regen-rpc-proto.sh` and `scripts/regen-transport-proto.sh` (both need
+  `protoc >= 27`), then commit the refreshed `generated/` tree and `rust/Cargo.lock`.
+  `scripts/check-generated-fresh.sh` fails on any drift; it also needs the
+  `wasm32-unknown-unknown` target. It runs in the `generated` step of `kit-ci-pr`
+  and in `generated code is fresh`. Dependabot **ignores `buffa*`/`connectrpc*` by
+  design** (`.github/dependabot.yml`), so these never arrive as an automated bump.
+- **Release pipeline** (`.github/workflows/release.yml`): it does not run on PRs —
+  a signed `v*.*.*` tag drives it (GitHub release archives + cosign keyless + SLSA
+  build provenance; the `@officialunofficial/kit-wasm` npm publish in its
+  `publish-npm` job). No workflow publishes to crates.io; a maintainer does that by
+  hand. On a PR, `release-artifact-check` and `publish-dry-run` in `kit-supply-pr`
+  and `Build twice and compare` are the only signals. Confirm current
+  release/publish state in `docs/RELEASE.md` and the workflows rather than trusting
+  any snapshot.
 
 ## Merge decision
 
-Merge only when: all three GitHub gates green (Step 2); all applicable
-`mkit-*-pr` GCB checks green with every absence explained (Steps 3–4); checks ran
-against a fresh head with `main` merged in (Step 5); code-owner approval and the
-CONTRIBUTING artifacts are in place (Step 6); and any subsystem trap for the
-files this PR touches has been cleared. If any item is unexplained-absent rather
-than green, resolve it first — absence is not a pass.
+Merge only when: every applicable GitHub check is green (Step 2); `kit-ci-pr` and
+any applicable `kit-*-pr` GCB check are green with every absence explained (Steps
+3–4); checks ran against a fresh head with `main` merged in (Step 5); the required
+review and the CONTRIBUTING artifacts are in place (Step 6); and any subsystem trap
+for the files this PR touches has been cleared. If any item is unexplained-absent
+rather than green, resolve it first — absence is not a pass.

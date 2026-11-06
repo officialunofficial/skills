@@ -127,18 +127,18 @@ Workflow tools, not code-specific.
 | [`scaffold-exercises`](skills/misc/scaffold-exercises/SKILL.md) | model | Scaffold an exercise directory tree: sections, problems, solutions, explainers. |
 | [`migrate-to-shoehorn`](skills/misc/migrate-to-shoehorn/SKILL.md) | model | Convert `as` assertions in tests to `@total-typescript/shoehorn` helpers. |
 
-### mkit
+### kit
 
-Skills for [mkit](https://github.com/officialunofficial/mkit) &mdash; the content-addressed,
-Ed25519-signed VCS. Two for *using* mkit, three for *developing* it.
+Skills for [kit](https://github.com/officialunofficial/kit) &mdash; the content-addressed,
+Ed25519-signed VCS. Two for *using* kit, three for *developing* it.
 
 | Skill | | What it does |
 | --- | --- | --- |
-| [`mkit`](skills/mkit/mkit/SKILL.md) | model | Drive the `mkit` CLI: BLAKE3 object IDs, signed commits, transports &mdash; the parts that aren't git. |
-| [`mkit-attest`](skills/mkit/mkit-attest/SKILL.md) | model | Produce and verify in-toto/DSSE attestations on a commit against a trust-roots registry. |
-| [`new-mkit-spec`](skills/mkit/new-mkit-spec/SKILL.md) | model | Scaffold a `SPEC-*.md` in the repo's format, register it in the index, and wire git-parity. |
-| [`mkit-release`](skills/mkit/mkit-release/SKILL.md) | model | Cut a signed, attested release &mdash; one `v` tag drives the GitHub, crates.io, and npm channels. |
-| [`mkit-ci-preflight`](skills/mkit/mkit-ci-preflight/SKILL.md) | model | Confirm a PR is genuinely green across the GitHub gates *and* the GCB `mkit-*-pr` checks before merge. |
+| [`kit`](skills/kit/kit/SKILL.md) | model | Drive the `kit` CLI: BLAKE3 object IDs, signed commits, transports &mdash; the parts that aren't git. |
+| [`kit-attest`](skills/kit/kit-attest/SKILL.md) | model | Produce and verify in-toto/DSSE attestations on a commit against a trust-roots registry. |
+| [`new-kit-spec`](skills/kit/new-kit-spec/SKILL.md) | model | Scaffold a `SPEC-*.md` in the repo's format, register it in the index, and wire git-parity. |
+| [`kit-release`](skills/kit/kit-release/SKILL.md) | model | Cut a signed, attested release &mdash; one `v` tag drives GitHub and npm, and crates.io goes out by hand from that tag. |
+| [`kit-ci-preflight`](skills/kit/kit-ci-preflight/SKILL.md) | model | Confirm a PR is genuinely green across the GitHub gates *and* the GCB `kit-*-pr` checks before merge. |
 
 ## Installing
 
