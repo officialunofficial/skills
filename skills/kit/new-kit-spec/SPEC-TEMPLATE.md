@@ -40,7 +40,14 @@ offset  size  field           value
 
 For a subsystem, the state model or on-disk layout. State bounds and every
 rejection as a typed error (e.g. `> 1_000_000` entries → `TooManyEntries`).
-Use MUST / MUST NOT / SHOULD / MAY for every normative requirement. -->
+Use MUST / MUST NOT / SHOULD / MAY for every normative requirement.
+Start each behavioral section with one of these markers (SPEC-CONVENTIONS §7); a
+marker covers the following paragraphs until the next marker or heading, and a
+mixed section marks each scope:
+**Protocol requirement.** A client, verifier, or other conforming server relies on
+this rule.
+**Reference-server behavior.** A mechanism, storage layout, or limit of the
+reference server. -->
 
 ### 2.1 <Subsection>
 
@@ -50,7 +57,8 @@ field grammars, ordering invariants, size caps, discovery rules. -->
 ## 3. Semantics
 
 <!-- How the format is read, written, and behaves. Failure modes, side effects,
-concurrency, and crash-safety ordering where relevant. Cross-link the specs that
+concurrency, and crash-safety ordering where relevant. Mark this section as in §2.
+Cross-link the specs that
 own adjacent concepts, e.g. [SPEC-SIGNING](SPEC-SIGNING.md) for signing bytes. -->
 
 ## 4. Out of scope (v1)

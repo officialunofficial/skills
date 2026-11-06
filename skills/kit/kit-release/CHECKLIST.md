@@ -17,6 +17,7 @@ steps. Substitute the real version for `X.Y.Z` throughout.
   - [ ] `--target=x86_64-unknown-linux-gnu`
   - [ ] `--target=aarch64-unknown-linux-gnu`
 - [ ] `bash scripts/check-publish.sh` passes (the workspace `cargo publish` dry run).
+- [ ] `bash scripts/check-semver.sh` passes (public API against the latest release tag).
 - [ ] `[workspace.package].version` in `rust/Cargo.toml` is bumped to a version
       **not already on crates.io** (immutable versions — a re-publish fails the run).
 - [ ] `CHANGELOG.md`: items moved from `## [Unreleased]` into `## [X.Y.Z] - YYYY-MM-DD`.

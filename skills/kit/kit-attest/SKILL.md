@@ -52,9 +52,10 @@ kit attest --algorithm ed25519 \
            --predicate-file provenance.json
 ```
 
-The predicate file is your claim as a JCS-canonical (RFC 8785) JSON object; kit
-passes the bytes through and never parses them. `--predicate-type` is the URI that
-tells a verifier how to interpret it. Omit both to attest the bare subject.
+The predicate file is your claim as a JCS-canonical (RFC 8785) JSON object. kit
+checks that it is a UTF-8 JSON object, then passes the bytes through without
+canonicalizing them. `--predicate-type` is the URI that tells a verifier how to
+interpret it. Omit both to attest the bare subject.
 
 ## Verify attestations
 
@@ -78,6 +79,7 @@ checkout. Exit codes:
 | `0`  | every attestation has ≥1 verified signature |
 | `65` | at least one attestation failed verification |
 | `1`  | the commit carries no attestations |
+| `78` | refused an in-repo trust-roots path (no explicit `--trust-roots`) |
 
 Branch on these codes, not on stderr text — `1` (nothing to verify) is a
 different decision from `65` (present but invalid).

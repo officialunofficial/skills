@@ -83,8 +83,11 @@ Write to the conventions: normative RFC 2119 keywords in caps (MUST, MUST NOT,
 SHOULD, MAY); short, active sentences in the present tense; `&mdash;` rather than a
 literal em dash; realistic 64-hex BLAKE3 digests in examples, never `xxxx`. A new
 magic is a distinct ASCII value that begins with `K` and goes in the SPEC-CONVENTIONS
-§4 registry. Specify a contract, not a library API (SPEC-CONVENTIONS §6). Link
-sibling specs with relative links (`[SPEC-REFS](SPEC-REFS.md)`) on first reference
+§4 registry. Specify a contract, not a library API (SPEC-CONVENTIONS §6). Start each
+new or revised behavioral section with `**Protocol requirement.**` or
+`**Reference-server behavior.**`; a marker covers the following paragraphs until the
+next marker or heading, and a mixed section marks each scope (SPEC-CONVENTIONS §7).
+Link sibling specs with relative links (`[SPEC-REFS](SPEC-REFS.md)`) on first reference
 to a term they own.
 
 Done when: `docs/specs/SPEC-<NAME>.md` exists; front matter has all four keys;
@@ -159,8 +162,8 @@ section; and the PR names the matrix status.
 ## Completion checklist
 
 - [ ] `docs/specs/SPEC-<NAME>.md` created with the four-key front matter,
-      `Status:`/`Scope:` opening, numbered normative sections, and an Invariants
-      table.
+      `Status:`/`Scope:` opening, numbered normative sections, behavioral-section
+      markers, and an Invariants table.
 - [ ] Registered as one alphabetically-placed bullet in `docs/specs/README.md`.
 - [ ] Parity wired (`docs/CLI.md`, `docs/PARITY.md` scope or divergence note, matrix
       status in the PR) — or consciously skipped because the spec adds no in-scope

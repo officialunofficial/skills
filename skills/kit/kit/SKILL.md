@@ -38,7 +38,7 @@ or agent context or the command blocks.
 ## The four differences that matter
 
 1. **Object IDs are 64-hex BLAKE3, not 40-hex SHA-1.** A git SHA never resolves.
-   Abbreviate with `--short[=N]` / `rev-parse --short`; short-prefix lookups work.
+   Abbreviate with `rev-parse --short[=N]` or `log --abbrev[=N]`; short-prefix lookups work.
 2. **The repo marker is `.kit/`, not `.git/`** — parallel layout (`objects/`,
    `refs/`, `HEAD`, `config`).
 3. **Safety guards over git's destructive defaults.** Data-losing ops refuse
@@ -61,7 +61,7 @@ Linked worktrees **are** supported (`kit worktree add/list/remove/prune`).
 kit keygen [--algorithm ed25519|secp256k1|p256] [--force] [--print-pubkey]
 kit verify <rev> [--trusted]      # check a commit/tag signature; --trusted also checks the signer against trust roots
 kit tag -s <name> -m "msg"        # signed tag (always pass -m)
-kit key generate [--backend B]    # keystore key: software (default), macos-keychain, linux-secret-service, systemd-creds, yubikey (as the build enables them)
+kit key generate [--backend B]    # keystore key: software (default), software-raw, macos-keychain, linux-secret-service, systemd-creds, yubikey (as the build enables them)
 ```
 
 > `keygen --algorithm secp256k1|p256` writes a separate **attestation** signer
@@ -98,7 +98,7 @@ The default remote is named `default`, not `origin`. Its tracking refs live unde
 ```sh
 kit remote add kit+https://gateway.example/<namespace>/<name>   # sets the default remote
 kit remote add origin <url>       # adds a named remote; push it with: kit push origin
-kit clone [--sparse <pattern>...] <url>   # --sparse needs a build with --features sparse-checkout
+kit clone <url> [--sparse <pattern>...]   # --sparse needs a build with --features sparse-checkout
 kit push [<remote>] [--all] [--force-with-lease] [--dry-run]
 kit pull [<remote>]               # or: kit fetch (download without merging)
 ```
@@ -119,8 +119,8 @@ It covers the everyday flow (`kit_status`, `kit_diff_unstaged`, `kit_diff_staged
 `kit_keygen`) plus the differentiators (`kit_verify`, `kit_attest`,
 `kit_verify_attest`, `kit_prove`, `kit_verify_proof`, `kit_closure_verify`). It
 deliberately does **not** expose remotes, history surgery
-(merge/rebase/cherry-pick/revert), tags, destructive worktree ops, or
-multi-/external-signer attestation — use the shell for those.
+(merge/rebase/cherry-pick/revert), tags, `worktree` commands, destructive ops
+(`reset --hard`, `clean`, `rm`), or multi-/external-signer attestation — use the shell for those.
 
 The default server speaks stdio. A build with `--features mcp-v2` (release binaries
 omit it) also serves streamable HTTP with `kit mcp --http <addr>`. The listener
