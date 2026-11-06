@@ -58,8 +58,8 @@ field grammars, ordering invariants, size caps, discovery rules. -->
 
 <!-- How the format is read, written, and behaves. Failure modes, side effects,
 concurrency, and crash-safety ordering where relevant. Mark this section as in §2.
-Cross-link the specs that
-own adjacent concepts, e.g. [SPEC-SIGNING](SPEC-SIGNING.md) for signing bytes. -->
+Cross-link the specs that own adjacent concepts, e.g. [SPEC-SIGNING](SPEC-SIGNING.md)
+for signing bytes. -->
 
 ## 4. Out of scope (v1)
 

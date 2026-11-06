@@ -62,10 +62,11 @@ from a prior release.
   jobs ran — confirm by name that the `kit-ci-main` build on Cloud Build and the
   macOS leg (`macos.yml`) both succeeded on the release commit. The macOS leg runs
   only on pushes to `main` and on demand (`gh workflow run macos.yml --ref main`).
-- Run `bash scripts/check-publish.sh` (the workspace `cargo publish` dry run) and
-  `bash scripts/check-semver.sh`.
+- Run `bash scripts/check-publish.sh` (the workspace `cargo publish` dry run).
 - Bump `[workspace.package].version` in `rust/Cargo.toml` to a version **not yet
   published** on crates.io (Phase 1).
+- Run `bash scripts/check-semver.sh` after the bump: a breaking change fails unless
+  the bump allows it.
 - Move `CHANGELOG.md` items from `## [Unreleased]` into `## [X.Y.Z] - YYYY-MM-DD`,
   leaving a fresh `## [Unreleased]` heading above it.
 - Update every hard-coded version site (README install snippets, `docs/INSTALL.md`,

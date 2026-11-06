@@ -119,8 +119,8 @@ It covers the everyday flow (`kit_status`, `kit_diff_unstaged`, `kit_diff_staged
 `kit_keygen`) plus the differentiators (`kit_verify`, `kit_attest`,
 `kit_verify_attest`, `kit_prove`, `kit_verify_proof`, `kit_closure_verify`). It
 deliberately does **not** expose remotes, history surgery
-(merge/rebase/cherry-pick/revert), tags, `worktree` commands, destructive ops
-(`reset --hard`, `clean`, `rm`), or multi-/external-signer attestation — use the shell for those.
+(merge/rebase/cherry-pick/revert), tags, `worktree` commands, `reset --hard`, `clean`,
+`rm`, or multi-/external-signer attestation — use the shell for those.
 
 The default server speaks stdio. A build with `--features mcp-v2` (release binaries
 omit it) also serves streamable HTTP with `kit mcp --http <addr>`. The listener
