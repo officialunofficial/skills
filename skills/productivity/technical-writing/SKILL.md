@@ -62,7 +62,7 @@ Write short sentences. One thought each is punchier than three crammed together.
   spec is available [here](#)". Use relative links between files in the same repo.
 - **Inline code is for code.** Back-tick identifiers, paths, commands, and literal
   output only. Do not use inline code, bold, or caps as a substitute for emphasis.
-- **Bold file and directory names** (**.mkit/**, **src/**, **.cbor**) rather than
+- **Bold file and directory names** (**.kit/**, **src/**, **.cbor**) rather than
   back-ticking them.
 - **No emojis** &mdash; not in prose, headings, callouts, or changelog entries.
 - **Spell out symbols in prose**: "and" not "&", "plus" not "+" (except in

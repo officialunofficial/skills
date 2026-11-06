@@ -20,6 +20,6 @@ Add audit-issue and to-primitives skills (#4)
 ### Other
 
 - lead with /plugin install as the Claude Code CTA (#3)
-Agent skills for Official Unofficial: engineering, productivity, misc, and mkit
+Agent skills for Official Unofficial: engineering, productivity, misc, and kit
 
 <!-- New releases are inserted here by .github/workflows/release.yml (CalVer vYYYY.M.MICRO). -->
