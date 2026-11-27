@@ -1,5 +1,18 @@
 # Technical writing — reference
 
+## Contents
+
+- Punctuation
+- Capitalization and naming
+- Abbreviations
+- Numbers, bytes, and bits
+- Links and accessibility
+- Keyboard shortcuts
+- Terminal transcripts and code blocks
+- Words and workflows to avoid
+- Code and API documentation
+- Precision on terms that trip authors
+
 The detailed mechanics behind [`technical-writing`](SKILL.md). Consult a section
 when the specific question comes up; the SKILL.md holds the rules you apply on
 every write.

@@ -118,11 +118,62 @@ Workflow tools, not code-specific.
 | [`technical-writing`](skills/productivity/technical-writing/SKILL.md) | model | House style for docs, specs, release notes, and user-facing copy: clear, direct, specific. |
 | [`writing-great-skills`](skills/productivity/writing-great-skills/SKILL.md) | user | Reference for writing and editing skills well: the vocabulary that makes a skill predictable. |
 
+### Design
+
+Interface work: motion, layout, copy, color, accessibility and craft review. Start with
+[`design-router`](skills/design/design-router/SKILL.md): it picks the skills for a UI task and sets the
+order of work. Most of these skills are rewrites of open-source skills by Emil Kowalski, Raphael Salaja,
+Benji Taylor, Jakub Krehel, Vercel and others; see [NOTICE.md](NOTICE.md) and each skill's `LICENSE.txt`.
+
+| Skill | | What it does |
+| --- | --- | --- |
+| [`alignment`](skills/design/alignment/SKILL.md) | user | Measures a running page for edges, gaps, centres and radii that miss by a pixel or two, judges visual weight, and returns a numbered report with |
+| [`animate`](skills/design/animate/SKILL.md) | model | Builds a web animation from scratch and writes the code. |
+| [`animate-expo`](skills/design/animate-expo/SKILL.md) | model | Builds animations in React Native and Expo with Reanimated, Gesture Handler, Expo Router and expo-haptics. |
+| [`animation-performance`](skills/design/animation-performance/SKILL.md) | model | Diagnoses and fixes web animations that drop frames. |
+| [`animation-vocabulary`](skills/design/animation-vocabulary/SKILL.md) | model | Names a web animation or motion effect from a loose description, for example "the bouncy thing when a popover opens" is Pop in and "the iOS scroll |
+| [`apple-design`](skills/design/apple-design/SKILL.md) | model | Applies Apple's approach to fluid, physical interfaces on the web. |
+| [`ask-sonner`](skills/design/ask-sonner/SKILL.md) | model | Guides work with Sonner, the React toast library: mounting the Toaster, choosing the right toast() call, promise and loading toasts, updating, |
+| [`audit`](skills/design/audit/SKILL.md) | user | Reviews a change, a session or a whole codebase against every design skill in this collection and returns one ranked, numbered report. |
+| [`avatar`](skills/design/avatar/SKILL.md) | user | Draws any object as a flat character with two capsule eyes, then animates its whole body so it glances, blinks, breathes, follows the pointer and |
+| [`blank-page`](skills/design/blank-page/SKILL.md) | model | Expands a one-line motion, animation or design brief into the full prompt: one committed look grounded in five reference images, three motion |
+| [`break-ui`](skills/design/break-ui/SKILL.md) | model | Stress-tests a component or screen with realistic worst-case data (long names, unbreakable emails, one-letter names, missing fields, huge counts, |
+| [`color`](skills/design/color/SKILL.md) | model | Holds text and control contrast to exact WCAG ratios measured on screen, routes colour through role tokens, keeps neutrals translucent, gives dark |
+| [`copy`](skills/design/copy/SKILL.md) | model | Writes and reviews the words inside an interface, such as button labels, menu items, headings, setting names, descriptions and status text. |
+| [`deconstruct`](skills/design/deconstruct/SKILL.md) | user | Breaks an animation or interaction into a state machine and a timeline of every property, on a page you can scrub and edit. |
+| [`defaults`](skills/design/defaults/SKILL.md) | model | Applies the interface defaults that every screen needs, with exact values for scroll edges, shadows and surfaces, focus, hit areas, mobile |
+| [`design-router`](skills/design/design-router/SKILL.md) | model | Routes interface work to the right design skill in this set and sets the order of work. |
+| [`emil-design-eng`](skills/design/emil-design-eng/SKILL.md) | model | Applies Emil Kowalski's design engineering rules for UI polish, component design and animation decisions. |
+| [`find-animation-opportunities`](skills/design/find-animation-opportunities/SKILL.md) | model | Sweeps a codebase or UI for places that do not animate but should, rejects the ones that should stay still, and proposes motion with exact values. |
+| [`frames`](skills/design/frames/SKILL.md) | user | Records one interaction on a throttled CPU, names what drops frames or delays input, then proves the fix with a second recording. |
+| [`gather`](skills/design/gather/SKILL.md) | model | Collects design references from the user's own saves, their boards, pattern libraries and curated galleries onto one linked board before a design |
+| [`icons`](skills/design/icons/SKILL.md) | model | Draws the icons a project's set lacks, in that set's own style: measures stroke, grid, radii and padding from every existing icon, writes each new |
+| [`improve-animations`](skills/design/improve-animations/SKILL.md) | model | Surveys the animation and motion code of a whole codebase, then writes a prioritized audit and self-contained implementation plans that another |
+| [`keyboard`](skills/design/keyboard/SKILL.md) | user | Walks a running page with the keyboard alone, records every focus stop and reports controls it cannot reach, see or operate. |
+| [`lab`](skills/design/lab/SKILL.md) | user | Builds a temporary page that shows every variant and state of real components at once, each linked to its source. |
+| [`match`](skills/design/match/SKILL.md) | model | Rebuilds a named reference from its real source and measured values, then compares reference and rebuild side by side in every state. |
+| [`mobile-native`](skills/design/mobile-native/SKILL.md) | model | Makes a web app feel native on a phone with small CSS and meta tag fixes. |
+| [`motion`](skills/design/motion/SKILL.md) | model | Sets how interface elements move, with exact values for what animates, easing curves, durations, springs, gestures, exits, motion blur and reduced |
+| [`pick-ui-library`](skills/design/pick-ui-library/SKILL.md) | user | Picks one library for a frontend task from a curated list: UI primitives, toasts, OTP inputs, charts, command menus, virtualization, drag and |
+| [`prose`](skills/design/prose/SKILL.md) | model | Writes and reviews long-form text about design and engineering work, such as blog posts, breakdowns, case studies and design notes. |
+| [`remove-animations`](skills/design/remove-animations/SKILL.md) | model | Finds the animations an interface does not need and removes or reduces them, then cleans up the code they leave behind. |
+| [`restraint`](skills/design/restraint/SKILL.md) | model | Cuts a change down to the ask. |
+| [`reuse`](skills/design/reuse/SKILL.md) | model | Sets the build order for anything new. |
+| [`review-animations`](skills/design/review-animations/SKILL.md) | user | Reviews animation and motion code against a strict craft standard and returns a findings table with a block or approve verdict. |
+| [`rule`](skills/design/rule/SKILL.md) | model | Turns a correction into a short written project rule with a broken line and the line that replaces it, puts the rule in the one file that owns its |
+| [`scope`](skills/design/scope/SKILL.md) | model | Holds an edit to the request. |
+| [`sketchbook`](skills/design/sketchbook/SKILL.md) | user | Generates a batch of small interaction experiments in the project's own stack as live tiles to keep or kill, and learns the user's taste from each |
+| [`stageshow`](skills/design/stageshow/SKILL.md) | model | Builds faux product UI that reads as a real product, as a still illustration or a short animated demo with a cursor: browser and app windows, |
+| [`verify`](skills/design/verify/SKILL.md) | model | Checks a UI or behaviour change in the running app before calling it done, then tells the user where to see it. |
+| [`viewports`](skills/design/viewports/SKILL.md) | model | Renders one page at 320, 375, 768, 1024 and 1440 wide, at each side of every breakpoint, on a short landscape phone and at 200% text, then reports |
+| [`web-design-guidelines`](skills/design/web-design-guidelines/SKILL.md) | model | Reviews UI code against the Vercel Web Interface Guidelines, fetched fresh for each review, and reports findings as terse file:line lines. |
+| [`write-swift`](skills/design/write-swift/SKILL.md) | model | Guides modern Swift through Swift 6.3, with value types, Swift 6 data-race safety, the Swift 6.2 concurrency model (main actor by default, |
+
 ### Misc
 
 | Skill | | What it does |
 | --- | --- | --- |
-| [`git-guardrails-claude-code`](skills/misc/git-guardrails-claude-code/SKILL.md) | model | Install a Claude Code hook that blocks destructive git commands. |
+| [`git-guardrails`](skills/misc/git-guardrails/SKILL.md) | model | Install a Claude Code hook that blocks destructive git commands. |
 | [`setup-pre-commit`](skills/misc/setup-pre-commit/SKILL.md) | model | Add a Husky pre-commit hook (lint-staged plus Prettier), type checking, and tests. |
 | [`scaffold-exercises`](skills/misc/scaffold-exercises/SKILL.md) | model | Scaffold an exercise directory tree: sections, problems, solutions, explainers. |
 | [`migrate-to-shoehorn`](skills/misc/migrate-to-shoehorn/SKILL.md) | model | Convert `as` assertions in tests to `@total-typescript/shoehorn` helpers. |
@@ -180,12 +231,17 @@ file works unmodified on other agents that support it &mdash; for Codex CLI, sym
 ## Adding a skill
 
 1. Create the skill directory `skills/<category>/<name>/` with a `SKILL.md` inside.
-2. The YAML header needs a `name` (equal to the directory) and a `description`. For a model-invoked
-   skill, write the description in third person: the first sentence says what it does, then "Use
-   when …" names the distinct triggers. For a user-invoked skill, set `disable-model-invocation:
-   true` and keep the description to a one-line human summary.
+2. The YAML header needs a `name` (equal to the directory; lowercase letters, digits and hyphens; no
+   "claude" or "anthropic") and a `description`. For a model-invoked skill, write the description in
+   third person: say what the skill does, then when to use it, with concrete trigger words. Keep it under
+   600 characters. For a user-invoked skill, set `disable-model-invocation: true` and keep the description
+   to a one-line human summary.
 3. Keep **SKILL.md** tight; disclose long reference into sibling **.md** files, loaded on demand.
-4. See [`writing-great-skills`](skills/productivity/writing-great-skills/SKILL.md) for the craft, and
+4. Test the skill before you ship it: run two or three realistic prompts with and without the skill, and
+   check that the description triggers on the right requests and stays quiet on the wrong ones.
+5. Run `python3 scripts/check-skills.py`. It checks names, descriptions, size limits, links, the plugin list and
+   this README. The same check runs on every pull request.
+6. See [`writing-great-skills`](skills/productivity/writing-great-skills/SKILL.md) for the craft, and
    [`technical-writing`](skills/productivity/technical-writing/SKILL.md) for the prose style.
 
 ## Releasing

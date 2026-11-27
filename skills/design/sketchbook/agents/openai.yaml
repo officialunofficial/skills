@@ -1,0 +1,5 @@
+interface:
+  display_name: "Sketchbook"
+  short_description: "Live tiles you keep or kill"
+policy:
+  allow_implicit_invocation: false

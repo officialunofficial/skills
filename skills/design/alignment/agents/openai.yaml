@@ -1,0 +1,5 @@
+interface:
+  display_name: "Alignment"
+  short_description: "Measured misalignment and visual weight, numbered"
+policy:
+  allow_implicit_invocation: false

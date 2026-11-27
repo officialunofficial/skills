@@ -1,0 +1,1588 @@
+<!doctype html>
+<!--
+  Audit report. Copy this file to .audit/<scope>/index.html and write report.js beside it:
+
+  window.audit = {
+    scope: "Uncommitted diff, 14 files, 3 requests in this thread",
+    verdict: "Block",
+    skills: [
+      { name: "verify", checked: "Settings and Library opened" },
+      { name: "match", skipped: "No reference named" }
+    ],
+    findings: [
+      {
+        n: 1,
+        severity: "HIGH",
+        title: "Reset Does Nothing",
+        rules: ["verify-click-new-controls"],
+        skills: ["verify"],
+        locations: ["settings/index.tsx:42"],
+        evidence: "Clicked Reset in Settings and no value changed.",
+        fix: "Call the store's reset from the Reset handler."
+      }
+    ],
+    notVerified: ["Export, it needs a signed build"]
+  };
+
+  `verdict` is "Block" when any HIGH remains and "Approve" otherwise. `severity` is HIGH, MEDIUM or LOW. Number findings in rank order: severity, then reach. A location is file:line, or "request 2" when no file applies. Each skill has `checked` with what was inspected, or `skipped` with the reason. `notVerified` lists every check that could not run, or stays empty. Titles take Title Case, such as "Reset Does Nothing".
+-->
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#ffffff" media="(prefers-color-scheme: light)" />
+    <meta name="theme-color" content="#080808" media="(prefers-color-scheme: dark)" />
+    <title>Audit</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400..600&display=swap"
+    />
+    <style>
+      :root {
+        /* kit:tokens */
+        --gray-1: light-dark(#ffffff, #080808);
+        --gray-2: light-dark(#fafafa, #111111);
+        --gray-3: light-dark(#f2f2f2, #1a1a1a);
+        --gray-4: light-dark(#ebebeb, #222222);
+        --gray-5: light-dark(#e3e3e3, #2a2a2a);
+        --gray-10: light-dark(#6b6b6b, #8f8f8f);
+        --gray-11: light-dark(#575757, #b4b4b4);
+        --gray-12: light-dark(#080808, #ffffff);
+        --blue: #02bbff;
+        --red: light-dark(#d93036, #ff6369);
+        --green: light-dark(#2b9a66, #3dd68c);
+        --accent: var(--blue);
+        --danger: var(--red);
+        --success: var(--green);
+        --text-primary: var(--gray-12);
+        --text-secondary: color-mix(in oklab, var(--gray-12) 80%, var(--gray-11));
+        --text-tertiary: var(--gray-11);
+        --text-quaternary: var(--gray-10);
+        --text-on-accent: light-dark(#ffffff, #080808);
+        --border-primary: color-mix(in oklab, var(--gray-12) 7%, transparent);
+        --border-secondary: color-mix(in oklab, var(--gray-12) 12%, transparent);
+        --background-primary: var(--gray-1);
+        --background-secondary: var(--gray-2);
+        --background-tertiary: light-dark(rgb(8 8 8 / 5%), rgb(255 255 255 / 8%));
+        --background-hover: light-dark(rgb(8 8 8 / 8%), rgb(255 255 255 / 13%));
+        --background-raised: light-dark(#ffffff, #1a1a1a);
+        --background-control: light-dark(#ffffff, #222222);
+        --background-overlay: light-dark(#ffffff, #111111);
+        --fill-hover: light-dark(rgb(8 8 8 / 4%), rgb(255 255 255 / 6%));
+        --shadow-border: 0 0 0 1px light-dark(rgb(0 0 0 / 7%), rgb(255 255 255 / 7%));
+        --shadow-default:
+          inset 0 0 0 0.5px light-dark(transparent, rgb(255 255 255 / 7%)),
+          0 0 0 0.5px light-dark(rgb(0 0 0 / 6%), transparent),
+          0 1px 1px -1px light-dark(rgb(0 0 0 / 10%), transparent),
+          0 1px 2px 0 light-dark(rgb(0 0 0 / 5%), transparent);
+        --shadow-large:
+          0 0 0 0.5px light-dark(oklab(0.802 0 0 / 0.297), transparent),
+          0 0 0 1px light-dark(transparent, oklab(0.463 0 0 / 0.303)),
+          0 2px 3px -2px light-dark(rgb(0 0 0 / 6.3%), rgb(0 0 0 / 15%)),
+          0 3px 12px -4px light-dark(rgb(0 0 0 / 10%), transparent),
+          0 4px 16px -8px light-dark(rgb(0 0 0 / 5%), transparent),
+          0 3px 8px -2px light-dark(transparent, rgb(0 0 0 / 40%)),
+          0 4px 12px -4px light-dark(transparent, rgb(0 0 0 / 50%));
+        --shadow-extra-large:
+          inset 0 0 0 0.5px light-dark(transparent, rgb(255 255 255 / 7%)),
+          0 0 0 0.5px light-dark(rgb(0 0 0 / 6%), transparent),
+          0 8px 40px 0 rgb(0 0 0 / 5%),
+          0 12px 32px -16px rgb(0 0 0 / 15%);
+        --font-sans: Inter, -apple-system, BlinkMacSystemFont, sans-serif;
+        --font-mono: ui-monospace, "SF Mono", Menlo, monospace;
+        --font-weight-400: "wght" 400, "opsz" 14;
+        --font-weight-500: "wght" 500, "opsz" 14;
+        --ease-out: cubic-bezier(0.23, 1, 0.32, 1);
+        --ease-in-out: cubic-bezier(0.77, 0, 0.175, 1);
+        --ease-drawer: cubic-bezier(0.32, 0.72, 0, 1);
+        --duration-snappy: 220ms;
+        --duration-exit: 160ms;
+        --radius-control: 8px;
+        --radius-menu: 12px;
+        --radius-panel: 16px;
+        /* kit:tokens end */
+        --inset: 48px;
+      }
+
+      /* kit:page */
+      :root {
+        color-scheme: light dark;
+      }
+
+      *,
+      *::before,
+      *::after {
+        box-sizing: border-box;
+      }
+
+      * {
+        padding: 0;
+        margin: 0;
+        font: inherit;
+        font-variation-settings: inherit;
+        color: inherit;
+        text-decoration: none;
+        border: 0;
+      }
+
+      ol,
+      ul {
+        list-style: none;
+      }
+
+      img,
+      svg,
+      canvas,
+      video {
+        display: block;
+        max-width: 100%;
+      }
+
+      [hidden] {
+        display: none !important;
+      }
+
+      button {
+        cursor: pointer;
+        user-select: none;
+        background: none;
+      }
+
+      button,
+      a,
+      select {
+        touch-action: manipulation;
+      }
+
+      code {
+        font-family: var(--font-mono);
+        font-size: 0.9em;
+      }
+
+      html {
+        font-family: var(--font-sans);
+        font-size: 14px;
+        line-height: 20px;
+        font-variation-settings: var(--font-weight-400);
+        font-optical-sizing: none;
+        font-feature-settings: "calt", "ccmp", "locl", "kern", "cv01", "ss03";
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+        -webkit-tap-highlight-color: transparent;
+        color: var(--text-primary);
+        background: var(--background-primary);
+        scroll-padding-block-start: var(--bar-height, 72px);
+      }
+
+      * {
+        scrollbar-width: none;
+      }
+
+      ::-webkit-scrollbar {
+        display: none;
+      }
+
+      ::selection {
+        background: color-mix(in oklab, var(--accent) 28%, transparent);
+      }
+
+      :focus-visible {
+        outline: 2px solid var(--accent);
+        outline-offset: 2px;
+        border-radius: 4px;
+      }
+
+      h1,
+      h2,
+      h3 {
+        text-wrap: balance;
+      }
+
+      p {
+        text-wrap: pretty;
+      }
+
+      @media (width <= 640px) {
+        input:not([type="range"]),
+        textarea,
+        select {
+          font-size: 16px;
+        }
+      }
+
+      @media (prefers-reduced-motion: reduce) {
+        *,
+        *::before,
+        *::after,
+        ::backdrop {
+          transition-duration: 0s !important;
+          transition-delay: 0s !important;
+        }
+      }
+      /* kit:page end */
+
+      /* kit:fade */
+      @property --fade-start {
+        syntax: "<length>";
+        inherits: false;
+        initial-value: 0px;
+      }
+
+      @property --fade-end {
+        syntax: "<length>";
+        inherits: false;
+        initial-value: 0px;
+      }
+
+      @keyframes scroll-fade {
+        0% {
+          --fade-start: 0px;
+          --fade-end: 24px;
+        }
+        10% {
+          --fade-start: 24px;
+        }
+        90% {
+          --fade-end: 24px;
+        }
+        100% {
+          --fade-start: 24px;
+          --fade-end: 0px;
+        }
+      }
+
+      .scroll-fade {
+        mask-image:
+          linear-gradient(to bottom, transparent, black var(--fade-start), black calc(100% - var(--fade-end)), transparent),
+          linear-gradient(black, black),
+          linear-gradient(black, black);
+        mask-clip: border-box, border-box, no-clip;
+        mask-size: 100% 100%, 100% 100%, calc(100% + 128px) calc(100% + 128px);
+        mask-position: 0 0, 0 0, -64px -64px;
+        mask-repeat: no-repeat;
+        mask-composite: add, exclude;
+        animation: scroll-fade linear both;
+        animation-timeline: scroll(self);
+      }
+      /* kit:fade end */
+
+      /* kit:head */
+      .head {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+        max-width: 640px;
+      }
+
+      .title {
+        font-variation-settings: var(--font-weight-500);
+      }
+
+      .brief {
+        color: var(--text-tertiary);
+        overflow-wrap: anywhere;
+
+        a {
+          display: inline-flex;
+          gap: 4px;
+          align-items: center;
+          color: var(--text-secondary);
+
+          svg {
+            color: var(--text-quaternary);
+          }
+
+          &:active,
+          &:active svg {
+            color: var(--text-primary);
+          }
+        }
+
+        code {
+          color: var(--text-secondary);
+        }
+      }
+
+      @property --bar-line {
+        syntax: "<color>";
+        inherits: false;
+        initial-value: transparent;
+      }
+
+      .bar {
+        position: sticky;
+        top: 0;
+        z-index: 10;
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+        align-items: center;
+        padding: 16px 0;
+        border-image: linear-gradient(to top, var(--bar-line) 1px, var(--background-primary) 1px) fill 0 / / 0 100vw;
+        transition: --bar-line var(--duration-snappy) var(--ease-out);
+
+        &[data-stuck] {
+          --bar-line: var(--border-primary);
+        }
+      }
+
+      @media (hover: hover) and (pointer: fine) {
+        .brief a:hover,
+        .brief a:hover svg {
+          color: var(--text-primary);
+        }
+      }
+      /* kit:head end */
+
+      /* kit:controls */
+      .chip,
+      .action {
+        display: inline-flex;
+        gap: 6px;
+        align-items: center;
+        height: 28px;
+        padding: 0 12px;
+        font-size: 13px;
+        font-variation-settings: var(--font-weight-500);
+        color: var(--text-tertiary);
+        white-space: nowrap;
+        border-radius: var(--radius-control);
+
+        &[aria-pressed="true"] {
+          color: var(--text-primary);
+          background: var(--background-tertiary);
+        }
+
+        &:active:not(:disabled) {
+          color: var(--text-primary);
+        }
+
+        &:disabled {
+          cursor: default;
+          opacity: 0.5;
+        }
+      }
+
+      .action {
+        color: var(--text-primary);
+        background: var(--background-tertiary);
+
+        &:active:not(:disabled) {
+          background: var(--background-hover);
+        }
+      }
+
+      .icon-button,
+      .tool-button {
+        position: relative;
+        display: grid;
+        flex: none;
+        place-items: center;
+        width: 28px;
+        height: 28px;
+        color: var(--text-tertiary);
+        border-radius: var(--radius-control);
+
+        &::before {
+          position: absolute;
+          inset: -4px;
+          content: "";
+        }
+
+        &:disabled {
+          cursor: default;
+          opacity: 0.4;
+        }
+      }
+
+      .icon-button {
+        background: var(--background-tertiary);
+
+        &:active:not(:disabled, [aria-pressed="true"]) {
+          color: var(--text-primary);
+          background: var(--background-hover);
+        }
+
+        &[aria-pressed="true"] {
+          color: var(--text-on-accent);
+          background: var(--accent);
+        }
+      }
+
+      .tool-button {
+        &:active:not(:disabled) {
+          color: var(--text-primary);
+          background: var(--background-tertiary);
+        }
+
+        &[aria-pressed="true"] {
+          color: var(--text-primary);
+          background: var(--background-tertiary);
+        }
+
+        &[aria-pressed="true"]:active:not(:disabled) {
+          background: var(--background-hover);
+        }
+      }
+
+      .pick {
+        position: relative;
+        display: grid;
+        flex: none;
+        place-items: center;
+        width: 28px;
+        height: 28px;
+        color: var(--text-quaternary);
+        border-radius: var(--radius-control);
+        box-shadow: inset 0 0 0 1px var(--border-secondary);
+
+        &::before {
+          position: absolute;
+          inset: -6px;
+          content: "";
+        }
+
+        &:active:not([aria-pressed="true"]) {
+          color: var(--text-primary);
+        }
+
+        &[aria-pressed="true"] {
+          color: var(--text-on-accent);
+          background: var(--accent);
+          box-shadow: none;
+        }
+      }
+
+      .count {
+        color: var(--text-quaternary);
+        font-variant-numeric: tabular-nums;
+      }
+
+      @media (hover: hover) and (pointer: fine) {
+        .chip:hover:not(:disabled) {
+          color: var(--text-primary);
+        }
+
+        .action:hover:not(:disabled) {
+          background: var(--background-hover);
+        }
+
+        .icon-button:hover:not(:disabled, [aria-pressed="true"]) {
+          color: var(--text-primary);
+          background: var(--background-hover);
+        }
+
+        .tool-button:hover:not(:disabled) {
+          color: var(--text-primary);
+          background: var(--background-tertiary);
+        }
+
+        .tool-button[aria-pressed="true"]:hover:not(:disabled) {
+          background: var(--background-hover);
+        }
+
+        .pick:hover:not([aria-pressed="true"]) {
+          color: var(--text-primary);
+        }
+      }
+      /* kit:controls end */
+
+      /* kit:select */
+      .select {
+        display: inline-flex;
+        gap: 6px;
+        align-items: center;
+        min-width: 0;
+        max-width: 280px;
+        height: 28px;
+        padding: 0 28px 0 12px;
+        font-size: 13px;
+        font-variation-settings: var(--font-weight-500);
+        color: var(--text-primary);
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        cursor: pointer;
+        appearance: none;
+        background: var(--background-tertiary) no-repeat right 11px center / 10px
+          url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 10 10' fill='none' stroke='%236b6b6b' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M2.5 4l2.5 2.5L7.5 4'/%3E%3C/svg%3E");
+        border-radius: var(--radius-control);
+
+        &:active {
+          background-color: var(--background-hover);
+        }
+      }
+
+      @supports (appearance: base-select) {
+        .select,
+        .select::picker(select) {
+          appearance: base-select;
+        }
+
+        .select {
+          padding-right: 12px;
+          background-image: none;
+
+          &::picker-icon {
+            width: 10px;
+            height: 10px;
+            content: "";
+            background: var(--text-quaternary);
+            mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 10 10' fill='none' stroke='black' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M2.5 4l2.5 2.5L7.5 4'/%3E%3C/svg%3E");
+            transition: rotate var(--duration-snappy) var(--ease-out);
+          }
+
+          &:open::picker-icon {
+            rotate: 180deg;
+          }
+
+          selectedcontent {
+            overflow: hidden;
+            text-overflow: ellipsis;
+          }
+
+          &::picker(select) {
+            min-width: anchor-size(width);
+            max-height: min(400px, 60dvh);
+            scrollbar-width: none;
+            padding: 4px;
+            margin-block: 8px;
+            background: var(--background-raised);
+            border: 1px solid transparent;
+            border-radius: var(--radius-menu);
+            box-shadow: var(--shadow-large);
+            opacity: 0;
+            mask-image:
+              linear-gradient(to bottom, transparent, black var(--fade-start), black calc(100% - var(--fade-end)), transparent),
+              linear-gradient(black, black),
+              linear-gradient(black, black);
+            mask-clip: border-box, border-box, no-clip;
+            mask-size: 100% 100%, 100% 100%, calc(100% + 128px) calc(100% + 128px);
+            mask-position: 0 0, 0 0, -64px -64px;
+            mask-repeat: no-repeat;
+            mask-composite: add, exclude;
+            animation: scroll-fade linear both;
+            animation-timeline: scroll(self);
+            transition:
+              opacity var(--duration-exit) var(--ease-out),
+              display var(--duration-exit) allow-discrete,
+              overlay var(--duration-exit) allow-discrete;
+          }
+
+          &:open::picker(select) {
+            opacity: 1;
+            transition-duration: var(--duration-snappy);
+
+            @starting-style {
+              opacity: 0;
+            }
+          }
+        }
+
+        .select option {
+          display: flex;
+          gap: 6px;
+          align-items: center;
+          height: 28px;
+          padding: 0 8px;
+          font-size: 13px;
+          font-variation-settings: var(--font-weight-500);
+          color: var(--text-tertiary);
+          white-space: nowrap;
+          cursor: pointer;
+          border-radius: var(--radius-control);
+
+          &:active {
+            color: var(--text-primary);
+            background: var(--fill-hover);
+          }
+
+          &:focus-visible {
+            color: var(--text-primary);
+            background: var(--background-tertiary);
+            outline: none;
+          }
+
+          &:checked {
+            color: var(--text-primary);
+          }
+
+          &::checkmark {
+            order: 1;
+            margin-left: auto;
+            padding-left: 16px;
+            color: var(--accent);
+          }
+        }
+      }
+
+      @media (width <= 640px) {
+        .select {
+          font-size: 16px;
+        }
+      }
+
+      @media (hover: hover) and (pointer: fine) {
+        .select:hover {
+          background-color: var(--background-hover);
+        }
+
+        .select option:hover {
+          color: var(--text-primary);
+          background: var(--fill-hover);
+        }
+      }
+      /* kit:select end */
+
+      /* kit:overlays */
+      .toast {
+        position: fixed;
+        inset: auto;
+        display: inline-flex;
+        align-items: center;
+        height: 32px;
+        padding: 0 12px;
+        margin: 0;
+        overflow: visible;
+        font-size: 13px;
+        font-variation-settings: var(--font-weight-500);
+        color: var(--text-primary);
+        white-space: nowrap;
+        pointer-events: none;
+        background: var(--background-raised);
+        border: 1px solid transparent;
+        border-radius: 10px;
+        box-shadow: var(--shadow-large);
+        opacity: 0;
+        translate: -50% 4px;
+        scale: 0.97;
+        transform-origin: bottom center;
+        transition:
+          opacity var(--duration-exit) var(--ease-out),
+          translate var(--duration-exit) var(--ease-out),
+          scale var(--duration-exit) var(--ease-out);
+
+        &[data-side="below"] {
+          translate: -50% -4px;
+          transform-origin: top center;
+        }
+
+        &[data-open] {
+          opacity: 1;
+          translate: -50% 0;
+          scale: 1;
+          transition-duration: var(--duration-snappy);
+        }
+
+        &:has(button) {
+          gap: 12px;
+          padding-right: 4px;
+          pointer-events: auto;
+        }
+
+        button {
+          height: 24px;
+          padding: 0 8px;
+          color: var(--accent);
+          border-radius: 6px;
+
+          &:active {
+            background: var(--background-hover);
+          }
+        }
+      }
+
+      .tip {
+        position: fixed;
+        inset: auto;
+        display: inline-flex;
+        gap: 6px;
+        align-items: center;
+        height: 24px;
+        padding: 0 8px;
+        margin: 0;
+        overflow: visible;
+        font-size: 12px;
+        font-variation-settings: var(--font-weight-500);
+        color: var(--text-primary);
+        white-space: nowrap;
+        pointer-events: none;
+        background: var(--background-raised);
+        border: 1px solid transparent;
+        border-radius: var(--radius-control);
+        box-shadow: var(--shadow-large);
+        translate: -50% 0;
+        transition:
+          opacity 125ms var(--ease-out),
+          translate 125ms var(--ease-out);
+
+        @starting-style {
+          opacity: 0;
+          translate: -50% 4px;
+        }
+
+        &[data-side="below"] {
+          @starting-style {
+            translate: -50% -4px;
+          }
+        }
+
+        &[data-instant] {
+          transition: none;
+        }
+
+        kbd {
+          font: inherit;
+          color: var(--text-tertiary);
+        }
+      }
+
+      @media (hover: hover) and (pointer: fine) {
+        .toast button:hover {
+          background: var(--background-hover);
+        }
+      }
+      /* kit:overlays end */
+
+      /* kit:panel */
+      .sheet {
+        position: fixed;
+        inset: 0 0 0 auto;
+        flex-direction: column;
+        width: min(400px, 100% - 24px);
+        max-width: none;
+        height: calc(100dvh - 24px);
+        max-height: none;
+        padding: 0;
+        margin: 12px;
+        overflow: hidden;
+        color: var(--text-primary);
+        background: var(--background-raised);
+        border: 1px solid transparent;
+        border-radius: var(--radius-panel);
+        box-shadow: var(--shadow-extra-large);
+        opacity: 0;
+        transition:
+          opacity var(--duration-exit) var(--ease-out),
+          display var(--duration-exit) allow-discrete,
+          overlay var(--duration-exit) allow-discrete;
+
+        &[open] {
+          display: flex;
+          opacity: 1;
+          transition-duration: var(--duration-snappy);
+
+          @starting-style {
+            opacity: 0;
+          }
+        }
+
+        &::backdrop {
+          color-scheme: light dark;
+          background: transparent;
+          transition:
+            background-color var(--duration-exit) var(--ease-out),
+            display var(--duration-exit) allow-discrete,
+            overlay var(--duration-exit) allow-discrete;
+        }
+
+        &[open]::backdrop {
+          background: color-mix(in oklab, var(--background-primary) 64%, transparent);
+          transition-duration: var(--duration-snappy);
+
+          @starting-style {
+            background: transparent;
+          }
+        }
+
+        @media (width <= 640px) {
+          inset: auto 0 0;
+          width: calc(100% - 24px);
+          height: auto;
+          max-height: 80dvh;
+          margin: 0 12px max(12px, env(safe-area-inset-bottom));
+        }
+      }
+
+      .panel-scroll {
+        display: flex;
+        flex-direction: column;
+        gap: 24px;
+        min-height: 0;
+        padding: 16px;
+        overflow-y: auto;
+        overscroll-behavior: contain;
+      }
+
+      .panel-top,
+      .panel-tools {
+        display: flex;
+        gap: 8px;
+        align-items: center;
+      }
+
+      .panel-top {
+        justify-content: space-between;
+      }
+
+      .panel-head {
+        display: flex;
+        flex-direction: column;
+        gap: 2px;
+      }
+
+      .panel-group {
+        color: var(--text-tertiary);
+        overflow-wrap: anywhere;
+      }
+
+      .panel-title {
+        font-variation-settings: var(--font-weight-500);
+      }
+
+      .panel-note {
+        margin-top: 10px;
+        color: var(--text-secondary);
+      }
+
+      .panel-count {
+        margin-top: 10px;
+        color: var(--text-quaternary);
+        font-variant-numeric: tabular-nums;
+      }
+
+      .detail {
+        display: flex;
+        gap: 16px;
+        justify-content: space-between;
+        padding: 6px 0;
+
+        & + & {
+          border-top: 1px solid var(--border-primary);
+        }
+
+        dt {
+          flex: none;
+          color: var(--text-tertiary);
+        }
+
+        dd {
+          min-width: 0;
+          text-align: right;
+          overflow-wrap: anywhere;
+          font-variant-numeric: tabular-nums;
+
+          span + span::before {
+            content: ", ";
+          }
+        }
+
+        a {
+          display: inline-flex;
+          gap: 4px;
+          align-items: center;
+
+          svg {
+            color: var(--text-quaternary);
+          }
+
+          &:active svg {
+            color: var(--text-primary);
+          }
+        }
+
+        &[data-stacked] {
+          flex-direction: column;
+          gap: 2px;
+
+          dd {
+            text-align: left;
+          }
+        }
+      }
+
+      @media (hover: hover) and (pointer: fine) {
+        .detail a:hover svg {
+          color: var(--text-primary);
+        }
+      }
+      /* kit:panel end */
+
+      /* kit:section */
+      .section-head {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 4px 12px;
+        align-items: baseline;
+        margin-bottom: 20px;
+
+        .count {
+          margin-left: auto;
+        }
+      }
+
+      .section-title {
+        font-variation-settings: var(--font-weight-500);
+      }
+
+      .section-description {
+        color: var(--text-tertiary);
+      }
+
+      .rows > * + * {
+        border-top: 1px solid var(--border-primary);
+      }
+
+      .empty {
+        padding: 64px 0;
+        color: var(--text-tertiary);
+        text-align: center;
+      }
+      /* kit:section end */
+
+      .page {
+        width: min(768px, 100% - var(--inset) * 2);
+        margin: 0 auto;
+        padding: 96px 0 128px;
+
+        @media (width <= 640px) {
+          --inset: 24px;
+          padding-top: 64px;
+        }
+      }
+
+      .bar {
+        margin-top: 48px;
+      }
+
+      .filters,
+      .picks {
+        display: flex;
+        gap: 8px;
+        min-width: 0;
+      }
+
+      .picks {
+        margin-left: auto;
+      }
+
+      .sections {
+        display: flex;
+        flex-direction: column;
+        gap: 64px;
+        margin-top: 32px;
+      }
+
+      .finding {
+        position: relative;
+        display: flex;
+        gap: 12px;
+        align-items: flex-start;
+        padding: 10px 12px;
+        margin: 0 -12px;
+        border-radius: var(--radius-menu);
+
+        &:active {
+          background: var(--fill-hover);
+        }
+
+        &[data-current] {
+          background: var(--background-tertiary);
+        }
+      }
+
+      .finding-n {
+        flex: none;
+        min-width: 20px;
+        padding-top: 4px;
+        color: var(--text-quaternary);
+        font-variant-numeric: tabular-nums;
+      }
+
+      .finding-body {
+        display: flex;
+        flex: 1;
+        flex-direction: column;
+        gap: 2px;
+        min-width: 0;
+        padding-top: 4px;
+      }
+
+      .finding-open {
+        text-align: left;
+        text-wrap: pretty;
+
+        &::after {
+          position: absolute;
+          inset: 0;
+          content: "";
+          border-radius: var(--radius-menu);
+        }
+
+        &:focus-visible {
+          outline: none;
+
+          &::after {
+            outline: 2px solid var(--accent);
+          }
+        }
+      }
+
+      .finding-where {
+        font-size: 13px;
+        color: var(--text-tertiary);
+        overflow-wrap: anywhere;
+      }
+
+      .pick {
+        z-index: 1;
+      }
+
+      .skill {
+        display: grid;
+        grid-template-columns: 1fr auto;
+        gap: 2px 16px;
+        padding: 10px 0;
+      }
+
+      .skill-name {
+        font-variation-settings: var(--font-weight-500);
+      }
+
+      .skill-result {
+        color: var(--text-tertiary);
+        text-align: right;
+        font-variant-numeric: tabular-nums;
+      }
+
+      .skill-checked {
+        grid-column: 1 / -1;
+        color: var(--text-tertiary);
+      }
+
+      .gap {
+        padding: 10px 0;
+        color: var(--text-secondary);
+      }
+
+      @media (hover: hover) and (pointer: fine) {
+        .finding:hover:not([data-current]) {
+          background: var(--fill-hover);
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="page">
+      <header class="head">
+        <h1 class="title" id="title"></h1>
+        <p class="brief" id="scope"></p>
+      </header>
+
+      <nav class="bar" id="bar" aria-label="Filters">
+        <div class="filters">
+          <select class="select" id="severity-filter" aria-label="Severity"></select>
+          <select class="select" id="skill-filter" aria-label="Skill"></select>
+        </div>
+        <div class="picks">
+          <button class="action" id="copy" type="button" title="Copy Picks (⇧C)" aria-keyshortcuts="Shift+C" disabled>Copy Picks</button>
+        </div>
+      </nav>
+
+      <main class="sections" id="sections"></main>
+    </div>
+
+    <dialog class="sheet" id="panel" aria-labelledby="panel-title">
+      <div class="panel-scroll scroll-fade">
+        <div class="panel-top">
+          <button class="icon-button" id="panel-close" type="button" aria-label="Close" title="Close (Esc)">
+            <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><path d="M4 4l8 8M12 4l-8 8" /></svg>
+          </button>
+          <div class="panel-tools">
+            <button class="icon-button" id="panel-pick" type="button" aria-pressed="false"></button>
+            <button class="icon-button" id="panel-prev" type="button" aria-label="Previous" title="Previous (K)">
+              <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M8 12.5v-9M4.5 7L8 3.5 11.5 7" /></svg>
+            </button>
+            <button class="icon-button" id="panel-next" type="button" aria-label="Next" title="Next (J)">
+              <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M8 3.5v9M4.5 9L8 12.5 11.5 9" /></svg>
+            </button>
+          </div>
+        </div>
+        <header class="panel-head">
+          <span class="panel-group" id="panel-group"></span>
+          <h2 class="panel-title" id="panel-title"></h2>
+          <p class="panel-note" id="panel-note"></p>
+          <span class="panel-count" id="panel-count"></span>
+        </header>
+        <dl id="panel-details"></dl>
+      </div>
+    </dialog>
+
+    <script src="report.js"></script>
+    <script>
+      // kit:h
+      const $ = (id) => document.getElementById(id);
+
+      function h(tag, props = {}, ...children) {
+        const node = document.createElement(tag);
+        for (const [key, value] of Object.entries(props)) {
+          if (key === "html") node.innerHTML = value;
+          else if (key.startsWith("on")) node.addEventListener(key.slice(2), value);
+          else node.setAttribute(key, value);
+        }
+        node.append(...children.filter((child) => child != null));
+        return node;
+      }
+      // kit:h end
+
+      // kit:anchor
+      function anchorTo(popover, anchor) {
+        const rect = anchor.getBoundingClientRect();
+        const frame = (anchor.closest("[data-frame]") ?? anchor).getBoundingClientRect();
+        const half = popover.offsetWidth / 2;
+        const edge = document.documentElement.clientWidth - 8;
+        const below = frame.top < popover.offsetHeight + 16;
+        popover.style.left = `${Math.min(edge - half, Math.max(8 + half, rect.left + rect.width / 2))}px`;
+        popover.style.top = `${below ? frame.bottom + 8 : frame.top - 8 - popover.offsetHeight}px`;
+        popover.dataset.side = below ? "below" : "above";
+      }
+      // kit:anchor end
+
+      // kit:overlays
+      const toast = h("output", { class: "toast", popover: "manual" });
+      const tip = h("div", { class: "tip", popover: "manual", "aria-hidden": "true" });
+      document.body.append(toast, tip);
+
+      function hideToast() {
+        clearTimeout(toast.hide);
+        delete toast.dataset.open;
+        toast.hide = setTimeout(() => toast.hidePopover(), 200);
+      }
+
+      function showToast(anchor, message, action) {
+        clearTimeout(toast.hide);
+        hideTip();
+        delete toast.dataset.open;
+        if (!toast.matches(":popover-open")) toast.showPopover();
+        toast.replaceChildren(message, ...(action ? [action] : []));
+        anchorTo(toast, anchor);
+        toast.dataset.open = "";
+        toast.hide = setTimeout(hideToast, action ? 5000 : 1600);
+      }
+
+      async function copy(text, anchor) {
+        const tokens = Math.ceil(text.length / 4).toLocaleString();
+        const message = await navigator.clipboard.writeText(text).then(
+          () => `Copied · ~${tokens} tokens`,
+          () => "Copy Failed",
+        );
+        showToast(anchor, message);
+      }
+
+      let tipTimer;
+      let tipClosedAt = 0;
+
+      function showTip(button) {
+        clearTimeout(tipTimer);
+        const warm = tip.matches(":popover-open") || performance.now() - tipClosedAt < 300;
+        const open = () => {
+          const key = button.dataset.key;
+          tip.replaceChildren(button.dataset.tip || button.getAttribute("aria-label"), ...(key ? [h("kbd", {}, key)] : []));
+          tip.toggleAttribute("data-instant", warm);
+          if (!tip.matches(":popover-open")) tip.showPopover();
+          anchorTo(tip, button);
+        };
+        if (warm) open();
+        else tipTimer = setTimeout(open, 500);
+      }
+
+      function hideTip() {
+        clearTimeout(tipTimer);
+        if (!tip.matches(":popover-open")) return;
+        tipClosedAt = performance.now();
+        tip.hidePopover();
+      }
+
+      const tipped = (event) => event.target.closest?.("[data-tip]");
+      document.addEventListener("pointerover", (event) => {
+        const button = tipped(event);
+        if (button && event.pointerType === "mouse" && !button.contains(event.relatedTarget)) showTip(button);
+      });
+      document.addEventListener("pointerout", (event) => {
+        const button = tipped(event);
+        if (button && !button.contains(event.relatedTarget)) hideTip();
+      });
+      document.addEventListener("focusin", (event) => {
+        const button = tipped(event);
+        if (button?.matches(":focus-visible")) showTip(button);
+      });
+      document.addEventListener("focusout", (event) => tipped(event) && hideTip());
+      document.addEventListener("pointerdown", hideTip);
+      // kit:overlays end
+
+      // kit:bar
+      function stick(bar) {
+        const mark = () => bar.toggleAttribute("data-stuck", scrollY > 0 && bar.getBoundingClientRect().top <= 0);
+        addEventListener("scroll", mark, { passive: true });
+        mark();
+        new ResizeObserver(() => {
+          document.documentElement.style.setProperty("--bar-height", `${bar.offsetHeight + 8}px`);
+        }).observe(bar);
+      }
+      // kit:bar end
+
+      const audit = window.audit;
+      const storageKey = `audit:${location.pathname}`;
+      const picked = new Set(JSON.parse(localStorage.getItem(storageKey) || "[]"));
+      const filters = { severity: null, skill: null };
+
+      const check = `<svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3.5 8.5l3 3 6-7" /></svg>`;
+
+      const levels = [
+        { key: "HIGH", label: "High", title: "High Severity", description: "Breaks behaviour or loses work." },
+        { key: "MEDIUM", label: "Medium", title: "Medium Severity", description: "Visible and inconsistent." },
+        { key: "LOW", label: "Low", title: "Low Severity", description: "Polish." },
+      ];
+      const levelOf = Object.fromEntries(levels.map((level) => [level.key, level]));
+      const skillName = (name) => name.charAt(0).toUpperCase() + name.slice(1);
+      const list = (parts) => (parts.length < 2 ? parts.join("") : `${parts.slice(0, -1).join(", ")} and ${parts.at(-1)}`);
+      const place = (location) => location.replaceAll("/", " › ").replace(/^request\b/, "Request");
+
+      function places(locations) {
+        const files = new Map();
+        for (const location of locations) {
+          const [, file, line] = location.match(/^(.+?):(\d+)$/) ?? [, location, null];
+          if (!files.has(file)) files.set(file, []);
+          if (line) files.get(file).push(line);
+        }
+        return [...files].map(([file, lines]) => place(lines.length ? `${file}:${lines.join(", ")}` : file)).join(" · ");
+      }
+
+      const findings = [...audit.findings].sort((a, b) => a.n - b.n);
+      const identity = (finding) => `${finding.n} ${finding.title}`;
+      const skillOrder = [...new Set([...audit.skills.map((skill) => skill.name), ...findings.flatMap((finding) => finding.skills)])];
+      const owners = skillOrder.filter((name) => findings.some((finding) => finding.skills.includes(name)));
+
+      const highs = findings.filter((finding) => finding.severity === "HIGH").length;
+      $("title").textContent = highs ? `${audit.verdict}, ${highs} High` : audit.verdict;
+      $("scope").textContent = audit.scope;
+      document.title = `${audit.verdict} · Audit`;
+
+      function isVisible(finding) {
+        return (
+          (filters.severity === null || finding.severity === filters.severity) &&
+          (filters.skill === null || finding.skills.includes(filters.skill))
+        );
+      }
+
+      function option(value, label, count) {
+        return h("option", { value }, label, " ", h("span", { class: "count" }, String(count)));
+      }
+
+      $("severity-filter").append(
+        option("", "All Severities", findings.length),
+        ...levels
+          .map((level) => [level, findings.filter((finding) => finding.severity === level.key).length])
+          .filter(([, count]) => count > 0)
+          .map(([level, count]) => option(level.key, level.label, count)),
+      );
+      $("skill-filter").append(
+        option("", "All Skills", findings.length),
+        ...owners.map((name) =>
+          option(name, skillName(name), findings.filter((finding) => finding.skills.includes(name)).length),
+        ),
+      );
+      $("severity-filter").addEventListener("change", (event) => setFilter("severity", event.target.value || null));
+      $("skill-filter").addEventListener("change", (event) => setFilter("skill", event.target.value || null));
+
+      function setFilter(key, value) {
+        filters[key] = value;
+        if (current && !isVisible(current)) setCurrent(null);
+        render();
+        writeHash();
+      }
+
+      const sections = levels.map((level) => {
+        const rows = h("ol", { class: "findings" });
+        const node = h(
+          "section",
+          { class: "section" },
+          h(
+            "header",
+            { class: "section-head" },
+            h("h2", { class: "section-title" }, level.title),
+            h("p", { class: "section-description" }, level.description),
+          ),
+          rows,
+        );
+        $("sections").append(node);
+        return { level, node, rows };
+      });
+      const empty = h("p", { class: "empty", hidden: "" }, findings.length ? "No Findings Match" : "No Findings");
+      $("sections").append(empty);
+
+      for (const finding of findings) {
+        finding.pick = h("button", {
+          class: "pick",
+          type: "button",
+          html: check,
+          onclick: () => togglePick(finding),
+        });
+        finding.open = h(
+          "button",
+          { class: "finding-open", type: "button", onclick: () => openPanel(finding) },
+          finding.title,
+        );
+        finding.node = h(
+          "li",
+          { class: "finding" },
+          h("span", { class: "finding-n" }, String(finding.n)),
+          h(
+            "div",
+            { class: "finding-body" },
+            finding.open,
+            h("span", { class: "finding-where" }, places(finding.locations)),
+          ),
+          finding.pick,
+        );
+        sections.find((section) => section.level.key === finding.severity).rows.append(finding.node);
+        renderPick(finding);
+      }
+
+      const coverage = h("div", { class: "rows" });
+      for (const skill of audit.skills) {
+        const numbers = findings.filter((finding) => finding.skills.includes(skill.name)).map((finding) => String(finding.n));
+        const result = skill.skipped
+          ? "Skipped"
+          : numbers.length
+            ? `${numbers.length === 1 ? "Finding" : "Findings"} ${list(numbers)}`
+            : "Clean";
+        coverage.append(
+          h(
+            "div",
+            { class: "skill" },
+            h("span", { class: "skill-name" }, skillName(skill.name)),
+            h("span", { class: "skill-result" }, result),
+            h("p", { class: "skill-checked" }, skill.skipped ?? skill.checked),
+          ),
+        );
+      }
+      $("sections").append(
+        h(
+          "section",
+          { class: "section" },
+          h(
+            "header",
+            { class: "section-head" },
+            h("h2", { class: "section-title" }, "Skill Coverage"),
+            h("p", { class: "section-description" }, "What each skill checked, or why it was skipped."),
+          ),
+          coverage,
+        ),
+      );
+
+      if (audit.notVerified.length) {
+        $("sections").append(
+          h(
+            "section",
+            { class: "section" },
+            h(
+              "header",
+              { class: "section-head" },
+              h("h2", { class: "section-title" }, "Not Verified"),
+              h("p", { class: "section-description" }, "Checks that could not run, and why."),
+            ),
+            h("div", { class: "rows" }, ...audit.notVerified.map((gap) => h("p", { class: "gap" }, gap))),
+          ),
+        );
+      }
+
+      function render() {
+        let shown = 0;
+        for (const finding of findings) {
+          finding.node.hidden = !isVisible(finding);
+          if (!finding.node.hidden) shown += 1;
+        }
+        for (const section of sections) {
+          section.node.hidden = !findings.some((finding) => finding.severity === section.level.key && isVisible(finding));
+        }
+        empty.hidden = shown > 0;
+      }
+
+      function save() {
+        localStorage.setItem(storageKey, JSON.stringify([...picked]));
+      }
+
+      function renderPick(finding) {
+        const isPicked = picked.has(identity(finding));
+        const label = isPicked ? "Unpick" : "Pick";
+        finding.pick.setAttribute("aria-pressed", String(isPicked));
+        finding.pick.setAttribute("aria-label", `${label} ${finding.n}`);
+        finding.pick.title = `${label} (P)`;
+      }
+
+      function renderCopy() {
+        $("copy").disabled = !findings.some((finding) => picked.has(identity(finding)));
+      }
+
+      function togglePick(finding) {
+        const key = identity(finding);
+        if (picked.has(key)) picked.delete(key);
+        else picked.add(key);
+        save();
+        renderPick(finding);
+        renderCopy();
+        if (panel.open && current === finding) renderPanel();
+      }
+
+      stick($("bar"));
+
+      function reportLine(finding) {
+        return `${finding.n}. ${finding.severity}  ${finding.locations.join(", ")} - [${finding.rules.join(", ")}] ${finding.title}`;
+      }
+
+      function copyPicks() {
+        const picks = findings.filter((finding) => picked.has(identity(finding)));
+        if (picks.length === 0) return;
+        copy(`Fix ${list(picks.map((finding) => String(finding.n)))}\n\n${picks.map(reportLine).join("\n")}\n`, $("copy"));
+      }
+
+      $("copy").addEventListener("click", copyPicks);
+
+      const panel = $("panel");
+      let current = null;
+
+      function setCurrent(finding) {
+        current?.node.removeAttribute("data-current");
+        current = finding;
+        current?.node.setAttribute("data-current", "");
+      }
+
+      function select(finding) {
+        setCurrent(finding);
+        if (panel.open) {
+          renderPanel();
+          writeHash();
+        } else {
+          finding.open.focus({ preventScroll: true });
+        }
+        finding.node.scrollIntoView({ block: "nearest" });
+      }
+
+      function step(offset) {
+        const sequence = findings.filter(isVisible);
+        const index = sequence.indexOf(current);
+        const next = index === -1 ? sequence.at(offset > 0 ? 0 : -1) : sequence[index + offset];
+        if (next) select(next);
+      }
+
+      function openPanel(finding) {
+        setCurrent(finding);
+        renderPanel();
+        if (!panel.open) panel.showModal();
+        writeHash();
+      }
+
+      function renderPanel() {
+        const sequence = findings.filter(isVisible);
+        const index = sequence.indexOf(current);
+        const isPicked = picked.has(identity(current));
+        $("panel-group").textContent = `Finding ${current.n} · ${levelOf[current.severity].label}`;
+        $("panel-title").textContent = current.title;
+        $("panel-note").textContent = current.evidence;
+        $("panel-count").textContent = `${index + 1} of ${sequence.length}`;
+
+        const rows = [
+          ["Rules", current.rules],
+          ["Skills", current.skills.map(skillName)],
+          ["Locations", current.locations.map(place)],
+        ];
+        const detail = (label, value, stacked) =>
+          h(
+            "div",
+            stacked ? { class: "detail", "data-stacked": "" } : { class: "detail" },
+            h("dt", {}, label),
+            h("dd", {}, ...[value].flat().map((part) => h("span", {}, part))),
+          );
+        $("panel-details").replaceChildren(
+          ...rows.map(([label, value]) => detail(label, value)),
+          detail("Fix", current.fix, true),
+        );
+
+        const pick = $("panel-pick");
+        const label = isPicked ? "Unpick" : "Pick";
+        pick.setAttribute("aria-pressed", String(isPicked));
+        pick.setAttribute("aria-label", label);
+        pick.title = `${label} (P)`;
+        $("panel-prev").disabled = index <= 0;
+        $("panel-next").disabled = index === sequence.length - 1;
+      }
+
+      $("panel-pick").innerHTML = check;
+      $("panel-pick").addEventListener("click", () => togglePick(current));
+      $("panel-prev").addEventListener("click", () => step(-1));
+      $("panel-next").addEventListener("click", () => step(1));
+      $("panel-close").addEventListener("click", () => panel.close());
+      panel.addEventListener("click", (event) => {
+        if (event.target !== panel) return;
+        const rect = panel.getBoundingClientRect();
+        const inside =
+          event.clientX >= rect.left && event.clientX <= rect.right && event.clientY >= rect.top && event.clientY <= rect.bottom;
+        if (!inside) panel.close();
+      });
+      panel.addEventListener("close", () => {
+        writeHash();
+        current?.open.focus({ preventScroll: true });
+        current?.node.scrollIntoView({ block: "nearest" });
+      });
+
+      document.addEventListener("keydown", (event) => {
+        if (event.metaKey || event.ctrlKey || event.altKey) return;
+        if (event.key === "Escape" && panel.open) {
+          event.preventDefault();
+          panel.close();
+          return;
+        }
+        if (event.target.closest("input, textarea, select, [contenteditable]")) return;
+        if (event.shiftKey) {
+          if (event.code !== "KeyC" || panel.open) return;
+          event.preventDefault();
+          copyPicks();
+          return;
+        }
+        const key = event.key.length === 1 ? event.key.toLowerCase() : event.key;
+        if (key === "j" || key === "ArrowDown" || key === "ArrowRight") step(1);
+        else if (key === "k" || key === "ArrowUp" || key === "ArrowLeft") step(-1);
+        else if (key === "p" && current) togglePick(current);
+        else return;
+        event.preventDefault();
+      });
+
+      function writeHash() {
+        const params = new URLSearchParams();
+        if (filters.severity) params.set("severity", filters.severity);
+        if (filters.skill) params.set("skill", filters.skill);
+        if (panel.open && current) params.set("finding", String(current.n));
+        const hash = params.toString();
+        history.replaceState(null, "", hash ? `#${hash}` : location.pathname + location.search);
+      }
+
+      function readHash() {
+        const params = new URLSearchParams(location.hash.slice(1));
+        const severity = params.get("severity");
+        const skill = params.get("skill");
+        filters.severity = levelOf[severity] ? severity : null;
+        filters.skill = owners.includes(skill) ? skill : null;
+        $("severity-filter").value = filters.severity ?? "";
+        $("skill-filter").value = filters.skill ?? "";
+        return findings.find((finding) => String(finding.n) === params.get("finding") && isVisible(finding));
+      }
+
+      const opened = readHash();
+      render();
+      renderCopy();
+      if (opened) openPanel(opened);
+    </script>
+  </body>
+</html>

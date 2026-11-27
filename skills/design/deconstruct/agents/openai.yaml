@@ -1,0 +1,5 @@
+interface:
+  display_name: "Deconstruct"
+  short_description: "Motion as states and an editable timeline"
+policy:
+  allow_implicit_invocation: false

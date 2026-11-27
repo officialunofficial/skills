@@ -1,5 +1,15 @@
 # Out-of-Scope Knowledge Base
 
+## Contents
+
+- Directory structure
+- File format
+- Why this is out of scope
+- Prior requests
+- When to check `.out-of-scope/`
+- When to write to `.out-of-scope/`
+- Updating or removing out-of-scope files
+
 The `.out-of-scope/` directory in a repo keeps persistent records of rejected feature requests. It earns its place two ways:
 
 1. **Institutional memory** — why a feature was rejected, so the reasoning survives the issue being closed

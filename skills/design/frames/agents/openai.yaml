@@ -1,0 +1,5 @@
+interface:
+  display_name: "Frames"
+  short_description: "Trace an interaction for dropped frames"
+policy:
+  allow_implicit_invocation: false

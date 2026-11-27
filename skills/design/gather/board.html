@@ -1,0 +1,2625 @@
+<!doctype html>
+<!--
+  Gather board. collect.mjs copies this file to .gather/<brief>/index.html and writes board.js beside it:
+
+  window.board = {
+    title: "Settings Page",
+    brief: "Desktop settings page, looking for grouping and density.",
+    live: false,
+    groups: [
+      {
+        title: "Grouping",
+        description: "How long lists of options are split up.",
+        items: [
+          {
+            media: "img/4c03063e.webp",
+            kind: "image",
+            title: "Linear",
+            source: "Mobbin",
+            url: "https://mobbin.com/screens/4c03063e",
+            note: "Take the grouped list, not the colours.",
+            details: { Kind: "Shipped" }
+          }
+        ]
+      }
+    ]
+  };
+
+  `media` is a path beside this file or a full URL. `kind` is "image" or "video", and a video may add `poster`. `url` is the original, and it identifies the item, so each one is unique. `details` adds rows to the viewer. While `live` is true the board reloads board.js every 2s and adds new cards in place.
+-->
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#ffffff" media="(prefers-color-scheme: light)" />
+    <meta name="theme-color" content="#080808" media="(prefers-color-scheme: dark)" />
+    <title>Gather</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400..600&display=swap"
+    />
+    <style>
+      :root {
+        /* kit:tokens */
+        --gray-1: light-dark(#ffffff, #080808);
+        --gray-2: light-dark(#fafafa, #111111);
+        --gray-3: light-dark(#f2f2f2, #1a1a1a);
+        --gray-4: light-dark(#ebebeb, #222222);
+        --gray-5: light-dark(#e3e3e3, #2a2a2a);
+        --gray-10: light-dark(#6b6b6b, #8f8f8f);
+        --gray-11: light-dark(#575757, #b4b4b4);
+        --gray-12: light-dark(#080808, #ffffff);
+        --blue: #02bbff;
+        --red: light-dark(#d93036, #ff6369);
+        --green: light-dark(#2b9a66, #3dd68c);
+        --accent: var(--blue);
+        --danger: var(--red);
+        --success: var(--green);
+        --text-primary: var(--gray-12);
+        --text-secondary: color-mix(in oklab, var(--gray-12) 80%, var(--gray-11));
+        --text-tertiary: var(--gray-11);
+        --text-quaternary: var(--gray-10);
+        --text-on-accent: light-dark(#ffffff, #080808);
+        --border-primary: color-mix(in oklab, var(--gray-12) 7%, transparent);
+        --border-secondary: color-mix(in oklab, var(--gray-12) 12%, transparent);
+        --background-primary: var(--gray-1);
+        --background-secondary: var(--gray-2);
+        --background-tertiary: light-dark(rgb(8 8 8 / 5%), rgb(255 255 255 / 8%));
+        --background-hover: light-dark(rgb(8 8 8 / 8%), rgb(255 255 255 / 13%));
+        --background-raised: light-dark(#ffffff, #1a1a1a);
+        --background-control: light-dark(#ffffff, #222222);
+        --background-overlay: light-dark(#ffffff, #111111);
+        --fill-hover: light-dark(rgb(8 8 8 / 4%), rgb(255 255 255 / 6%));
+        --shadow-border: 0 0 0 1px light-dark(rgb(0 0 0 / 7%), rgb(255 255 255 / 7%));
+        --shadow-default:
+          inset 0 0 0 0.5px light-dark(transparent, rgb(255 255 255 / 7%)),
+          0 0 0 0.5px light-dark(rgb(0 0 0 / 6%), transparent),
+          0 1px 1px -1px light-dark(rgb(0 0 0 / 10%), transparent),
+          0 1px 2px 0 light-dark(rgb(0 0 0 / 5%), transparent);
+        --shadow-large:
+          0 0 0 0.5px light-dark(oklab(0.802 0 0 / 0.297), transparent),
+          0 0 0 1px light-dark(transparent, oklab(0.463 0 0 / 0.303)),
+          0 2px 3px -2px light-dark(rgb(0 0 0 / 6.3%), rgb(0 0 0 / 15%)),
+          0 3px 12px -4px light-dark(rgb(0 0 0 / 10%), transparent),
+          0 4px 16px -8px light-dark(rgb(0 0 0 / 5%), transparent),
+          0 3px 8px -2px light-dark(transparent, rgb(0 0 0 / 40%)),
+          0 4px 12px -4px light-dark(transparent, rgb(0 0 0 / 50%));
+        --shadow-extra-large:
+          inset 0 0 0 0.5px light-dark(transparent, rgb(255 255 255 / 7%)),
+          0 0 0 0.5px light-dark(rgb(0 0 0 / 6%), transparent),
+          0 8px 40px 0 rgb(0 0 0 / 5%),
+          0 12px 32px -16px rgb(0 0 0 / 15%);
+        --font-sans: Inter, -apple-system, BlinkMacSystemFont, sans-serif;
+        --font-mono: ui-monospace, "SF Mono", Menlo, monospace;
+        --font-weight-400: "wght" 400, "opsz" 14;
+        --font-weight-500: "wght" 500, "opsz" 14;
+        --ease-out: cubic-bezier(0.23, 1, 0.32, 1);
+        --ease-in-out: cubic-bezier(0.77, 0, 0.175, 1);
+        --ease-drawer: cubic-bezier(0.32, 0.72, 0, 1);
+        --duration-snappy: 220ms;
+        --duration-exit: 160ms;
+        --radius-control: 8px;
+        --radius-menu: 12px;
+        --radius-panel: 16px;
+        /* kit:tokens end */
+        --gap: 24px;
+        --inset: 48px;
+      }
+
+      /* kit:page */
+      :root {
+        color-scheme: light dark;
+      }
+
+      *,
+      *::before,
+      *::after {
+        box-sizing: border-box;
+      }
+
+      * {
+        padding: 0;
+        margin: 0;
+        font: inherit;
+        font-variation-settings: inherit;
+        color: inherit;
+        text-decoration: none;
+        border: 0;
+      }
+
+      ol,
+      ul {
+        list-style: none;
+      }
+
+      img,
+      svg,
+      canvas,
+      video {
+        display: block;
+        max-width: 100%;
+      }
+
+      [hidden] {
+        display: none !important;
+      }
+
+      button {
+        cursor: pointer;
+        user-select: none;
+        background: none;
+      }
+
+      button,
+      a,
+      select {
+        touch-action: manipulation;
+      }
+
+      code {
+        font-family: var(--font-mono);
+        font-size: 0.9em;
+      }
+
+      html {
+        font-family: var(--font-sans);
+        font-size: 14px;
+        line-height: 20px;
+        font-variation-settings: var(--font-weight-400);
+        font-optical-sizing: none;
+        font-feature-settings: "calt", "ccmp", "locl", "kern", "cv01", "ss03";
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+        -webkit-tap-highlight-color: transparent;
+        color: var(--text-primary);
+        background: var(--background-primary);
+        scroll-padding-block-start: var(--bar-height, 72px);
+      }
+
+      * {
+        scrollbar-width: none;
+      }
+
+      ::-webkit-scrollbar {
+        display: none;
+      }
+
+      ::selection {
+        background: color-mix(in oklab, var(--accent) 28%, transparent);
+      }
+
+      :focus-visible {
+        outline: 2px solid var(--accent);
+        outline-offset: 2px;
+        border-radius: 4px;
+      }
+
+      h1,
+      h2,
+      h3 {
+        text-wrap: balance;
+      }
+
+      p {
+        text-wrap: pretty;
+      }
+
+      @media (width <= 640px) {
+        input:not([type="range"]),
+        textarea,
+        select {
+          font-size: 16px;
+        }
+      }
+
+      @media (prefers-reduced-motion: reduce) {
+        *,
+        *::before,
+        *::after,
+        ::backdrop {
+          transition-duration: 0s !important;
+          transition-delay: 0s !important;
+        }
+      }
+      /* kit:page end */
+
+      /* kit:fade */
+      @property --fade-start {
+        syntax: "<length>";
+        inherits: false;
+        initial-value: 0px;
+      }
+
+      @property --fade-end {
+        syntax: "<length>";
+        inherits: false;
+        initial-value: 0px;
+      }
+
+      @keyframes scroll-fade {
+        0% {
+          --fade-start: 0px;
+          --fade-end: 24px;
+        }
+        10% {
+          --fade-start: 24px;
+        }
+        90% {
+          --fade-end: 24px;
+        }
+        100% {
+          --fade-start: 24px;
+          --fade-end: 0px;
+        }
+      }
+
+      .scroll-fade {
+        mask-image:
+          linear-gradient(to bottom, transparent, black var(--fade-start), black calc(100% - var(--fade-end)), transparent),
+          linear-gradient(black, black),
+          linear-gradient(black, black);
+        mask-clip: border-box, border-box, no-clip;
+        mask-size: 100% 100%, 100% 100%, calc(100% + 128px) calc(100% + 128px);
+        mask-position: 0 0, 0 0, -64px -64px;
+        mask-repeat: no-repeat;
+        mask-composite: add, exclude;
+        animation: scroll-fade linear both;
+        animation-timeline: scroll(self);
+      }
+      /* kit:fade end */
+
+      /* kit:head */
+      .head {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+        max-width: 640px;
+      }
+
+      .title {
+        font-variation-settings: var(--font-weight-500);
+      }
+
+      .brief {
+        color: var(--text-tertiary);
+        overflow-wrap: anywhere;
+
+        a {
+          display: inline-flex;
+          gap: 4px;
+          align-items: center;
+          color: var(--text-secondary);
+
+          svg {
+            color: var(--text-quaternary);
+          }
+
+          &:active,
+          &:active svg {
+            color: var(--text-primary);
+          }
+        }
+
+        code {
+          color: var(--text-secondary);
+        }
+      }
+
+      @property --bar-line {
+        syntax: "<color>";
+        inherits: false;
+        initial-value: transparent;
+      }
+
+      .bar {
+        position: sticky;
+        top: 0;
+        z-index: 10;
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+        align-items: center;
+        padding: 16px 0;
+        border-image: linear-gradient(to top, var(--bar-line) 1px, var(--background-primary) 1px) fill 0 / / 0 100vw;
+        transition: --bar-line var(--duration-snappy) var(--ease-out);
+
+        &[data-stuck] {
+          --bar-line: var(--border-primary);
+        }
+      }
+
+      @media (hover: hover) and (pointer: fine) {
+        .brief a:hover,
+        .brief a:hover svg {
+          color: var(--text-primary);
+        }
+      }
+      /* kit:head end */
+
+      /* kit:controls */
+      .chip,
+      .action {
+        display: inline-flex;
+        gap: 6px;
+        align-items: center;
+        height: 28px;
+        padding: 0 12px;
+        font-size: 13px;
+        font-variation-settings: var(--font-weight-500);
+        color: var(--text-tertiary);
+        white-space: nowrap;
+        border-radius: var(--radius-control);
+
+        &[aria-pressed="true"] {
+          color: var(--text-primary);
+          background: var(--background-tertiary);
+        }
+
+        &:active:not(:disabled) {
+          color: var(--text-primary);
+        }
+
+        &:disabled {
+          cursor: default;
+          opacity: 0.5;
+        }
+      }
+
+      .action {
+        color: var(--text-primary);
+        background: var(--background-tertiary);
+
+        &:active:not(:disabled) {
+          background: var(--background-hover);
+        }
+      }
+
+      .icon-button,
+      .tool-button {
+        position: relative;
+        display: grid;
+        flex: none;
+        place-items: center;
+        width: 28px;
+        height: 28px;
+        color: var(--text-tertiary);
+        border-radius: var(--radius-control);
+
+        &::before {
+          position: absolute;
+          inset: -4px;
+          content: "";
+        }
+
+        &:disabled {
+          cursor: default;
+          opacity: 0.4;
+        }
+      }
+
+      .icon-button {
+        background: var(--background-tertiary);
+
+        &:active:not(:disabled, [aria-pressed="true"]) {
+          color: var(--text-primary);
+          background: var(--background-hover);
+        }
+
+        &[aria-pressed="true"] {
+          color: var(--text-on-accent);
+          background: var(--accent);
+        }
+      }
+
+      .tool-button {
+        &:active:not(:disabled) {
+          color: var(--text-primary);
+          background: var(--background-tertiary);
+        }
+
+        &[aria-pressed="true"] {
+          color: var(--text-primary);
+          background: var(--background-tertiary);
+        }
+
+        &[aria-pressed="true"]:active:not(:disabled) {
+          background: var(--background-hover);
+        }
+      }
+
+      .pick {
+        position: relative;
+        display: grid;
+        flex: none;
+        place-items: center;
+        width: 28px;
+        height: 28px;
+        color: var(--text-quaternary);
+        border-radius: var(--radius-control);
+        box-shadow: inset 0 0 0 1px var(--border-secondary);
+
+        &::before {
+          position: absolute;
+          inset: -6px;
+          content: "";
+        }
+
+        &:active:not([aria-pressed="true"]) {
+          color: var(--text-primary);
+        }
+
+        &[aria-pressed="true"] {
+          color: var(--text-on-accent);
+          background: var(--accent);
+          box-shadow: none;
+        }
+      }
+
+      .count {
+        color: var(--text-quaternary);
+        font-variant-numeric: tabular-nums;
+      }
+
+      @media (hover: hover) and (pointer: fine) {
+        .chip:hover:not(:disabled) {
+          color: var(--text-primary);
+        }
+
+        .action:hover:not(:disabled) {
+          background: var(--background-hover);
+        }
+
+        .icon-button:hover:not(:disabled, [aria-pressed="true"]) {
+          color: var(--text-primary);
+          background: var(--background-hover);
+        }
+
+        .tool-button:hover:not(:disabled) {
+          color: var(--text-primary);
+          background: var(--background-tertiary);
+        }
+
+        .tool-button[aria-pressed="true"]:hover:not(:disabled) {
+          background: var(--background-hover);
+        }
+
+        .pick:hover:not([aria-pressed="true"]) {
+          color: var(--text-primary);
+        }
+      }
+      /* kit:controls end */
+
+      /* kit:inputs */
+      .input {
+        width: 100%;
+        min-width: 0;
+        height: 28px;
+        padding: 0 10px;
+        font-size: 13px;
+        color: var(--text-primary);
+        background: var(--background-tertiary);
+        border-radius: var(--radius-control);
+
+        &::placeholder {
+          color: var(--text-quaternary);
+        }
+
+        &:focus-visible {
+          outline-offset: 0;
+          border-radius: var(--radius-control);
+        }
+      }
+
+      textarea.input {
+        height: auto;
+        min-height: 72px;
+        padding: 8px 10px;
+        resize: vertical;
+      }
+
+      .search {
+        display: flex;
+        gap: 6px;
+        align-items: center;
+        min-width: 0;
+        height: 28px;
+        padding: 0 10px;
+        color: var(--text-quaternary);
+        background: var(--background-tertiary);
+        border-radius: var(--radius-control);
+
+        svg {
+          flex: none;
+        }
+
+        input {
+          flex: 1;
+          min-width: 0;
+          height: 100%;
+          font-size: 13px;
+          color: var(--text-primary);
+          background: none;
+          outline: none;
+
+          &::placeholder {
+            color: var(--text-quaternary);
+          }
+
+          &::-webkit-search-cancel-button {
+            appearance: none;
+          }
+        }
+
+        &:has(input:focus-visible) {
+          outline: 2px solid var(--accent);
+        }
+      }
+
+      .field {
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+      }
+
+      .field-label {
+        color: var(--text-tertiary);
+      }
+
+      .range {
+        display: inline-flex;
+        gap: 10px;
+        align-items: center;
+        height: 28px;
+        padding: 0 12px;
+        font-size: 13px;
+        font-variation-settings: var(--font-weight-500);
+        color: var(--text-tertiary);
+        white-space: nowrap;
+        background: var(--background-tertiary);
+        border-radius: var(--radius-control);
+
+        output {
+          min-width: 4ch;
+          color: var(--text-primary);
+          font-variant-numeric: tabular-nums;
+          text-align: right;
+        }
+
+        input {
+          --fill: 50%;
+          width: 88px;
+          height: 28px;
+          cursor: pointer;
+          appearance: none;
+          background: none;
+          outline: none;
+
+          &::-webkit-slider-runnable-track {
+            height: 4px;
+            background: linear-gradient(to right, var(--accent) var(--fill), var(--border-secondary) var(--fill));
+            border-radius: 999px;
+          }
+
+          &::-moz-range-track {
+            height: 4px;
+            background: linear-gradient(to right, var(--accent) var(--fill), var(--border-secondary) var(--fill));
+            border-radius: 999px;
+          }
+
+          &::-webkit-slider-thumb {
+            width: 14px;
+            height: 14px;
+            margin-top: -5px;
+            appearance: none;
+            background: var(--background-control);
+            border-radius: 999px;
+            box-shadow: var(--shadow-default);
+          }
+
+          &::-moz-range-thumb {
+            width: 14px;
+            height: 14px;
+            background: var(--background-control);
+            border: 0;
+            border-radius: 999px;
+            box-shadow: var(--shadow-default);
+          }
+        }
+
+        &:has(input:focus-visible) {
+          outline: 2px solid var(--accent);
+          outline-offset: 2px;
+        }
+      }
+
+      .segmented {
+        display: inline-flex;
+        padding: 2px;
+        background: var(--background-tertiary);
+        border-radius: 10px;
+
+        button {
+          height: 24px;
+          padding: 0 10px;
+          font-size: 13px;
+          font-variation-settings: var(--font-weight-500);
+          color: var(--text-tertiary);
+          white-space: nowrap;
+          border-radius: 8px;
+
+          &:active {
+            color: var(--text-primary);
+          }
+
+          &[aria-pressed="true"] {
+            color: var(--text-primary);
+            background: var(--background-control);
+            box-shadow: var(--shadow-default);
+          }
+        }
+      }
+
+      @media (width <= 640px) {
+        .input,
+        .search input {
+          font-size: 16px;
+        }
+      }
+
+      @media (hover: hover) and (pointer: fine) {
+        .segmented button:hover {
+          color: var(--text-primary);
+        }
+      }
+      /* kit:inputs end */
+
+      /* kit:overlays */
+      .toast {
+        position: fixed;
+        inset: auto;
+        display: inline-flex;
+        align-items: center;
+        height: 32px;
+        padding: 0 12px;
+        margin: 0;
+        overflow: visible;
+        font-size: 13px;
+        font-variation-settings: var(--font-weight-500);
+        color: var(--text-primary);
+        white-space: nowrap;
+        pointer-events: none;
+        background: var(--background-raised);
+        border: 1px solid transparent;
+        border-radius: 10px;
+        box-shadow: var(--shadow-large);
+        opacity: 0;
+        translate: -50% 4px;
+        scale: 0.97;
+        transform-origin: bottom center;
+        transition:
+          opacity var(--duration-exit) var(--ease-out),
+          translate var(--duration-exit) var(--ease-out),
+          scale var(--duration-exit) var(--ease-out);
+
+        &[data-side="below"] {
+          translate: -50% -4px;
+          transform-origin: top center;
+        }
+
+        &[data-open] {
+          opacity: 1;
+          translate: -50% 0;
+          scale: 1;
+          transition-duration: var(--duration-snappy);
+        }
+
+        &:has(button) {
+          gap: 12px;
+          padding-right: 4px;
+          pointer-events: auto;
+        }
+
+        button {
+          height: 24px;
+          padding: 0 8px;
+          color: var(--accent);
+          border-radius: 6px;
+
+          &:active {
+            background: var(--background-hover);
+          }
+        }
+      }
+
+      .tip {
+        position: fixed;
+        inset: auto;
+        display: inline-flex;
+        gap: 6px;
+        align-items: center;
+        height: 24px;
+        padding: 0 8px;
+        margin: 0;
+        overflow: visible;
+        font-size: 12px;
+        font-variation-settings: var(--font-weight-500);
+        color: var(--text-primary);
+        white-space: nowrap;
+        pointer-events: none;
+        background: var(--background-raised);
+        border: 1px solid transparent;
+        border-radius: var(--radius-control);
+        box-shadow: var(--shadow-large);
+        translate: -50% 0;
+        transition:
+          opacity 125ms var(--ease-out),
+          translate 125ms var(--ease-out);
+
+        @starting-style {
+          opacity: 0;
+          translate: -50% 4px;
+        }
+
+        &[data-side="below"] {
+          @starting-style {
+            translate: -50% -4px;
+          }
+        }
+
+        &[data-instant] {
+          transition: none;
+        }
+
+        kbd {
+          font: inherit;
+          color: var(--text-tertiary);
+        }
+      }
+
+      @media (hover: hover) and (pointer: fine) {
+        .toast button:hover {
+          background: var(--background-hover);
+        }
+      }
+      /* kit:overlays end */
+
+      /* kit:panel */
+      .sheet {
+        position: fixed;
+        inset: 0 0 0 auto;
+        flex-direction: column;
+        width: min(400px, 100% - 24px);
+        max-width: none;
+        height: calc(100dvh - 24px);
+        max-height: none;
+        padding: 0;
+        margin: 12px;
+        overflow: hidden;
+        color: var(--text-primary);
+        background: var(--background-raised);
+        border: 1px solid transparent;
+        border-radius: var(--radius-panel);
+        box-shadow: var(--shadow-extra-large);
+        opacity: 0;
+        transition:
+          opacity var(--duration-exit) var(--ease-out),
+          display var(--duration-exit) allow-discrete,
+          overlay var(--duration-exit) allow-discrete;
+
+        &[open] {
+          display: flex;
+          opacity: 1;
+          transition-duration: var(--duration-snappy);
+
+          @starting-style {
+            opacity: 0;
+          }
+        }
+
+        &::backdrop {
+          color-scheme: light dark;
+          background: transparent;
+          transition:
+            background-color var(--duration-exit) var(--ease-out),
+            display var(--duration-exit) allow-discrete,
+            overlay var(--duration-exit) allow-discrete;
+        }
+
+        &[open]::backdrop {
+          background: color-mix(in oklab, var(--background-primary) 64%, transparent);
+          transition-duration: var(--duration-snappy);
+
+          @starting-style {
+            background: transparent;
+          }
+        }
+
+        @media (width <= 640px) {
+          inset: auto 0 0;
+          width: calc(100% - 24px);
+          height: auto;
+          max-height: 80dvh;
+          margin: 0 12px max(12px, env(safe-area-inset-bottom));
+        }
+      }
+
+      .panel-scroll {
+        display: flex;
+        flex-direction: column;
+        gap: 24px;
+        min-height: 0;
+        padding: 16px;
+        overflow-y: auto;
+        overscroll-behavior: contain;
+      }
+
+      .panel-top,
+      .panel-tools {
+        display: flex;
+        gap: 8px;
+        align-items: center;
+      }
+
+      .panel-top {
+        justify-content: space-between;
+      }
+
+      .panel-head {
+        display: flex;
+        flex-direction: column;
+        gap: 2px;
+      }
+
+      .panel-group {
+        color: var(--text-tertiary);
+        overflow-wrap: anywhere;
+      }
+
+      .panel-title {
+        font-variation-settings: var(--font-weight-500);
+      }
+
+      .panel-note {
+        margin-top: 10px;
+        color: var(--text-secondary);
+      }
+
+      .panel-count {
+        margin-top: 10px;
+        color: var(--text-quaternary);
+        font-variant-numeric: tabular-nums;
+      }
+
+      .detail {
+        display: flex;
+        gap: 16px;
+        justify-content: space-between;
+        padding: 6px 0;
+
+        & + & {
+          border-top: 1px solid var(--border-primary);
+        }
+
+        dt {
+          flex: none;
+          color: var(--text-tertiary);
+        }
+
+        dd {
+          min-width: 0;
+          text-align: right;
+          overflow-wrap: anywhere;
+          font-variant-numeric: tabular-nums;
+
+          span + span::before {
+            content: ", ";
+          }
+        }
+
+        a {
+          display: inline-flex;
+          gap: 4px;
+          align-items: center;
+
+          svg {
+            color: var(--text-quaternary);
+          }
+
+          &:active svg {
+            color: var(--text-primary);
+          }
+        }
+
+        &[data-stacked] {
+          flex-direction: column;
+          gap: 2px;
+
+          dd {
+            text-align: left;
+          }
+        }
+      }
+
+      @media (hover: hover) and (pointer: fine) {
+        .detail a:hover svg {
+          color: var(--text-primary);
+        }
+      }
+      /* kit:panel end */
+
+      .page {
+        width: min(1600px, 100% - var(--inset) * 2);
+        margin: 0 auto;
+        padding-bottom: 128px;
+
+        @media (width <= 640px) {
+          --inset: 24px;
+        }
+      }
+
+      .head {
+        padding-top: 40px;
+        margin-bottom: 8px;
+      }
+
+      .status {
+        display: inline-flex;
+        gap: 8px;
+        align-items: center;
+        color: var(--text-tertiary);
+
+        &::before {
+          width: 6px;
+          height: 6px;
+          content: "";
+          background: var(--accent);
+          border-radius: 50%;
+        }
+      }
+
+      @keyframes pulse {
+        50% {
+          opacity: 0.3;
+        }
+      }
+
+      @media (prefers-reduced-motion: no-preference) {
+        .status::before {
+          animation: pulse 1.6s var(--ease-in-out) infinite;
+        }
+      }
+
+      .bar-row {
+        display: flex;
+        flex: 1;
+        flex-wrap: wrap;
+        gap: 8px;
+        align-items: center;
+        min-width: 0;
+
+        @media (width <= 640px) {
+          flex-wrap: nowrap;
+          margin-inline: calc(var(--inset) * -1);
+          padding-inline: var(--inset);
+          overflow-x: auto;
+          overscroll-behavior-x: contain;
+          mask: linear-gradient(to right, transparent, black var(--inset) calc(100% - var(--inset)), transparent);
+        }
+      }
+
+      .filters,
+      .picks {
+        display: flex;
+        flex-shrink: 0;
+        gap: 2px;
+      }
+
+      .filters .chip {
+        padding-inline: 8px;
+      }
+
+      .picks {
+        margin-left: auto;
+      }
+
+      .source-icon {
+        display: grid;
+        flex: none;
+        place-items: center;
+        width: 16px;
+        height: 16px;
+        font-size: 10px;
+        color: var(--text-secondary);
+        background: var(--background-tertiary);
+        border-radius: 4px;
+        object-fit: cover;
+
+        &[data-brand="Pond"] {
+          color: #fff;
+          background: linear-gradient(#6db5ff, #3d8bf2);
+        }
+      }
+
+      .source-icons {
+        display: flex;
+
+        .source-icon + .source-icon {
+          margin-left: -4px;
+          box-shadow: 0 0 0 1.5px var(--chip-ring);
+        }
+      }
+
+      .chip {
+        --chip-ring: var(--background-primary);
+
+        &[aria-pressed="true"] {
+          --chip-ring: var(--background-tertiary);
+        }
+      }
+
+      .groups {
+        display: flex;
+        flex-direction: column;
+        gap: 48px;
+        margin-top: 16px;
+      }
+
+      .tray {
+        position: fixed;
+        bottom: calc(16px + env(safe-area-inset-bottom));
+        left: 50%;
+        z-index: 20;
+        display: flex;
+        gap: 6px;
+        align-items: center;
+        height: 52px;
+        padding: 6px;
+        background: var(--background-raised);
+        border-radius: 14px;
+        box-shadow: var(--shadow-extra-large);
+        translate: -50% 0;
+        transition:
+          opacity var(--duration-snappy) var(--ease-out),
+          translate var(--duration-snappy) var(--ease-out);
+
+        &[data-empty] {
+          pointer-events: none;
+          opacity: 0;
+          translate: -50% 12px;
+          transition-duration: var(--duration-exit);
+        }
+      }
+
+      .tray-thumbs {
+        --fanned: 0;
+        position: relative;
+        display: grid;
+        place-items: center;
+        width: 56px;
+        height: 40px;
+        margin-inline: 4px;
+
+        &::before {
+          position: absolute;
+          right: -220px;
+          bottom: 100%;
+          left: -48px;
+          height: calc(var(--fanned) * 260px);
+          content: "";
+        }
+
+        &::after {
+          width: 32px;
+          height: 32px;
+          grid-area: 1 / 1;
+          content: "";
+          background: conic-gradient(from -37deg at 50% 100%, var(--text-secondary) 74deg, transparent 0) center / 12px 8px no-repeat;
+          border: 1.5px solid var(--text-tertiary);
+          border-radius: 8px;
+          pointer-events: none;
+          opacity: var(--fanned);
+          scale: calc(0.8 + var(--fanned) * 0.2);
+          transition:
+            opacity var(--duration-snappy) var(--ease-out),
+            scale var(--duration-snappy) var(--ease-out);
+        }
+
+        &:focus-within {
+          --fanned: 1;
+        }
+
+        @media (width <= 640px) {
+          display: none;
+        }
+      }
+
+      .tray .icon-button {
+        width: 32px;
+        height: 32px;
+        background: transparent;
+      }
+
+      .tray-divider {
+        width: 1px;
+        height: 24px;
+        background: var(--border-secondary);
+
+        @media (width <= 640px) {
+          display: none;
+        }
+      }
+
+      .tray-thumb,
+      .tray-more {
+        --x: calc(var(--k) * var(--k) * -1.5px - 4px);
+        --y: calc(-46px - var(--k) * 40px);
+        grid-area: 1 / 1;
+        rotate: calc(var(--tilt, 0deg) * (1 - var(--fanned)) + var(--k) * -2deg * var(--fanned));
+        transition:
+          rotate var(--duration-snappy) var(--ease-out),
+          translate var(--duration-snappy) var(--ease-out),
+          scale var(--duration-snappy) var(--ease-out),
+          opacity var(--duration-snappy) var(--ease-out);
+        transition-delay: calc(var(--fanned) * var(--k) * 24ms);
+      }
+
+      .tray-thumb {
+        position: relative;
+        width: 40px;
+        height: 30px;
+        padding: 2px;
+        cursor: zoom-in;
+        background: #fff;
+        border-radius: 4px;
+        box-shadow:
+          0 0 0 0.5px rgb(0 0 0 / 0.2),
+          0 2px 4px rgb(0 0 0 / 0.4);
+        translate: calc(var(--shift) * (1 - var(--fanned)) + var(--x) * var(--fanned)) calc(var(--y) * var(--fanned));
+
+        @starting-style {
+          opacity: 0;
+          translate: var(--shift) -12px;
+          rotate: 0deg;
+        }
+
+        img,
+        video {
+          width: 100%;
+          height: 100%;
+          object-fit: cover;
+          border-radius: 2px;
+        }
+      }
+
+      .tray-more {
+        position: relative;
+        z-index: 1;
+        display: grid;
+        place-items: center;
+        min-width: 18px;
+        height: 18px;
+        padding: 0 5px;
+        font-size: 11px;
+        font-variation-settings: var(--font-weight-500);
+        font-variant-numeric: tabular-nums;
+        color: var(--text-primary);
+        background: var(--background-tertiary);
+        border-radius: 9px;
+        box-shadow: 0 0 0 2px var(--background-raised);
+        translate: calc(20px * (1 - var(--fanned)) + var(--x) * var(--fanned)) calc(-16px * (1 - var(--fanned)) + var(--y) * var(--fanned));
+
+        &::after {
+          content: "Show All Picks";
+        }
+      }
+
+      .tray-label,
+      .tray-more::after {
+        position: absolute;
+        top: 50%;
+        left: calc(100% + 8px);
+        max-width: 200px;
+        padding: 0 8px;
+        overflow: hidden;
+        font-size: 12px;
+        font-variation-settings: var(--font-weight-500);
+        line-height: 20px;
+        color: var(--text-primary);
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        pointer-events: none;
+        background: var(--background-raised);
+        border-radius: 10px;
+        box-shadow: var(--shadow-extra-large);
+        opacity: var(--fanned);
+        translate: 0 -50%;
+        transition: opacity var(--duration-snappy) var(--ease-out);
+      }
+
+      .group-head {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 4px 12px;
+        align-items: baseline;
+        margin-bottom: 20px;
+
+        .count {
+          margin-left: auto;
+        }
+      }
+
+      .group-title {
+        font-variation-settings: var(--font-weight-500);
+        text-wrap: balance;
+      }
+
+      .group-description {
+        color: var(--text-tertiary);
+      }
+
+      .cards {
+        position: relative;
+      }
+
+      .ref {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: var(--card-width);
+
+        &::after {
+          position: absolute;
+          inset: 0;
+          content: "";
+          border-radius: 10px;
+          box-shadow:
+            0 0 0 2px var(--background-primary),
+            0 0 0 4px var(--accent);
+          opacity: 0;
+          pointer-events: none;
+          transition: opacity var(--duration-snappy) var(--ease-out);
+        }
+
+        &[data-picked]::after {
+          opacity: 1;
+        }
+      }
+
+      .shot {
+        position: relative;
+        display: block;
+        width: 100%;
+        overflow: hidden;
+        aspect-ratio: 4 / 3;
+        cursor: zoom-in;
+        background: var(--background-tertiary);
+        border-radius: 10px;
+
+        &::after {
+          position: absolute;
+          inset: 0;
+          pointer-events: none;
+          content: "";
+          border-radius: inherit;
+          box-shadow: inset 0 0 0 1px var(--border-primary);
+        }
+
+        img,
+        video {
+          width: 100%;
+          height: 100%;
+          object-fit: cover;
+        }
+      }
+
+      @media (prefers-reduced-motion: no-preference) {
+        .shot :is(img, video) {
+          transition:
+            opacity 0.6s var(--ease-out),
+            filter 0.7s var(--ease-out);
+
+          &:not([data-loaded]) {
+            opacity: 0;
+            filter: blur(6px);
+          }
+        }
+      }
+
+      .tools {
+        position: absolute;
+        top: 8px;
+        right: 8px;
+        display: flex;
+        gap: 6px;
+      }
+
+      .tool {
+        position: relative;
+        display: grid;
+        place-items: center;
+        width: 28px;
+        height: 28px;
+        color: var(--text-tertiary);
+        background: color-mix(in oklab, var(--background-primary) 82%, transparent);
+        border-radius: var(--radius-control);
+        box-shadow: var(--shadow-large);
+        opacity: 0;
+        backdrop-filter: blur(8px);
+        transition: opacity var(--duration-snappy) var(--ease-out);
+
+        &::before {
+          position: absolute;
+          inset: -3px;
+          content: "";
+        }
+
+        &:active:not([aria-pressed="true"]) {
+          color: var(--text-primary);
+        }
+
+        .ref:has(:focus-visible) & {
+          opacity: 1;
+        }
+
+        &[aria-pressed="true"] {
+          color: var(--text-on-accent);
+          background: var(--accent);
+          opacity: 1;
+        }
+
+        @media not ((hover: hover) and (pointer: fine)) {
+          &.tool-pick {
+            opacity: 1;
+          }
+
+          &:not(.tool-pick) {
+            display: none;
+          }
+        }
+      }
+
+      .caption {
+        position: absolute;
+        inset: auto 0 0;
+        display: flex;
+        flex-direction: column;
+        gap: 2px;
+        padding: 40px 12px 10px;
+        font-size: 13px;
+        line-height: 18px;
+        color: #fff;
+        pointer-events: none;
+        background: linear-gradient(to top, oklch(0 0 0 / 0.72), oklch(0 0 0 / 0.48) 55%, transparent);
+        border-radius: 0 0 10px 10px;
+        opacity: 0;
+        transition: opacity var(--duration-snappy) var(--ease-out);
+
+        .ref:has(:focus-visible) & {
+          opacity: 1;
+        }
+
+        @media not ((hover: hover) and (pointer: fine)) {
+          display: none;
+        }
+      }
+
+      .caption-line {
+        display: flex;
+        gap: 6px;
+        align-items: baseline;
+        min-width: 0;
+      }
+
+      .caption-title {
+        overflow: hidden;
+        font-variation-settings: var(--font-weight-500);
+        text-overflow: ellipsis;
+        white-space: nowrap;
+      }
+
+      .caption-source {
+        flex: none;
+        color: oklch(1 0 0 / 0.72);
+      }
+
+      .caption-note {
+        display: -webkit-box;
+        overflow: hidden;
+        color: oklch(1 0 0 / 0.88);
+        -webkit-line-clamp: 1;
+        -webkit-box-orient: vertical;
+      }
+
+      .empty {
+        padding: 64px 0;
+        color: var(--text-tertiary);
+        text-align: center;
+      }
+
+      .viewer {
+        position: fixed;
+        inset: 0;
+        width: 100%;
+        max-width: none;
+        height: 100%;
+        max-height: none;
+        color: var(--text-primary);
+        background: transparent;
+        backdrop-filter: blur(0);
+        transition:
+          background-color var(--duration-exit) var(--ease-out),
+          backdrop-filter var(--duration-exit) var(--ease-out),
+          display var(--duration-exit) allow-discrete,
+          overlay var(--duration-exit) allow-discrete;
+
+        grid-template-columns: 1fr 344px;
+
+        @media (width <= 900px) {
+          grid-template-rows: 1fr auto;
+          grid-template-columns: 1fr;
+        }
+
+        &[open] {
+          display: grid;
+          background: color-mix(in oklab, var(--background-primary) 92%, transparent);
+          backdrop-filter: blur(24px);
+          transition-duration: var(--duration-snappy);
+
+          @starting-style {
+            background: transparent;
+            backdrop-filter: blur(0);
+          }
+        }
+
+        &[open][data-closing] {
+          background: transparent;
+          backdrop-filter: blur(0);
+          transition-duration: var(--duration-exit);
+        }
+
+        &::backdrop {
+          background: transparent;
+        }
+      }
+
+      .stage {
+        display: grid;
+        place-items: center;
+        min-width: 0;
+        min-height: 0;
+        padding: var(--inset);
+        cursor: zoom-out;
+
+        img,
+        video {
+          max-width: 100%;
+          max-height: calc(100dvh - var(--inset) * 2);
+          object-fit: contain;
+          cursor: default;
+          border-radius: 12px;
+          box-shadow: var(--shadow-large);
+
+          @media (width <= 900px) {
+            max-height: calc(60dvh - var(--inset));
+          }
+        }
+      }
+
+      .panel {
+        display: flex;
+        flex-direction: column;
+        min-height: 0;
+        margin: 12px 12px 12px 0;
+        overflow: hidden;
+        background: var(--background-raised);
+        border: 1px solid transparent;
+        border-radius: var(--radius-panel);
+        box-shadow: var(--shadow-extra-large);
+        opacity: 0;
+        transition: opacity var(--duration-exit) var(--ease-out);
+
+        .viewer[open] & {
+          opacity: 1;
+          transition-duration: var(--duration-snappy);
+          transition-delay: 60ms;
+
+          @starting-style {
+            opacity: 0;
+          }
+        }
+
+        .viewer[open][data-closing] & {
+          opacity: 0;
+          transition-duration: var(--duration-exit);
+          transition-delay: 0s;
+        }
+
+        @media (width <= 900px) {
+          max-height: calc(40dvh - 12px);
+          margin: 0 12px 12px;
+        }
+      }
+
+      .compare {
+        position: fixed;
+        inset: 0;
+        width: 100%;
+        max-width: none;
+        height: 100%;
+        max-height: none;
+        color: var(--text-primary);
+        background: color-mix(in oklab, var(--background-primary) 92%, transparent);
+        backdrop-filter: blur(24px);
+        opacity: 0;
+        transition:
+          opacity var(--duration-exit) var(--ease-out),
+          display var(--duration-exit) allow-discrete,
+          overlay var(--duration-exit) allow-discrete;
+
+        @media (width <= 640px) {
+          --inset: 24px;
+        }
+
+        &[open] {
+          display: flex;
+          flex-direction: column;
+          opacity: 1;
+          transition-duration: var(--duration-snappy);
+
+          @starting-style {
+            opacity: 0;
+          }
+        }
+
+        &::backdrop {
+          background: transparent;
+        }
+      }
+
+      .compare-head {
+        display: flex;
+        gap: 8px;
+        align-items: center;
+        padding: 16px var(--inset) 0;
+
+        h2 {
+          font-variation-settings: var(--font-weight-500);
+        }
+
+        .icon-button {
+          margin-left: auto;
+        }
+      }
+
+      .compare-row {
+        display: grid;
+        flex: 1;
+        grid-auto-columns: calc((100% - var(--gap) * (var(--n) - 1)) / var(--n));
+        grid-auto-flow: column;
+        grid-template-rows: minmax(0, 1fr) auto;
+        gap: 20px var(--gap);
+        min-height: 0;
+        padding: 24px var(--inset) var(--inset);
+        overflow-x: auto;
+        overscroll-behavior-x: contain;
+        scroll-padding-inline: var(--inset);
+        scroll-snap-type: x mandatory;
+
+        @media (width <= 640px) {
+          grid-auto-columns: 82%;
+          grid-template-rows: auto auto;
+          align-content: start;
+          column-gap: 16px;
+        }
+      }
+
+      .compare-item {
+        display: grid;
+        grid-row: span 2;
+        grid-template-rows: subgrid;
+        min-width: 0;
+        min-height: 0;
+        scroll-snap-align: start;
+      }
+
+      .compare-media {
+        display: flex;
+        align-items: flex-end;
+        min-height: 0;
+
+        img,
+        video {
+          max-width: 100%;
+          max-height: 100%;
+          object-fit: contain;
+          border-radius: 12px;
+          box-shadow: var(--shadow-large);
+
+          @media (width <= 640px) {
+            max-height: 60dvh;
+          }
+        }
+      }
+
+      .compare-caption {
+        display: flex;
+        flex-direction: column;
+        gap: 2px;
+
+        a {
+          display: inline-flex;
+          gap: 4px;
+          align-items: center;
+          font-variation-settings: var(--font-weight-500);
+
+          svg {
+            color: var(--text-quaternary);
+          }
+        }
+      }
+
+      .compare-source {
+        color: var(--text-tertiary);
+      }
+
+      .compare-note {
+        margin-top: 6px;
+        color: var(--text-secondary);
+      }
+
+      .compare-mine {
+        padding-left: 10px;
+        margin-top: 6px;
+        color: var(--text-secondary);
+        box-shadow: inset 2px 0 0 var(--accent);
+      }
+
+      @media (hover: hover) and (pointer: fine) {
+        .tray-thumbs:hover {
+          --fanned: 1;
+        }
+
+        .tray-thumb:hover,
+        .tray-more:hover {
+          scale: 1.1;
+        }
+
+        .ref:hover :is(.tool, .caption) {
+          opacity: 1;
+        }
+
+        .tool:hover:not([aria-pressed="true"]) {
+          color: var(--text-primary);
+        }
+
+        .compare-caption a:hover svg {
+          color: var(--text-primary);
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="page">
+      <header class="head">
+        <h1 class="title" id="title"></h1>
+        <p class="brief" id="brief"></p>
+        <p class="status" id="status" hidden>Gathering <span class="count" id="status-count"></span></p>
+      </header>
+
+      <nav class="bar" id="bar" aria-label="Filters">
+        <div class="bar-row">
+          <div class="filters" id="source-filter" role="group" aria-label="Source"></div>
+          <div class="picks">
+            <button class="chip" id="picked-only" type="button" aria-pressed="false"></button>
+          </div>
+        </div>
+      </nav>
+
+      <main class="groups" id="groups"><p class="empty" id="empty" hidden></p></main>
+    </div>
+
+    <div class="tray" id="tray" role="region" aria-label="Picks" data-frame data-empty inert>
+      <div class="tray-thumbs" id="tray-thumbs"></div>
+      <span class="tray-divider" aria-hidden="true"></span>
+      <button class="icon-button" id="compare" type="button" aria-label="Compare Picks" aria-keyshortcuts="C" data-tip data-key="C" disabled>
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M8 3.5H4A1.5 1.5 0 0 0 2.5 5v6A1.5 1.5 0 0 0 4 12.5h4z" fill="currentColor" fill-opacity="0.3" /><rect x="2.5" y="3.5" width="11" height="9" rx="1.5" /><path d="M8 3.5v9" /></svg>
+      </button>
+      <button class="icon-button" id="save" type="button" aria-label="Save Picks" aria-keyshortcuts="Shift+S" data-tip data-key="⇧S" disabled>
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"><path d="M4 2.5h8v11L8 10.5l-4 3z" /></svg>
+      </button>
+      <button class="icon-button" id="copy" type="button" aria-label="Copy Picks" aria-keyshortcuts="Shift+C" data-tip data-key="⇧C" disabled>
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="5.5" y="5.5" width="8" height="8" rx="1.5" /><path d="M10.5 5.5V4a1.5 1.5 0 0 0-1.5-1.5H4A1.5 1.5 0 0 0 2.5 4v5A1.5 1.5 0 0 0 4 10.5h1.5" /></svg>
+      </button>
+      <button class="icon-button" id="clear" type="button" aria-label="Clear Picks" data-tip disabled>
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M2.5 4.5h11M6.5 4.5v-2h3v2M4 4.5l.75 9h6.5l.75-9" /></svg>
+      </button>
+    </div>
+
+    <dialog class="viewer" id="viewer" aria-label="Reference">
+      <div class="stage" id="stage"></div>
+      <aside class="panel">
+        <div class="panel-scroll scroll-fade">
+          <div class="panel-top">
+            <button class="icon-button" id="viewer-close" type="button" aria-label="Close" title="Close (Esc)">
+              <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><path d="M4 4l8 8M12 4l-8 8" /></svg>
+            </button>
+            <div class="panel-tools">
+              <button class="icon-button" id="viewer-more" type="button" aria-label="More Like This" title="More Like This (M)"></button>
+              <button class="icon-button" id="viewer-pick" type="button" aria-pressed="false"></button>
+              <button class="icon-button" id="viewer-prev" type="button" aria-label="Previous" title="Previous (K)">
+                <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12.5 8h-9M7 4.5L3.5 8 7 11.5" /></svg>
+              </button>
+              <button class="icon-button" id="viewer-next" type="button" aria-label="Next" title="Next (J)">
+                <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3.5 8h9M9 4.5L12.5 8 9 11.5" /></svg>
+              </button>
+            </div>
+          </div>
+          <header class="panel-head">
+            <span class="panel-group" id="viewer-group"></span>
+            <h2 class="panel-title" id="viewer-title"></h2>
+            <p class="panel-note" id="viewer-note"></p>
+            <span class="panel-count" id="viewer-count"></span>
+          </header>
+          <label class="field" id="viewer-field" hidden>
+            <span class="field-label">Your Note</span>
+            <textarea class="input" id="viewer-notes" rows="3" placeholder="What to take from it"></textarea>
+          </label>
+          <dl id="viewer-details"></dl>
+        </div>
+      </aside>
+    </dialog>
+
+    <dialog class="compare" id="compare-dialog" aria-labelledby="compare-title">
+      <header class="compare-head">
+        <h2 id="compare-title">Compare</h2>
+        <span class="count" id="compare-count"></span>
+        <button class="icon-button" id="compare-close" type="button" aria-label="Close" title="Close (Esc)">
+          <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><path d="M4 4l8 8M12 4l-8 8" /></svg>
+        </button>
+      </header>
+      <div class="compare-row" id="compare-row"></div>
+    </dialog>
+
+    <script src="board.js"></script>
+    <script>
+      // kit:h
+      const $ = (id) => document.getElementById(id);
+
+      function h(tag, props = {}, ...children) {
+        const node = document.createElement(tag);
+        for (const [key, value] of Object.entries(props)) {
+          if (key === "html") node.innerHTML = value;
+          else if (key.startsWith("on")) node.addEventListener(key.slice(2), value);
+          else node.setAttribute(key, value);
+        }
+        node.append(...children.filter((child) => child != null));
+        return node;
+      }
+      // kit:h end
+
+      // kit:anchor
+      function anchorTo(popover, anchor) {
+        const rect = anchor.getBoundingClientRect();
+        const frame = (anchor.closest("[data-frame]") ?? anchor).getBoundingClientRect();
+        const half = popover.offsetWidth / 2;
+        const edge = document.documentElement.clientWidth - 8;
+        const below = frame.top < popover.offsetHeight + 16;
+        popover.style.left = `${Math.min(edge - half, Math.max(8 + half, rect.left + rect.width / 2))}px`;
+        popover.style.top = `${below ? frame.bottom + 8 : frame.top - 8 - popover.offsetHeight}px`;
+        popover.dataset.side = below ? "below" : "above";
+      }
+      // kit:anchor end
+
+      // kit:overlays
+      const toast = h("output", { class: "toast", popover: "manual" });
+      const tip = h("div", { class: "tip", popover: "manual", "aria-hidden": "true" });
+      document.body.append(toast, tip);
+
+      function hideToast() {
+        clearTimeout(toast.hide);
+        delete toast.dataset.open;
+        toast.hide = setTimeout(() => toast.hidePopover(), 200);
+      }
+
+      function showToast(anchor, message, action) {
+        clearTimeout(toast.hide);
+        hideTip();
+        delete toast.dataset.open;
+        if (!toast.matches(":popover-open")) toast.showPopover();
+        toast.replaceChildren(message, ...(action ? [action] : []));
+        anchorTo(toast, anchor);
+        toast.dataset.open = "";
+        toast.hide = setTimeout(hideToast, action ? 5000 : 1600);
+      }
+
+      async function copy(text, anchor) {
+        const tokens = Math.ceil(text.length / 4).toLocaleString();
+        const message = await navigator.clipboard.writeText(text).then(
+          () => `Copied · ~${tokens} tokens`,
+          () => "Copy Failed",
+        );
+        showToast(anchor, message);
+      }
+
+      let tipTimer;
+      let tipClosedAt = 0;
+
+      function showTip(button) {
+        clearTimeout(tipTimer);
+        const warm = tip.matches(":popover-open") || performance.now() - tipClosedAt < 300;
+        const open = () => {
+          const key = button.dataset.key;
+          tip.replaceChildren(button.dataset.tip || button.getAttribute("aria-label"), ...(key ? [h("kbd", {}, key)] : []));
+          tip.toggleAttribute("data-instant", warm);
+          if (!tip.matches(":popover-open")) tip.showPopover();
+          anchorTo(tip, button);
+        };
+        if (warm) open();
+        else tipTimer = setTimeout(open, 500);
+      }
+
+      function hideTip() {
+        clearTimeout(tipTimer);
+        if (!tip.matches(":popover-open")) return;
+        tipClosedAt = performance.now();
+        tip.hidePopover();
+      }
+
+      const tipped = (event) => event.target.closest?.("[data-tip]");
+      document.addEventListener("pointerover", (event) => {
+        const button = tipped(event);
+        if (button && event.pointerType === "mouse" && !button.contains(event.relatedTarget)) showTip(button);
+      });
+      document.addEventListener("pointerout", (event) => {
+        const button = tipped(event);
+        if (button && !button.contains(event.relatedTarget)) hideTip();
+      });
+      document.addEventListener("focusin", (event) => {
+        const button = tipped(event);
+        if (button?.matches(":focus-visible")) showTip(button);
+      });
+      document.addEventListener("focusout", (event) => tipped(event) && hideTip());
+      document.addEventListener("pointerdown", hideTip);
+      // kit:overlays end
+
+      // kit:bar
+      function stick(bar) {
+        const mark = () => bar.toggleAttribute("data-stuck", scrollY > 0 && bar.getBoundingClientRect().top <= 0);
+        addEventListener("scroll", mark, { passive: true });
+        mark();
+        new ResizeObserver(() => {
+          document.documentElement.style.setProperty("--bar-height", `${bar.offsetHeight + 8}px`);
+        }).observe(bar);
+      }
+      // kit:bar end
+
+      const storageKey = `gather:${location.pathname}`;
+      const picked = new Set(JSON.parse(localStorage.getItem(storageKey) || "[]"));
+      const notes = JSON.parse(localStorage.getItem(`${storageKey}:notes`) || "{}");
+      const filters = { source: null, pickedOnly: false };
+      const motion = matchMedia("(prefers-reduced-motion: no-preference)");
+      const byUrl = new Map();
+      const sections = new Map();
+      let board = window.board ?? { title: "Gather", brief: "", live: true, groups: [] };
+      let items = [];
+      let sources = [];
+
+      const icons = {
+        check: `<svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3.5 8.5l3 3 6-7" /></svg>`,
+        external: `<svg width="12" height="12" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5.5 4.5h6v6M11.5 4.5l-7 7" /></svg>`,
+        more: `<svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M8 2.5v3M8 10.5v3M2.5 8h3M10.5 8h3M4.2 4.2l1.4 1.4M10.4 10.4l1.4 1.4M4.2 11.8l1.4-1.4M10.4 5.6l1.4-1.4" /></svg>`,
+        all: `<svg width="10" height="10" viewBox="0 0 10 10" fill="currentColor"><rect width="4" height="4" rx="1" /><rect x="6" width="4" height="4" rx="1" /><rect y="6" width="4" height="4" rx="1" /><rect x="6" y="6" width="4" height="4" rx="1" /></svg>`,
+        marked: `<svg width="11" height="11" viewBox="0 0 200 200" fill="currentColor"><path fill-rule="evenodd" clip-rule="evenodd" d="M41.7555 0C18.779 0 0 16.8356 0 37.4344V147.588C0 154.781 2.41284 161.439 7.79548 165.922L39.157 194.047L40.2555 195.004C40.3088 195.048 40.3596 195.096 40.4104 195.144C40.47 195.2 40.5296 195.256 40.5935 195.307C48.6398 201.713 59.7586 201.099 69.4939 196.225L111.957 175.013C112.745 174.627 114.295 174.236 116.267 174.236C118.246 174.237 119.748 174.638 120.439 174.984L162.945 196.216C171.389 200.448 180.844 201.533 188.665 197.39C196.471 193.254 200 185.313 200 176.68V66.5259C200.052 56.7318 195.822 47.7929 188.951 41.1277C188.906 41.0849 188.862 41.0437 188.817 41.0024L188.708 40.9004L186.658 39.0822L186.416 38.8644L157.779 13.3525C156.041 11.501 154.114 9.7963 152.012 8.27668C144.87 3.11543 135.768 0 125.9 0H41.7555ZM18.9183 155.344C17.7753 154.434 16.2247 152.183 16.2247 147.588V37.4344C16.2247 24.869 27.7396 14.5457 41.7555 14.5457H125.9C131.799 14.5457 137.242 16.3758 141.586 19.4417L145.811 23.2107C149.119 26.9362 151.152 31.5638 151.315 36.5916C151.323 36.8552 151.327 37.1205 151.325 37.3871V147.588C151.325 153.015 149.219 155.116 147.966 155.78C146.73 156.434 143.685 157.076 138.396 154.425L95.8908 133.184C92.1514 131.309 87.7477 130.6 83.8173 130.599C79.8686 130.599 75.4154 131.34 71.6593 133.184L29.1433 154.435C23.0831 157.472 20.0458 156.239 18.9183 155.344Z" /></svg>`,
+        pond: `<svg width="10" height="10" viewBox="0 0 207 207" fill="currentColor"><path fill-rule="evenodd" clip-rule="evenodd" d="M120.711 14.6446C140.237 -4.88145 171.895 -4.88142 191.421 14.6446C210.947 34.1707 210.947 65.8283 191.421 85.3545L177.279 99.4967C175.326 101.449 175.326 104.615 177.279 106.568L191.421 120.71C210.947 140.236 210.947 171.895 191.421 191.421C171.895 210.947 140.237 210.947 120.711 191.421L106.568 177.278C104.615 175.325 101.449 175.325 99.4967 177.278L85.3555 191.421C65.8293 210.947 34.1708 210.947 14.6446 191.421C-4.88146 171.895 -4.88159 140.236 14.6446 120.71L28.7868 106.568C30.7394 104.615 30.7394 101.449 28.7868 99.4967L14.6446 85.3545C-4.88125 65.8283 -4.88141 34.1707 14.6446 14.6446C34.1707 -4.88153 65.8293 -4.88151 85.3555 14.6446L99.4969 28.786C101.449 30.7385 104.615 30.7386 106.568 28.7862L120.711 14.6446ZM72.2891 53C61.2434 53.0001 52.2891 61.9544 52.2891 73V133C52.2893 144.046 61.2436 153 72.2891 153H132.289C143.335 153 152.289 144.046 152.289 133V73C152.289 61.9543 143.335 53 132.289 53H72.2891Z" /></svg>`,
+        globe: `<svg width="12" height="12" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="8" cy="8" r="5.75" /><path d="M2.25 8h11.5M8 2.25c-3 3.5-3 8 0 11.5M8 2.25c3 3.5 3 8 0 11.5" /></svg>`,
+      };
+
+      function place(parent, nodes) {
+        let cursor = parent.firstChild;
+        for (const node of nodes) {
+          if (node === cursor) cursor = cursor.nextSibling;
+          else parent.insertBefore(node, cursor);
+        }
+      }
+
+      function loaded(image) {
+        return new Promise((resolve, reject) => {
+          image.addEventListener("load", resolve, { once: true });
+          image.addEventListener("error", reject, { once: true });
+        });
+      }
+
+      function dimensions(media) {
+        if (media.tagName === "VIDEO") {
+          return new Promise((resolve, reject) => {
+            const measured = () => resolve([media.videoWidth, media.videoHeight]);
+            if (media.readyState >= 1) measured();
+            media.addEventListener("loadedmetadata", measured, { once: true });
+            media.addEventListener("error", reject, { once: true });
+          });
+        }
+        return media
+          .decode()
+          .catch(() => (media.complete ? (media.naturalWidth ? undefined : Promise.reject()) : loaded(media)))
+          .then(() => [media.naturalWidth, media.naturalHeight]);
+      }
+
+      function mediaFor(item, { controls = false } = {}) {
+        if (item.kind !== "video") return h("img", { src: item.media, alt: controls ? item.title : "", decoding: "async" });
+        const video = h("video", { src: item.poster ? item.media : `${item.media}#t=0.1`, playsinline: "", loop: "", preload: "metadata" });
+        if (item.poster) video.poster = item.poster;
+        video.muted = true;
+        if (controls) {
+          video.controls = true;
+          video.autoplay = motion.matches;
+          video.setAttribute("aria-label", item.title);
+        }
+        return video;
+      }
+
+      const watcher = new IntersectionObserver(
+        (entries) => {
+          for (const entry of entries) {
+            const item = entry.target.item;
+            item.inView = entry.isIntersecting;
+            if (item.inView && motion.matches) item.el.play().catch(() => {});
+            else item.el.pause();
+          }
+        },
+        { rootMargin: "120px" },
+      );
+
+      motion.addEventListener("change", () => {
+        for (const item of items) {
+          if (item.kind !== "video") continue;
+          if (item.inView && motion.matches) item.el.play().catch(() => {});
+          else item.el.pause();
+        }
+      });
+
+      function createItem(raw) {
+        const item = { ...raw, kind: raw.kind ?? "image", ratio: 4 / 3, inView: false };
+        item.el = mediaFor(item);
+        item.shot = h("button", { class: "shot", type: "button", onclick: () => openViewer(item) }, item.el);
+        item.captionTitle = h("span", { class: "caption-title" });
+        item.captionSource = h("span", { class: "caption-source" });
+        item.captionNote = h("span", { class: "caption-note" });
+        item.more = h("button", { class: "tool", type: "button", html: icons.more, onclick: () => moreLikeThis(item, item.more) });
+        item.open = h("a", { class: "tool", target: "_blank", rel: "noreferrer", html: icons.external });
+        item.pick = h("button", { class: "tool tool-pick", type: "button", html: icons.check, onclick: () => togglePick(item) });
+        item.node = h(
+          "figure",
+          { class: "ref", "data-kind": item.kind },
+          item.shot,
+          h("div", { class: "caption", "aria-hidden": "true" }, h("span", { class: "caption-line" }, item.captionTitle, item.captionSource), item.captionNote),
+          h("div", { class: "tools" }, item.more, item.open, item.pick),
+        );
+        item.node.item = item;
+
+        dimensions(item.el)
+          .then(([width, height]) => {
+            if (!width || !height) return;
+            item.ratio = width / height;
+            item.shot.style.aspectRatio = `${width} / ${height}`;
+            item.el.setAttribute("data-loaded", "");
+            scheduleLayout();
+          })
+          .catch(() => {});
+
+        if (item.kind === "video") {
+          watcher.observe(item.node);
+          const hover = (play) => () => {
+            if (motion.matches) return;
+            if (play) item.el.play().catch(() => {});
+            else item.el.pause();
+          };
+          item.node.addEventListener("pointerenter", hover(true));
+          item.node.addEventListener("pointerleave", hover(false));
+          item.node.addEventListener("focusin", hover(true));
+          item.node.addEventListener("focusout", hover(false));
+        }
+
+        byUrl.set(item.url, item);
+        return item;
+      }
+
+      function renderItem(item) {
+        item.shot.setAttribute("aria-label", `View ${item.title}`);
+        item.captionTitle.textContent = item.title;
+        item.captionSource.textContent = item.source;
+        item.captionNote.textContent = item.note ?? "";
+        item.captionNote.hidden = !item.note;
+        item.more.setAttribute("aria-label", `More Like ${item.title}`);
+        item.more.title = "More Like This (M)";
+        item.open.href = item.url;
+        item.open.setAttribute("aria-label", `Open ${item.title}`);
+        item.open.title = "Open Original (O)";
+        renderPick(item);
+      }
+
+      function createSection(title) {
+        const count = h("span", { class: "count" });
+        const description = h("p", { class: "group-description" });
+        const cards = h("div", { class: "cards" });
+        const node = h(
+          "section",
+          { class: "group" },
+          h("header", { class: "group-head" }, h("h2", { class: "group-title" }, title), description, count),
+          cards,
+        );
+        const section = { title, node, count, description, cards, members: [] };
+        sections.set(title, section);
+        return section;
+      }
+
+      function ingest(data) {
+        board = data;
+        document.title = `${board.title} · Gather`;
+        $("title").textContent = board.title;
+        $("brief").textContent = board.brief;
+        $("brief").hidden = !board.brief;
+
+        const next = [];
+        const titles = new Set();
+        for (const group of board.groups) {
+          titles.add(group.title);
+          const section = sections.get(group.title) ?? createSection(group.title);
+          section.description.textContent = group.description ?? "";
+          section.description.hidden = !group.description;
+          section.members = group.items.map((raw) => {
+            const item = byUrl.get(raw.url) ?? createItem(raw);
+            Object.assign(item, { title: raw.title, source: raw.source, note: raw.note, details: raw.details, group: group.title });
+            renderItem(item);
+            return item;
+          });
+          place(section.cards, section.members.map((item) => item.node));
+          next.push(...section.members);
+        }
+
+        const kept = new Set(next);
+        for (const item of items) {
+          if (kept.has(item)) continue;
+          if (item.kind === "video") watcher.unobserve(item.node);
+          item.node.remove();
+          byUrl.delete(item.url);
+        }
+        for (const [title, section] of sections) {
+          if (titles.has(title)) continue;
+          section.node.remove();
+          sections.delete(title);
+        }
+        place($("groups"), board.groups.map((group) => sections.get(group.title).node));
+
+        items = next;
+        sources = [...new Set(items.map((item) => item.source))];
+        if (filters.source !== null && !sources.includes(filters.source)) filters.source = null;
+        $("status").hidden = !board.live;
+        $("status-count").textContent = String(items.length);
+        renderFilters();
+        renderPicks();
+        layout();
+      }
+
+      let snapshot = JSON.stringify(board);
+
+      function poll() {
+        if (!board.live) return;
+        setTimeout(() => {
+          const script = h("script", { src: `board.js?v=${Date.now()}` });
+          script.addEventListener("load", () => {
+            script.remove();
+            const text = JSON.stringify(window.board);
+            if (text !== snapshot) {
+              snapshot = text;
+              ingest(window.board);
+            }
+            poll();
+          });
+          script.addEventListener("error", () => {
+            script.remove();
+            poll();
+          });
+          document.head.append(script);
+        }, 2000);
+      }
+
+      function isVisible(item) {
+        return (
+          (filters.source === null || item.source === filters.source) &&
+          (!filters.pickedOnly || picked.has(item.url))
+        );
+      }
+
+      const platforms = {
+        X: "x.com",
+        "Are.na": "are.na",
+        Cosmos: "cosmos.so",
+        Mobbin: "mobbin.com",
+        Pinterest: "pinterest.com",
+        Savee: "savee.com",
+      };
+
+      const marks = { "": icons.all, Live: icons.globe, Pond: icons.pond, "marked.dev": icons.marked };
+
+      function partIcon(part) {
+        const letter = () => h("span", { class: "source-icon" }, part[0]);
+        if (marks[part]) return h("span", { class: "source-icon", "data-brand": part, html: marks[part] });
+        if (!platforms[part]) return null;
+        const image = h("img", { class: "source-icon", src: `https://www.google.com/s2/favicons?domain=${platforms[part]}&sz=64`, alt: "" });
+        image.addEventListener("error", () => image.replaceWith(letter()));
+        return image;
+      }
+
+      function sourceIcon(source) {
+        const found = source.split(" › ").map(partIcon).filter(Boolean);
+        return h("span", { class: "source-icons" }, ...(found.length ? found : [h("span", { class: "source-icon" }, source[0])]));
+      }
+
+      const sourceChips = new Map();
+
+      function sourceChip(value, label) {
+        if (!sourceChips.has(value)) {
+          const count = h("span", { class: "count" });
+          const node = h(
+            "button",
+            { class: "chip", type: "button", "data-tip": label, onclick: () => setFilter("source", value || null) },
+            sourceIcon(value),
+            count,
+          );
+          sourceChips.set(value, { node, count });
+        }
+        return sourceChips.get(value);
+      }
+
+      function renderFilters() {
+        const entries = [["", "All Sources", items.length], ...sources.map((source) => [source, source, items.filter((item) => item.source === source).length])];
+        const nodes = entries.map(([value, label, count]) => {
+          const chip = sourceChip(value, label);
+          chip.count.textContent = String(count);
+          chip.node.setAttribute("aria-label", `${label}, ${count}`);
+          chip.node.setAttribute("aria-pressed", String((filters.source ?? "") === value));
+          return chip.node;
+        });
+        const group = $("source-filter");
+        place(group, nodes);
+        for (const child of [...group.children]) if (!nodes.includes(child)) child.remove();
+      }
+
+      const pickedItems = () => items.filter((item) => picked.has(item.url));
+
+      function renderPicks() {
+        const count = pickedItems().length;
+        const pickedOnly = $("picked-only");
+        pickedOnly.setAttribute("aria-pressed", String(filters.pickedOnly));
+        pickedOnly.replaceChildren("Picked", h("span", { class: "count" }, String(count)));
+        $("copy").disabled = count === 0;
+        $("save").disabled = count === 0;
+        $("clear").disabled = count === 0;
+        $("compare").disabled = count < 2;
+        renderTray();
+      }
+
+      const tilts = [7, -6, 5, -8, -2];
+      const shifts = [-4, 3, -2, 4, 0];
+
+      function thumbFor(item) {
+        item.thumb ??= h(
+          "button",
+          { class: "tray-thumb", type: "button", "aria-label": `View ${item.title}`, onclick: () => openViewer(item) },
+          mediaFor(item),
+          h("span", { class: "tray-label" }, item.title),
+        );
+        return item.thumb;
+      }
+
+      const trayMore = h("button", { class: "tray-more", type: "button", onclick: () => setFilter("pickedOnly", true) });
+
+      function renderTray() {
+        const picks = [...picked].map((url) => byUrl.get(url)).filter(Boolean);
+        const shown = picks.slice(-5).map(thumbFor);
+        const tray = $("tray");
+        tray.toggleAttribute("data-empty", picks.length === 0);
+        tray.inert = picks.length === 0;
+        const pile = $("tray-thumbs");
+        for (const child of [...pile.children]) if (!shown.includes(child)) child.remove();
+        shown.forEach((node, index) => {
+          const slot = tilts.length - shown.length + index;
+          node.style.setProperty("--tilt", `${tilts[slot]}deg`);
+          node.style.setProperty("--shift", `${shifts[slot]}px`);
+          node.style.setProperty("--k", String(shown.length - 1 - index));
+          if (pile.children[index] !== node) pile.insertBefore(node, pile.children[index] ?? null);
+        });
+        trayMore.textContent = `+${picks.length - shown.length}`;
+        trayMore.style.setProperty("--k", String(shown.length));
+        trayMore.setAttribute("aria-label", `Show All ${picks.length} Picks`);
+        if (picks.length > shown.length) pile.append(trayMore);
+      }
+
+      function setFilter(key, value) {
+        filters[key] = value;
+        renderFilters();
+        renderPicks();
+        layout();
+        writeHash();
+      }
+
+      function nearest(item) {
+        const index = items.indexOf(item);
+        return items.slice(index).find(isVisible) ?? items.slice(0, index).findLast(isVisible) ?? null;
+      }
+
+      function focusNear(item, options) {
+        const target = nearest(item);
+        (target ? target.shot : $("source-filter").querySelector('[aria-pressed="true"]')).focus(options);
+        return target;
+      }
+
+      let width = 0;
+
+      function layout() {
+        const focused = items.find((item) => item.node.contains(document.activeElement));
+        const gap = parseFloat(getComputedStyle(document.documentElement).getPropertyValue("--gap"));
+        width = $("groups").clientWidth;
+        const columns = Math.min(6, Math.max(1, Math.floor((width + gap) / (200 + gap))));
+        const cardWidth = (width - gap * (columns - 1)) / columns;
+        let shown = 0;
+        for (const group of board.groups) {
+          const section = sections.get(group.title);
+          const heights = Array(columns).fill(0);
+          let visible = 0;
+          for (const item of section.members) {
+            item.node.hidden = !isVisible(item);
+            if (item.node.hidden) continue;
+            const shortest = heights.indexOf(Math.min(...heights));
+            item.node.style.translate = `${shortest * (cardWidth + gap)}px ${heights[shortest]}px`;
+            heights[shortest] += cardWidth / item.ratio + gap;
+            visible += 1;
+          }
+          section.node.hidden = visible === 0;
+          section.count.textContent = String(visible);
+          section.cards.style.setProperty("--card-width", `${cardWidth}px`);
+          section.cards.style.height = `${Math.max(0, Math.max(...heights) - gap)}px`;
+          shown += visible;
+        }
+        const empty = $("empty");
+        if (items.length === 0) empty.textContent = board.live ? "Gathering References" : "No References Yet";
+        else if (filters.pickedOnly && pickedItems().length === 0) empty.textContent = "Nothing Picked Yet";
+        else empty.textContent = "No References Match";
+        empty.hidden = shown > 0;
+        if (focused && !isVisible(focused)) focusNear(focused);
+        renderTray();
+      }
+
+      let pending = 0;
+
+      function scheduleLayout() {
+        if (pending) return;
+        pending = requestAnimationFrame(() => {
+          pending = 0;
+          layout();
+        });
+      }
+
+      new ResizeObserver(() => {
+        if ($("groups").clientWidth !== width) layout();
+      }).observe($("groups"));
+
+      function storePicks() {
+        localStorage.setItem(storageKey, JSON.stringify([...picked]));
+      }
+
+      function renderPick(item) {
+        const isPicked = picked.has(item.url);
+        const label = isPicked ? "Unpick" : "Pick";
+        item.node.toggleAttribute("data-picked", isPicked);
+        item.pick.setAttribute("aria-pressed", String(isPicked));
+        item.pick.setAttribute("aria-label", `${label} ${item.title}`);
+        item.pick.title = `${label} (P)`;
+      }
+
+      function togglePick(item) {
+        if (picked.has(item.url)) picked.delete(item.url);
+        else picked.add(item.url);
+        storePicks();
+        renderPick(item);
+        renderPicks();
+        if (viewer.open && current === item) renderViewer();
+        if (filters.pickedOnly && !viewer.open) layout();
+      }
+
+      function setPicks(urls) {
+        picked.clear();
+        for (const url of urls) picked.add(url);
+        storePicks();
+        for (const item of items) renderPick(item);
+        renderPicks();
+        if (viewer.open) renderViewer();
+        if (filters.pickedOnly && !viewer.open) layout();
+      }
+
+      function clearPicks(anchor) {
+        const cleared = [...picked];
+        if (cleared.length === 0) return;
+        const hadFocus = document.activeElement === anchor;
+        setPicks([]);
+        const undo = h("button", { type: "button" }, "Undo");
+        undo.addEventListener("click", () => {
+          setPicks(cleared);
+          hideToast();
+          if (hadFocus) anchor.focus();
+        });
+        showToast(anchor, `Cleared ${cleared.length} ${cleared.length === 1 ? "Pick" : "Picks"}`, undo);
+        if (hadFocus) undo.focus({ preventScroll: true });
+      }
+
+      $("picked-only").addEventListener("click", () => setFilter("pickedOnly", !filters.pickedOnly));
+
+      stick($("bar"));
+
+      function describe(item, index) {
+        const pad = index === undefined ? "" : "   ";
+        const lines = [`${index === undefined ? "" : `${index + 1}. `}${item.title}, ${item.source}`];
+        if (item.note) lines.push(`${pad}${item.note}`);
+        if (notes[item.url]) lines.push(`${pad}My note: ${notes[item.url]}`);
+        lines.push(`${pad}${item.url}`);
+        return lines.join("\n");
+      }
+
+      function copyPicks(anchor) {
+        const picks = pickedItems();
+        if (picks.length === 0) return;
+        const lead = picks.length === 1 ? "Pick this reference" : `Pick these ${picks.length} references`;
+        copy(`${lead} from the ${board.title} board:\n\n${picks.map(describe).join("\n\n")}\n`, anchor);
+      }
+
+      function savePicks(anchor) {
+        const picks = pickedItems();
+        if (picks.length === 0) return;
+        const lead = picks.length === 1 ? "Save this pick" : `Save these ${picks.length} picks`;
+        const ask = "Ask me where if I haven't said, match the naming already there and skip anything already saved";
+        copy(`${lead} from the ${board.title} board. ${ask}:\n\n${picks.map(describe).join("\n\n")}\n`, anchor);
+      }
+
+      function moreLikeThis(item, anchor) {
+        const rest = `Seed an image search from it and leave out the ${items.length} references already on the board.`;
+        copy(`Find more like this reference for the ${item.group} group on the ${board.title} board:\n\n${describe(item)}\n\n${rest}\n`, anchor);
+      }
+
+      $("copy").addEventListener("click", (event) => copyPicks(event.currentTarget));
+      $("save").addEventListener("click", (event) => savePicks(event.currentTarget));
+      $("clear").addEventListener("click", (event) => clearPicks(event.currentTarget));
+
+      const viewer = $("viewer");
+      $("viewer-pick").innerHTML = icons.check;
+      $("viewer-more").innerHTML = icons.more;
+      let sequence = [];
+      let current = null;
+      let staged = null;
+
+      const easeOutQuart = "cubic-bezier(0.165, 0.84, 0.44, 1)";
+      let flight = null;
+
+      function thumbnail(item) {
+        const rect = item.shot.getBoundingClientRect();
+        return rect.bottom > 0 && rect.top < innerHeight ? rect : null;
+      }
+
+      function thumbnailFrame(media, rect) {
+        const to = media.getBoundingClientRect();
+        const scale = rect.width / to.width;
+        const x = rect.left + rect.width / 2 - (to.left + to.width / 2);
+        const y = rect.top + rect.height / 2 - (to.top + to.height / 2);
+        return { transform: `translate(${x}px, ${y}px) scale(${scale})`, borderRadius: `${10 / scale}px` };
+      }
+
+      const flies = (item) => motion.matches && item.kind !== "video" && thumbnail(item);
+
+      async function openViewer(item) {
+        if (viewer.open) return;
+        sequence = items.filter(isVisible);
+        current = item;
+        renderViewer();
+        flight?.cancel();
+        const media = $("stage").firstChild;
+        const rect = flies(item);
+        media.style.opacity = rect ? "0" : "";
+        viewer.showModal();
+        writeHash();
+        if (!rect) return;
+        await media.decode().catch(() => {});
+        media.style.opacity = "";
+        flight = media.animate([thumbnailFrame(media, rect), { transform: "none", borderRadius: "12px" }], {
+          duration: 240,
+          easing: easeOutQuart,
+        });
+      }
+
+      async function closeViewer() {
+        if (!viewer.open || viewer.hasAttribute("data-closing")) return;
+        flight?.cancel();
+        const media = $("stage").firstChild;
+        const rect = flies(current);
+        if (!rect) return viewer.close();
+        viewer.setAttribute("data-closing", "");
+        flight = media.animate([{}, thumbnailFrame(media, rect)], { duration: 240, easing: easeOutQuart, fill: "forwards" });
+        await flight.finished.catch(() => {});
+        viewer.style.transition = "none";
+        viewer.close();
+        viewer.removeAttribute("data-closing");
+        flight.cancel();
+        requestAnimationFrame(() => viewer.style.removeProperty("transition"));
+      }
+
+      function renderViewer() {
+        const index = sequence.indexOf(current);
+        const isPicked = picked.has(current.url);
+        if (staged !== current) {
+          staged = current;
+          $("stage").replaceChildren(mediaFor(current, { controls: true }));
+        }
+        $("viewer-count").textContent = `${index + 1} of ${sequence.length}`;
+        $("viewer-group").textContent = current.group;
+        $("viewer-title").textContent = current.title;
+        $("viewer-note").textContent = current.note ?? "";
+
+        $("viewer-field").hidden = !isPicked;
+        if (document.activeElement !== $("viewer-notes")) $("viewer-notes").value = notes[current.url] ?? "";
+
+        const original = h("a", { href: current.url, target: "_blank", rel: "noreferrer", html: icons.external });
+        original.prepend(new URL(current.url).hostname.replace(/^www\./, ""));
+        const rows = [["Source", current.source], ["Original", original], ...Object.entries(current.details ?? {})];
+        $("viewer-details").replaceChildren(
+          ...rows.map(([label, value]) =>
+            h(
+              "div",
+              { class: "detail" },
+              h("dt", {}, label),
+              h("dd", {}, ...[value].flat().map((part) => (typeof part === "string" ? h("span", {}, part) : part))),
+            ),
+          ),
+        );
+
+        const pick = $("viewer-pick");
+        const label = isPicked ? "Unpick" : "Pick";
+        pick.setAttribute("aria-pressed", String(isPicked));
+        pick.setAttribute("aria-label", label);
+        pick.title = `${label} (P)`;
+        $("viewer-prev").disabled = index <= 0;
+        $("viewer-next").disabled = index === sequence.length - 1;
+      }
+
+      function step(offset) {
+        const next = sequence[sequence.indexOf(current) + offset];
+        if (!next) return;
+        current = next;
+        renderViewer();
+        writeHash();
+      }
+
+      $("viewer-notes").addEventListener("input", (event) => {
+        if (event.target.value.trim()) notes[current.url] = event.target.value.trim();
+        else delete notes[current.url];
+        localStorage.setItem(`${storageKey}:notes`, JSON.stringify(notes));
+      });
+      $("viewer-more").addEventListener("click", (event) => moreLikeThis(current, event.currentTarget));
+      $("viewer-prev").addEventListener("click", () => step(-1));
+      $("viewer-next").addEventListener("click", () => step(1));
+      $("viewer-pick").addEventListener("click", () => togglePick(current));
+      $("viewer-close").addEventListener("click", closeViewer);
+      $("stage").addEventListener("click", (event) => {
+        if (event.target === event.currentTarget) closeViewer();
+      });
+      viewer.addEventListener("cancel", (event) => {
+        event.preventDefault();
+        closeViewer();
+      });
+
+      viewer.addEventListener("close", () => {
+        $("stage").replaceChildren();
+        staged = null;
+        if (filters.pickedOnly) layout();
+        writeHash();
+        if (!current) return;
+        const target = focusNear(current, { preventScroll: true });
+        target?.shot.scrollIntoView({ block: "nearest", behavior: motion.matches ? "smooth" : "auto" });
+      });
+
+      const compare = $("compare-dialog");
+
+      function openCompare() {
+        const picks = pickedItems();
+        if (picks.length < 2) return;
+        $("compare-count").textContent = String(picks.length);
+        $("compare-row").style.setProperty("--n", String(Math.min(4, picks.length)));
+        $("compare-row").replaceChildren(
+          ...picks.map((item) => {
+            const link = h("a", { href: item.url, target: "_blank", rel: "noreferrer", html: icons.external });
+            link.prepend(item.title);
+            return h(
+              "figure",
+              { class: "compare-item" },
+              h("div", { class: "compare-media" }, mediaFor(item, { controls: true })),
+              h(
+                "figcaption",
+                { class: "compare-caption" },
+                link,
+                h("span", { class: "compare-source" }, `${item.source} · ${item.group}`),
+                item.note ? h("p", { class: "compare-note" }, item.note) : null,
+                notes[item.url] ? h("p", { class: "compare-mine" }, notes[item.url]) : null,
+              ),
+            );
+          }),
+        );
+        compare.showModal();
+      }
+
+      $("compare").addEventListener("click", openCompare);
+      $("compare-close").addEventListener("click", () => compare.close());
+      compare.addEventListener("close", () => $("compare-row").replaceChildren());
+
+      document.addEventListener("keydown", (event) => {
+        if (event.metaKey || event.ctrlKey || event.altKey || compare.open) return;
+        if (event.key === "Escape" && viewer.open) {
+          event.preventDefault();
+          closeViewer();
+          return;
+        }
+        if (event.target.closest("input, textarea, select, [contenteditable]")) return;
+        if (event.shiftKey) {
+          if (viewer.open) return;
+          if (event.code === "KeyC") copyPicks($("copy"));
+          else if (event.code === "KeyS") savePicks($("save"));
+          else return;
+          event.preventDefault();
+          return;
+        }
+        const key = event.key.length === 1 ? event.key.toLowerCase() : event.key;
+        if (viewer.open) {
+          if (key === "j" || key === "ArrowDown" || key === "ArrowRight") step(1);
+          else if (key === "k" || key === "ArrowUp" || key === "ArrowLeft") step(-1);
+          else if (key === "p") togglePick(current);
+          else if (key === "m") moreLikeThis(current, $("viewer-more"));
+          else if (key === "o") window.open(current.url, "_blank", "noreferrer");
+          else return;
+        } else if (key === "c") {
+          if ($("compare").disabled) return;
+          openCompare();
+        } else {
+          const item = items.find((item) => item.node.contains(event.target));
+          if (!item) return;
+          if (key === "p") togglePick(item);
+          else if (key === "m") moreLikeThis(item, item.shot);
+          else if (key === "o") window.open(item.url, "_blank", "noreferrer");
+          else return;
+        }
+        event.preventDefault();
+      });
+
+      function writeHash() {
+        const params = new URLSearchParams();
+        if (filters.source !== null) params.set("source", filters.source);
+        if (filters.pickedOnly) params.set("picked", "1");
+        if (viewer.open && current) params.set("item", current.url);
+        const hash = params.toString();
+        history.replaceState(null, "", hash ? `#${hash}` : location.pathname + location.search);
+      }
+
+      function readHash() {
+        const params = new URLSearchParams(location.hash.slice(1));
+        filters.source = sources.includes(params.get("source")) ? params.get("source") : null;
+        filters.pickedOnly = params.get("picked") === "1";
+        return items.find((item) => item.url === params.get("item") && isVisible(item));
+      }
+
+      ingest(board);
+      const opened = readHash();
+      renderFilters();
+      renderPicks();
+      layout();
+      if (opened) openViewer(opened);
+      poll();
+    </script>
+  </body>
+</html>

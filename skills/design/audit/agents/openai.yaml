@@ -1,0 +1,5 @@
+interface:
+  display_name: "Audit"
+  short_description: "Review against every skill"
+policy:
+  allow_implicit_invocation: false
