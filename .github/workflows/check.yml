@@ -1,0 +1,19 @@
+name: check
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  skills:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Check the skills
+        run: python3 scripts/check-skills.py
+      - name: Validate the plugin and the marketplace
+        run: npx --yes @anthropic-ai/claude-code plugin validate .

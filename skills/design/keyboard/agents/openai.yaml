@@ -1,0 +1,5 @@
+interface:
+  display_name: "Keyboard"
+  short_description: "Walk the page with keys alone"
+policy:
+  allow_implicit_invocation: false

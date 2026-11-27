@@ -1,5 +1,15 @@
 # kit release checklist
 
+## Contents
+
+- Pre-tag
+- Tag
+- Wait for the workflow (confirm each by name)
+- Smoke test (≥1 macOS and ≥1 Linux host)
+- Distribution and announce
+- Post-release
+- Recovery notes
+
 The running to-do for one `vX.Y.Z` release. Mirrors `docs/RELEASE.md`'s
 "Pre-release checklist"; when they disagree, `docs/RELEASE.md` wins. Do not skip
 steps. Substitute the real version for `X.Y.Z` throughout.

@@ -1,0 +1,1762 @@
+<!doctype html>
+<!--
+  Match compare. Copy this file to .match/<part>/index.html and write compare.js beside it:
+
+  window.compare = {
+    title: "Group Dropdown",
+    reference: { label: "Gather Board", source: "http://localhost:3000/board", platform: "Web" },
+    rebuild: { label: "Rebuild", file: "src/components/group-select.tsx" },
+    scale: 2,
+    states: [
+      { name: "Rest", reference: "img/rest-reference.png", rebuild: "img/rest-rebuild.png" }
+    ],
+    values: [
+      { property: "Trigger Radius", reference: "999px", rebuild: "8px", status: "Differs" }
+    ],
+    differences: ["Trigger radius is 8px, the reference reads 999px."]
+  };
+
+  Capture both sides of a state at the same size and device scale factor, and set `scale` to that factor. `source` is a URL or an app name, such as "Linear for Mac". State names and properties take Title Case, such as "Hover" or "Picker Offset". `status` is "Match", "Differs" or "Not Verified". Each difference is one short line naming the part and both values. Images are paths beside this file or full URLs.
+-->
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#ffffff" media="(prefers-color-scheme: light)" />
+    <meta name="theme-color" content="#080808" media="(prefers-color-scheme: dark)" />
+    <title>Match</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400..600&display=swap"
+    />
+    <style>
+      :root {
+        /* kit:tokens */
+        --gray-1: light-dark(#ffffff, #080808);
+        --gray-2: light-dark(#fafafa, #111111);
+        --gray-3: light-dark(#f2f2f2, #1a1a1a);
+        --gray-4: light-dark(#ebebeb, #222222);
+        --gray-5: light-dark(#e3e3e3, #2a2a2a);
+        --gray-10: light-dark(#6b6b6b, #8f8f8f);
+        --gray-11: light-dark(#575757, #b4b4b4);
+        --gray-12: light-dark(#080808, #ffffff);
+        --blue: #02bbff;
+        --red: light-dark(#d93036, #ff6369);
+        --green: light-dark(#2b9a66, #3dd68c);
+        --accent: var(--blue);
+        --danger: var(--red);
+        --success: var(--green);
+        --text-primary: var(--gray-12);
+        --text-secondary: color-mix(in oklab, var(--gray-12) 80%, var(--gray-11));
+        --text-tertiary: var(--gray-11);
+        --text-quaternary: var(--gray-10);
+        --text-on-accent: light-dark(#ffffff, #080808);
+        --border-primary: color-mix(in oklab, var(--gray-12) 7%, transparent);
+        --border-secondary: color-mix(in oklab, var(--gray-12) 12%, transparent);
+        --background-primary: var(--gray-1);
+        --background-secondary: var(--gray-2);
+        --background-tertiary: light-dark(rgb(8 8 8 / 5%), rgb(255 255 255 / 8%));
+        --background-hover: light-dark(rgb(8 8 8 / 8%), rgb(255 255 255 / 13%));
+        --background-raised: light-dark(#ffffff, #1a1a1a);
+        --background-control: light-dark(#ffffff, #222222);
+        --background-overlay: light-dark(#ffffff, #111111);
+        --fill-hover: light-dark(rgb(8 8 8 / 4%), rgb(255 255 255 / 6%));
+        --shadow-border: 0 0 0 1px light-dark(rgb(0 0 0 / 7%), rgb(255 255 255 / 7%));
+        --shadow-default:
+          inset 0 0 0 0.5px light-dark(transparent, rgb(255 255 255 / 7%)),
+          0 0 0 0.5px light-dark(rgb(0 0 0 / 6%), transparent),
+          0 1px 1px -1px light-dark(rgb(0 0 0 / 10%), transparent),
+          0 1px 2px 0 light-dark(rgb(0 0 0 / 5%), transparent);
+        --shadow-large:
+          0 0 0 0.5px light-dark(oklab(0.802 0 0 / 0.297), transparent),
+          0 0 0 1px light-dark(transparent, oklab(0.463 0 0 / 0.303)),
+          0 2px 3px -2px light-dark(rgb(0 0 0 / 6.3%), rgb(0 0 0 / 15%)),
+          0 3px 12px -4px light-dark(rgb(0 0 0 / 10%), transparent),
+          0 4px 16px -8px light-dark(rgb(0 0 0 / 5%), transparent),
+          0 3px 8px -2px light-dark(transparent, rgb(0 0 0 / 40%)),
+          0 4px 12px -4px light-dark(transparent, rgb(0 0 0 / 50%));
+        --shadow-extra-large:
+          inset 0 0 0 0.5px light-dark(transparent, rgb(255 255 255 / 7%)),
+          0 0 0 0.5px light-dark(rgb(0 0 0 / 6%), transparent),
+          0 8px 40px 0 rgb(0 0 0 / 5%),
+          0 12px 32px -16px rgb(0 0 0 / 15%);
+        --font-sans: Inter, -apple-system, BlinkMacSystemFont, sans-serif;
+        --font-mono: ui-monospace, "SF Mono", Menlo, monospace;
+        --font-weight-400: "wght" 400, "opsz" 14;
+        --font-weight-500: "wght" 500, "opsz" 14;
+        --ease-out: cubic-bezier(0.23, 1, 0.32, 1);
+        --ease-in-out: cubic-bezier(0.77, 0, 0.175, 1);
+        --ease-drawer: cubic-bezier(0.32, 0.72, 0, 1);
+        --duration-snappy: 220ms;
+        --duration-exit: 160ms;
+        --radius-control: 8px;
+        --radius-menu: 12px;
+        --radius-panel: 16px;
+        /* kit:tokens end */
+        --gap: 24px;
+        --inset: 48px;
+      }
+
+      /* kit:page */
+      :root {
+        color-scheme: light dark;
+      }
+
+      *,
+      *::before,
+      *::after {
+        box-sizing: border-box;
+      }
+
+      * {
+        padding: 0;
+        margin: 0;
+        font: inherit;
+        font-variation-settings: inherit;
+        color: inherit;
+        text-decoration: none;
+        border: 0;
+      }
+
+      ol,
+      ul {
+        list-style: none;
+      }
+
+      img,
+      svg,
+      canvas,
+      video {
+        display: block;
+        max-width: 100%;
+      }
+
+      [hidden] {
+        display: none !important;
+      }
+
+      button {
+        cursor: pointer;
+        user-select: none;
+        background: none;
+      }
+
+      button,
+      a,
+      select {
+        touch-action: manipulation;
+      }
+
+      code {
+        font-family: var(--font-mono);
+        font-size: 0.9em;
+      }
+
+      html {
+        font-family: var(--font-sans);
+        font-size: 14px;
+        line-height: 20px;
+        font-variation-settings: var(--font-weight-400);
+        font-optical-sizing: none;
+        font-feature-settings: "calt", "ccmp", "locl", "kern", "cv01", "ss03";
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+        -webkit-tap-highlight-color: transparent;
+        color: var(--text-primary);
+        background: var(--background-primary);
+        scroll-padding-block-start: var(--bar-height, 72px);
+      }
+
+      * {
+        scrollbar-width: none;
+      }
+
+      ::-webkit-scrollbar {
+        display: none;
+      }
+
+      ::selection {
+        background: color-mix(in oklab, var(--accent) 28%, transparent);
+      }
+
+      :focus-visible {
+        outline: 2px solid var(--accent);
+        outline-offset: 2px;
+        border-radius: 4px;
+      }
+
+      h1,
+      h2,
+      h3 {
+        text-wrap: balance;
+      }
+
+      p {
+        text-wrap: pretty;
+      }
+
+      @media (width <= 640px) {
+        input:not([type="range"]),
+        textarea,
+        select {
+          font-size: 16px;
+        }
+      }
+
+      @media (prefers-reduced-motion: reduce) {
+        *,
+        *::before,
+        *::after,
+        ::backdrop {
+          transition-duration: 0s !important;
+          transition-delay: 0s !important;
+        }
+      }
+      /* kit:page end */
+
+      /* kit:head */
+      .head {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+        max-width: 640px;
+      }
+
+      .title {
+        font-variation-settings: var(--font-weight-500);
+      }
+
+      .brief {
+        color: var(--text-tertiary);
+        overflow-wrap: anywhere;
+
+        a {
+          display: inline-flex;
+          gap: 4px;
+          align-items: center;
+          color: var(--text-secondary);
+
+          svg {
+            color: var(--text-quaternary);
+          }
+
+          &:active,
+          &:active svg {
+            color: var(--text-primary);
+          }
+        }
+
+        code {
+          color: var(--text-secondary);
+        }
+      }
+
+      @property --bar-line {
+        syntax: "<color>";
+        inherits: false;
+        initial-value: transparent;
+      }
+
+      .bar {
+        position: sticky;
+        top: 0;
+        z-index: 10;
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+        align-items: center;
+        padding: 16px 0;
+        border-image: linear-gradient(to top, var(--bar-line) 1px, var(--background-primary) 1px) fill 0 / / 0 100vw;
+        transition: --bar-line var(--duration-snappy) var(--ease-out);
+
+        &[data-stuck] {
+          --bar-line: var(--border-primary);
+        }
+      }
+
+      @media (hover: hover) and (pointer: fine) {
+        .brief a:hover,
+        .brief a:hover svg {
+          color: var(--text-primary);
+        }
+      }
+      /* kit:head end */
+
+      /* kit:controls */
+      .chip,
+      .action {
+        display: inline-flex;
+        gap: 6px;
+        align-items: center;
+        height: 28px;
+        padding: 0 12px;
+        font-size: 13px;
+        font-variation-settings: var(--font-weight-500);
+        color: var(--text-tertiary);
+        white-space: nowrap;
+        border-radius: var(--radius-control);
+
+        &[aria-pressed="true"] {
+          color: var(--text-primary);
+          background: var(--background-tertiary);
+        }
+
+        &:active:not(:disabled) {
+          color: var(--text-primary);
+        }
+
+        &:disabled {
+          cursor: default;
+          opacity: 0.5;
+        }
+      }
+
+      .action {
+        color: var(--text-primary);
+        background: var(--background-tertiary);
+
+        &:active:not(:disabled) {
+          background: var(--background-hover);
+        }
+      }
+
+      .icon-button,
+      .tool-button {
+        position: relative;
+        display: grid;
+        flex: none;
+        place-items: center;
+        width: 28px;
+        height: 28px;
+        color: var(--text-tertiary);
+        border-radius: var(--radius-control);
+
+        &::before {
+          position: absolute;
+          inset: -4px;
+          content: "";
+        }
+
+        &:disabled {
+          cursor: default;
+          opacity: 0.4;
+        }
+      }
+
+      .icon-button {
+        background: var(--background-tertiary);
+
+        &:active:not(:disabled, [aria-pressed="true"]) {
+          color: var(--text-primary);
+          background: var(--background-hover);
+        }
+
+        &[aria-pressed="true"] {
+          color: var(--text-on-accent);
+          background: var(--accent);
+        }
+      }
+
+      .tool-button {
+        &:active:not(:disabled) {
+          color: var(--text-primary);
+          background: var(--background-tertiary);
+        }
+
+        &[aria-pressed="true"] {
+          color: var(--text-primary);
+          background: var(--background-tertiary);
+        }
+
+        &[aria-pressed="true"]:active:not(:disabled) {
+          background: var(--background-hover);
+        }
+      }
+
+      .pick {
+        position: relative;
+        display: grid;
+        flex: none;
+        place-items: center;
+        width: 28px;
+        height: 28px;
+        color: var(--text-quaternary);
+        border-radius: var(--radius-control);
+        box-shadow: inset 0 0 0 1px var(--border-secondary);
+
+        &::before {
+          position: absolute;
+          inset: -6px;
+          content: "";
+        }
+
+        &:active:not([aria-pressed="true"]) {
+          color: var(--text-primary);
+        }
+
+        &[aria-pressed="true"] {
+          color: var(--text-on-accent);
+          background: var(--accent);
+          box-shadow: none;
+        }
+      }
+
+      .count {
+        color: var(--text-quaternary);
+        font-variant-numeric: tabular-nums;
+      }
+
+      @media (hover: hover) and (pointer: fine) {
+        .chip:hover:not(:disabled) {
+          color: var(--text-primary);
+        }
+
+        .action:hover:not(:disabled) {
+          background: var(--background-hover);
+        }
+
+        .icon-button:hover:not(:disabled, [aria-pressed="true"]) {
+          color: var(--text-primary);
+          background: var(--background-hover);
+        }
+
+        .tool-button:hover:not(:disabled) {
+          color: var(--text-primary);
+          background: var(--background-tertiary);
+        }
+
+        .tool-button[aria-pressed="true"]:hover:not(:disabled) {
+          background: var(--background-hover);
+        }
+
+        .pick:hover:not([aria-pressed="true"]) {
+          color: var(--text-primary);
+        }
+      }
+      /* kit:controls end */
+
+      /* kit:inputs */
+      .input {
+        width: 100%;
+        min-width: 0;
+        height: 28px;
+        padding: 0 10px;
+        font-size: 13px;
+        color: var(--text-primary);
+        background: var(--background-tertiary);
+        border-radius: var(--radius-control);
+
+        &::placeholder {
+          color: var(--text-quaternary);
+        }
+
+        &:focus-visible {
+          outline-offset: 0;
+          border-radius: var(--radius-control);
+        }
+      }
+
+      textarea.input {
+        height: auto;
+        min-height: 72px;
+        padding: 8px 10px;
+        resize: vertical;
+      }
+
+      .search {
+        display: flex;
+        gap: 6px;
+        align-items: center;
+        min-width: 0;
+        height: 28px;
+        padding: 0 10px;
+        color: var(--text-quaternary);
+        background: var(--background-tertiary);
+        border-radius: var(--radius-control);
+
+        svg {
+          flex: none;
+        }
+
+        input {
+          flex: 1;
+          min-width: 0;
+          height: 100%;
+          font-size: 13px;
+          color: var(--text-primary);
+          background: none;
+          outline: none;
+
+          &::placeholder {
+            color: var(--text-quaternary);
+          }
+
+          &::-webkit-search-cancel-button {
+            appearance: none;
+          }
+        }
+
+        &:has(input:focus-visible) {
+          outline: 2px solid var(--accent);
+        }
+      }
+
+      .field {
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+      }
+
+      .field-label {
+        color: var(--text-tertiary);
+      }
+
+      .range {
+        display: inline-flex;
+        gap: 10px;
+        align-items: center;
+        height: 28px;
+        padding: 0 12px;
+        font-size: 13px;
+        font-variation-settings: var(--font-weight-500);
+        color: var(--text-tertiary);
+        white-space: nowrap;
+        background: var(--background-tertiary);
+        border-radius: var(--radius-control);
+
+        output {
+          min-width: 4ch;
+          color: var(--text-primary);
+          font-variant-numeric: tabular-nums;
+          text-align: right;
+        }
+
+        input {
+          --fill: 50%;
+          width: 88px;
+          height: 28px;
+          cursor: pointer;
+          appearance: none;
+          background: none;
+          outline: none;
+
+          &::-webkit-slider-runnable-track {
+            height: 4px;
+            background: linear-gradient(to right, var(--accent) var(--fill), var(--border-secondary) var(--fill));
+            border-radius: 999px;
+          }
+
+          &::-moz-range-track {
+            height: 4px;
+            background: linear-gradient(to right, var(--accent) var(--fill), var(--border-secondary) var(--fill));
+            border-radius: 999px;
+          }
+
+          &::-webkit-slider-thumb {
+            width: 14px;
+            height: 14px;
+            margin-top: -5px;
+            appearance: none;
+            background: var(--background-control);
+            border-radius: 999px;
+            box-shadow: var(--shadow-default);
+          }
+
+          &::-moz-range-thumb {
+            width: 14px;
+            height: 14px;
+            background: var(--background-control);
+            border: 0;
+            border-radius: 999px;
+            box-shadow: var(--shadow-default);
+          }
+        }
+
+        &:has(input:focus-visible) {
+          outline: 2px solid var(--accent);
+          outline-offset: 2px;
+        }
+      }
+
+      .segmented {
+        display: inline-flex;
+        padding: 2px;
+        background: var(--background-tertiary);
+        border-radius: 10px;
+
+        button {
+          height: 24px;
+          padding: 0 10px;
+          font-size: 13px;
+          font-variation-settings: var(--font-weight-500);
+          color: var(--text-tertiary);
+          white-space: nowrap;
+          border-radius: 8px;
+
+          &:active {
+            color: var(--text-primary);
+          }
+
+          &[aria-pressed="true"] {
+            color: var(--text-primary);
+            background: var(--background-control);
+            box-shadow: var(--shadow-default);
+          }
+        }
+      }
+
+      @media (width <= 640px) {
+        .input,
+        .search input {
+          font-size: 16px;
+        }
+      }
+
+      @media (hover: hover) and (pointer: fine) {
+        .segmented button:hover {
+          color: var(--text-primary);
+        }
+      }
+      /* kit:inputs end */
+
+      /* kit:select */
+      .select {
+        display: inline-flex;
+        gap: 6px;
+        align-items: center;
+        min-width: 0;
+        max-width: 280px;
+        height: 28px;
+        padding: 0 28px 0 12px;
+        font-size: 13px;
+        font-variation-settings: var(--font-weight-500);
+        color: var(--text-primary);
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        cursor: pointer;
+        appearance: none;
+        background: var(--background-tertiary) no-repeat right 11px center / 10px
+          url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 10 10' fill='none' stroke='%236b6b6b' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M2.5 4l2.5 2.5L7.5 4'/%3E%3C/svg%3E");
+        border-radius: var(--radius-control);
+
+        &:active {
+          background-color: var(--background-hover);
+        }
+      }
+
+      @supports (appearance: base-select) {
+        .select,
+        .select::picker(select) {
+          appearance: base-select;
+        }
+
+        .select {
+          padding-right: 12px;
+          background-image: none;
+
+          &::picker-icon {
+            width: 10px;
+            height: 10px;
+            content: "";
+            background: var(--text-quaternary);
+            mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 10 10' fill='none' stroke='black' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M2.5 4l2.5 2.5L7.5 4'/%3E%3C/svg%3E");
+            transition: rotate var(--duration-snappy) var(--ease-out);
+          }
+
+          &:open::picker-icon {
+            rotate: 180deg;
+          }
+
+          selectedcontent {
+            overflow: hidden;
+            text-overflow: ellipsis;
+          }
+
+          &::picker(select) {
+            min-width: anchor-size(width);
+            max-height: min(400px, 60dvh);
+            scrollbar-width: none;
+            padding: 4px;
+            margin-block: 8px;
+            background: var(--background-raised);
+            border: 1px solid transparent;
+            border-radius: var(--radius-menu);
+            box-shadow: var(--shadow-large);
+            opacity: 0;
+            mask-image:
+              linear-gradient(to bottom, transparent, black var(--fade-start), black calc(100% - var(--fade-end)), transparent),
+              linear-gradient(black, black),
+              linear-gradient(black, black);
+            mask-clip: border-box, border-box, no-clip;
+            mask-size: 100% 100%, 100% 100%, calc(100% + 128px) calc(100% + 128px);
+            mask-position: 0 0, 0 0, -64px -64px;
+            mask-repeat: no-repeat;
+            mask-composite: add, exclude;
+            animation: scroll-fade linear both;
+            animation-timeline: scroll(self);
+            transition:
+              opacity var(--duration-exit) var(--ease-out),
+              display var(--duration-exit) allow-discrete,
+              overlay var(--duration-exit) allow-discrete;
+          }
+
+          &:open::picker(select) {
+            opacity: 1;
+            transition-duration: var(--duration-snappy);
+
+            @starting-style {
+              opacity: 0;
+            }
+          }
+        }
+
+        .select option {
+          display: flex;
+          gap: 6px;
+          align-items: center;
+          height: 28px;
+          padding: 0 8px;
+          font-size: 13px;
+          font-variation-settings: var(--font-weight-500);
+          color: var(--text-tertiary);
+          white-space: nowrap;
+          cursor: pointer;
+          border-radius: var(--radius-control);
+
+          &:active {
+            color: var(--text-primary);
+            background: var(--fill-hover);
+          }
+
+          &:focus-visible {
+            color: var(--text-primary);
+            background: var(--background-tertiary);
+            outline: none;
+          }
+
+          &:checked {
+            color: var(--text-primary);
+          }
+
+          &::checkmark {
+            order: 1;
+            margin-left: auto;
+            padding-left: 16px;
+            color: var(--accent);
+          }
+        }
+      }
+
+      @media (width <= 640px) {
+        .select {
+          font-size: 16px;
+        }
+      }
+
+      @media (hover: hover) and (pointer: fine) {
+        .select:hover {
+          background-color: var(--background-hover);
+        }
+
+        .select option:hover {
+          color: var(--text-primary);
+          background: var(--fill-hover);
+        }
+      }
+      /* kit:select end */
+
+      /* kit:overlays */
+      .toast {
+        position: fixed;
+        inset: auto;
+        display: inline-flex;
+        align-items: center;
+        height: 32px;
+        padding: 0 12px;
+        margin: 0;
+        overflow: visible;
+        font-size: 13px;
+        font-variation-settings: var(--font-weight-500);
+        color: var(--text-primary);
+        white-space: nowrap;
+        pointer-events: none;
+        background: var(--background-raised);
+        border: 1px solid transparent;
+        border-radius: 10px;
+        box-shadow: var(--shadow-large);
+        opacity: 0;
+        translate: -50% 4px;
+        scale: 0.97;
+        transform-origin: bottom center;
+        transition:
+          opacity var(--duration-exit) var(--ease-out),
+          translate var(--duration-exit) var(--ease-out),
+          scale var(--duration-exit) var(--ease-out);
+
+        &[data-side="below"] {
+          translate: -50% -4px;
+          transform-origin: top center;
+        }
+
+        &[data-open] {
+          opacity: 1;
+          translate: -50% 0;
+          scale: 1;
+          transition-duration: var(--duration-snappy);
+        }
+
+        &:has(button) {
+          gap: 12px;
+          padding-right: 4px;
+          pointer-events: auto;
+        }
+
+        button {
+          height: 24px;
+          padding: 0 8px;
+          color: var(--accent);
+          border-radius: 6px;
+
+          &:active {
+            background: var(--background-hover);
+          }
+        }
+      }
+
+      .tip {
+        position: fixed;
+        inset: auto;
+        display: inline-flex;
+        gap: 6px;
+        align-items: center;
+        height: 24px;
+        padding: 0 8px;
+        margin: 0;
+        overflow: visible;
+        font-size: 12px;
+        font-variation-settings: var(--font-weight-500);
+        color: var(--text-primary);
+        white-space: nowrap;
+        pointer-events: none;
+        background: var(--background-raised);
+        border: 1px solid transparent;
+        border-radius: var(--radius-control);
+        box-shadow: var(--shadow-large);
+        translate: -50% 0;
+        transition:
+          opacity 125ms var(--ease-out),
+          translate 125ms var(--ease-out);
+
+        @starting-style {
+          opacity: 0;
+          translate: -50% 4px;
+        }
+
+        &[data-side="below"] {
+          @starting-style {
+            translate: -50% -4px;
+          }
+        }
+
+        &[data-instant] {
+          transition: none;
+        }
+
+        kbd {
+          font: inherit;
+          color: var(--text-tertiary);
+        }
+      }
+
+      @media (hover: hover) and (pointer: fine) {
+        .toast button:hover {
+          background: var(--background-hover);
+        }
+      }
+      /* kit:overlays end */
+
+      /* kit:section */
+      .section-head {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 4px 12px;
+        align-items: baseline;
+        margin-bottom: 20px;
+
+        .count {
+          margin-left: auto;
+        }
+      }
+
+      .section-title {
+        font-variation-settings: var(--font-weight-500);
+      }
+
+      .section-description {
+        color: var(--text-tertiary);
+      }
+
+      .rows > * + * {
+        border-top: 1px solid var(--border-primary);
+      }
+
+      .empty {
+        padding: 64px 0;
+        color: var(--text-tertiary);
+        text-align: center;
+      }
+      /* kit:section end */
+
+      .page {
+        width: min(768px, 100% - var(--inset) * 2);
+        margin: 0 auto;
+        padding: 96px 0 128px;
+
+        @media (width <= 640px) {
+          --inset: 24px;
+          padding-top: 64px;
+        }
+      }
+
+      .bar {
+        margin-top: 48px;
+      }
+
+      .controls,
+      .tools {
+        display: flex;
+        gap: 8px;
+        align-items: center;
+        min-width: 0;
+      }
+
+      .tools {
+        margin-left: auto;
+      }
+
+      .range {
+        opacity: 1;
+        transition:
+          opacity var(--duration-snappy) var(--ease-out),
+          display var(--duration-snappy) allow-discrete;
+
+        @starting-style {
+          opacity: 0;
+        }
+
+        &[hidden] {
+          display: none;
+          opacity: 0;
+        }
+      }
+
+      .stage {
+        --frame-width: calc((100% - var(--gap)) / 2);
+        --frame-ratio: 4 / 3;
+        --wipe: 50%;
+        --opacity: 0.5;
+        display: grid;
+        grid-template-columns: repeat(2, var(--frame-width));
+        gap: var(--gap);
+        justify-content: center;
+        margin-top: 32px;
+        isolation: isolate;
+
+        &:not([data-mode="side"]) {
+          grid-template-columns: var(--frame-width);
+
+          #pane-reference,
+          #pane-rebuild {
+            grid-area: 1 / 1;
+          }
+
+          #pane-reference {
+            pointer-events: none;
+
+            .frame {
+              pointer-events: auto;
+            }
+          }
+
+          #pane-rebuild .caption {
+            margin-left: auto;
+          }
+
+          .caption {
+            max-width: calc(50% - 8px);
+          }
+        }
+      }
+
+      .pane {
+        display: grid;
+        grid-template-rows: auto auto;
+        gap: 8px;
+        min-width: 0;
+      }
+
+      #pane-reference {
+        grid-column: 1;
+        grid-row: 1;
+      }
+
+      #pane-rebuild {
+        grid-column: 2;
+        grid-row: 1;
+      }
+
+      .caption {
+        width: fit-content;
+        max-width: 100%;
+        overflow: hidden;
+        font-size: 13px;
+        color: var(--text-tertiary);
+        text-overflow: ellipsis;
+        white-space: nowrap;
+      }
+
+      .frame {
+        position: relative;
+        grid-area: 2 / 1;
+        width: 100%;
+        aspect-ratio: var(--frame-ratio);
+        overflow: hidden;
+        cursor: zoom-in;
+        touch-action: none;
+        user-select: none;
+        background: var(--background-tertiary);
+        border-radius: 10px;
+        transition: opacity var(--duration-snappy) var(--ease-out);
+
+        &::after {
+          position: absolute;
+          inset: 0;
+          pointer-events: none;
+          content: "";
+          border-radius: inherit;
+          box-shadow: inset 0 0 0 1px var(--border-primary);
+        }
+
+        .stage[data-zoomed] & {
+          cursor: zoom-out;
+        }
+
+        .stage[data-panning] & {
+          cursor: grabbing;
+        }
+      }
+
+      .canvas {
+        transform-origin: 0 0;
+        transition: transform 240ms var(--ease-in-out);
+
+        .stage[data-panning] & {
+          transition: none;
+        }
+
+        img {
+          width: 100%;
+          height: auto;
+          -webkit-user-drag: none;
+
+          .stage[data-zoomed] & {
+            image-rendering: pixelated;
+          }
+        }
+      }
+
+      @media (prefers-reduced-motion: no-preference) {
+        .canvas img {
+          transition: opacity 0.6s var(--ease-out);
+
+          &:not([data-loaded]) {
+            opacity: 0;
+          }
+        }
+      }
+
+      #pane-reference .frame {
+        .stage[data-mode="slider"] & {
+          clip-path: inset(0 calc(100% - var(--wipe)) 0 0);
+        }
+
+        .stage[data-mode="overlay"] & {
+          opacity: var(--opacity);
+        }
+
+        .stage[data-mode="difference"] & {
+          mix-blend-mode: difference;
+        }
+      }
+
+      .handle {
+        position: relative;
+        grid-area: 2 / 1;
+        left: var(--wipe);
+        display: grid;
+        place-items: center;
+        width: 24px;
+        cursor: ew-resize;
+        touch-action: none;
+        visibility: hidden;
+        opacity: 0;
+        translate: -50% 0;
+        pointer-events: none;
+        transition:
+          opacity var(--duration-snappy) var(--ease-out),
+          visibility var(--duration-snappy);
+
+        &::before {
+          position: absolute;
+          inset: 0 auto 0 50%;
+          width: 1px;
+          content: "";
+          background: var(--accent);
+        }
+
+        .stage[data-mode="slider"] & {
+          visibility: visible;
+          opacity: 1;
+          pointer-events: auto;
+        }
+
+        &:focus-visible {
+          outline: none;
+
+          .grip {
+            outline: 2px solid var(--accent);
+            outline-offset: 2px;
+          }
+        }
+      }
+
+      :root[data-instant] :is(.canvas, .frame, .handle, .range) {
+        transition: none;
+      }
+
+      .grip {
+        position: relative;
+        display: grid;
+        place-items: center;
+        width: 28px;
+        height: 28px;
+        color: var(--text-tertiary);
+        background: color-mix(in oklab, var(--background-primary) 82%, transparent);
+        border-radius: 999px;
+        box-shadow: var(--shadow-default);
+        backdrop-filter: blur(8px);
+
+        .handle:active &,
+        .stage[data-wiping] & {
+          color: var(--text-primary);
+        }
+      }
+
+      .section {
+        margin-top: 64px;
+      }
+
+      .values {
+        display: grid;
+        grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr) minmax(0, 1fr) auto;
+        column-gap: 16px;
+      }
+
+      .row {
+        display: grid;
+        grid-column: 1 / -1;
+        grid-template-columns: subgrid;
+        padding: 6px 0;
+
+        > * {
+          overflow-wrap: anywhere;
+        }
+
+        & + & {
+          border-top: 1px solid var(--border-primary);
+        }
+      }
+
+      .row-head > * {
+        font-size: 13px;
+        color: var(--text-quaternary);
+      }
+
+      .property {
+        color: var(--text-tertiary);
+      }
+
+      .status {
+        display: flex;
+        gap: 6px;
+        align-items: baseline;
+        justify-content: flex-end;
+        color: var(--text-tertiary);
+        white-space: nowrap;
+
+        &[data-status="Differs"] {
+          color: var(--text-primary);
+
+          &::before {
+            flex: none;
+            width: 6px;
+            height: 6px;
+            content: "";
+            background: var(--text-primary);
+            border-radius: 999px;
+            translate: 0 -1px;
+          }
+        }
+
+        &[data-status="Not Verified"] {
+          color: var(--text-quaternary);
+        }
+      }
+
+      .row-head .status {
+        color: var(--text-quaternary);
+      }
+
+      .differences {
+        counter-reset: difference;
+
+        li {
+          display: flex;
+          gap: 12px;
+          padding: 6px 0;
+          counter-increment: difference;
+
+          &::before {
+            flex: none;
+            min-width: 2ch;
+            color: var(--text-quaternary);
+            font-variant-numeric: tabular-nums;
+            content: counter(difference);
+          }
+
+          & + li {
+            border-top: 1px solid var(--border-primary);
+          }
+        }
+      }
+
+      @media (hover: hover) and (pointer: fine) {
+        .handle:hover .grip {
+          color: var(--text-primary);
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="page">
+      <header class="head">
+        <h1 class="title" id="title"></h1>
+        <p class="brief" id="brief"></p>
+      </header>
+
+      <nav class="bar" id="bar" aria-label="Compare">
+        <div class="controls">
+          <select class="select" id="state" aria-label="State" title="State (← →)"></select>
+          <select class="select" id="mode" aria-label="Mode" title="Mode (1–4)">
+            <option value="side">Side by Side</option>
+            <option value="slider">Slider</option>
+            <option value="overlay">Overlay</option>
+            <option value="difference">Difference</option>
+          </select>
+        </div>
+        <div class="tools">
+          <label class="range" id="opacity-control" title="Reference Opacity" hidden>
+            <input id="opacity" type="range" min="0" max="100" step="1" value="50" aria-label="Reference Opacity" />
+            <output id="opacity-value"></output>
+          </label>
+          <button class="chip" id="zoom" type="button" aria-pressed="false" title="Actual Pixels (Z)" aria-keyshortcuts="Z">Actual Pixels</button>
+          <button class="action" id="copy" type="button" title="Copy Differences (⇧C)" aria-keyshortcuts="Shift+C">Copy Differences</button>
+        </div>
+      </nav>
+
+      <main>
+        <div class="stage" id="stage" data-mode="side">
+          <figure class="pane" id="pane-rebuild">
+            <figcaption class="caption" id="caption-rebuild"></figcaption>
+            <div class="frame"><div class="canvas"><img id="image-rebuild" alt="" draggable="false" /></div></div>
+          </figure>
+          <figure class="pane" id="pane-reference">
+            <figcaption class="caption" id="caption-reference"></figcaption>
+            <div class="frame"><div class="canvas"><img id="image-reference" alt="" draggable="false" /></div></div>
+            <div class="handle" id="handle" role="slider" tabindex="0" aria-label="Wipe" aria-valuemin="0" aria-valuemax="100">
+              <span class="grip">
+                <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5.5 4.5L2 8l3.5 3.5M10.5 4.5L14 8l-3.5 3.5" /></svg>
+              </span>
+            </div>
+          </figure>
+        </div>
+
+        <section class="section" id="values-section">
+          <header class="section-head">
+            <h2 class="section-title">Values</h2>
+          </header>
+          <div class="values" id="values" role="table" aria-label="Values"></div>
+        </section>
+
+        <section class="section">
+          <header class="section-head">
+            <h2 class="section-title">Differences</h2>
+          </header>
+          <ol class="differences" id="differences"></ol>
+        </section>
+      </main>
+    </div>
+
+    <script src="compare.js"></script>
+    <script>
+      // kit:h
+      const $ = (id) => document.getElementById(id);
+
+      function h(tag, props = {}, ...children) {
+        const node = document.createElement(tag);
+        for (const [key, value] of Object.entries(props)) {
+          if (key === "html") node.innerHTML = value;
+          else if (key.startsWith("on")) node.addEventListener(key.slice(2), value);
+          else node.setAttribute(key, value);
+        }
+        node.append(...children.filter((child) => child != null));
+        return node;
+      }
+      // kit:h end
+
+      // kit:anchor
+      function anchorTo(popover, anchor) {
+        const rect = anchor.getBoundingClientRect();
+        const frame = (anchor.closest("[data-frame]") ?? anchor).getBoundingClientRect();
+        const half = popover.offsetWidth / 2;
+        const edge = document.documentElement.clientWidth - 8;
+        const below = frame.top < popover.offsetHeight + 16;
+        popover.style.left = `${Math.min(edge - half, Math.max(8 + half, rect.left + rect.width / 2))}px`;
+        popover.style.top = `${below ? frame.bottom + 8 : frame.top - 8 - popover.offsetHeight}px`;
+        popover.dataset.side = below ? "below" : "above";
+      }
+      // kit:anchor end
+
+      // kit:overlays
+      const toast = h("output", { class: "toast", popover: "manual" });
+      const tip = h("div", { class: "tip", popover: "manual", "aria-hidden": "true" });
+      document.body.append(toast, tip);
+
+      function hideToast() {
+        clearTimeout(toast.hide);
+        delete toast.dataset.open;
+        toast.hide = setTimeout(() => toast.hidePopover(), 200);
+      }
+
+      function showToast(anchor, message, action) {
+        clearTimeout(toast.hide);
+        hideTip();
+        delete toast.dataset.open;
+        if (!toast.matches(":popover-open")) toast.showPopover();
+        toast.replaceChildren(message, ...(action ? [action] : []));
+        anchorTo(toast, anchor);
+        toast.dataset.open = "";
+        toast.hide = setTimeout(hideToast, action ? 5000 : 1600);
+      }
+
+      async function copy(text, anchor) {
+        const tokens = Math.ceil(text.length / 4).toLocaleString();
+        const message = await navigator.clipboard.writeText(text).then(
+          () => `Copied · ~${tokens} tokens`,
+          () => "Copy Failed",
+        );
+        showToast(anchor, message);
+      }
+
+      let tipTimer;
+      let tipClosedAt = 0;
+
+      function showTip(button) {
+        clearTimeout(tipTimer);
+        const warm = tip.matches(":popover-open") || performance.now() - tipClosedAt < 300;
+        const open = () => {
+          const key = button.dataset.key;
+          tip.replaceChildren(button.dataset.tip || button.getAttribute("aria-label"), ...(key ? [h("kbd", {}, key)] : []));
+          tip.toggleAttribute("data-instant", warm);
+          if (!tip.matches(":popover-open")) tip.showPopover();
+          anchorTo(tip, button);
+        };
+        if (warm) open();
+        else tipTimer = setTimeout(open, 500);
+      }
+
+      function hideTip() {
+        clearTimeout(tipTimer);
+        if (!tip.matches(":popover-open")) return;
+        tipClosedAt = performance.now();
+        tip.hidePopover();
+      }
+
+      const tipped = (event) => event.target.closest?.("[data-tip]");
+      document.addEventListener("pointerover", (event) => {
+        const button = tipped(event);
+        if (button && event.pointerType === "mouse" && !button.contains(event.relatedTarget)) showTip(button);
+      });
+      document.addEventListener("pointerout", (event) => {
+        const button = tipped(event);
+        if (button && !button.contains(event.relatedTarget)) hideTip();
+      });
+      document.addEventListener("focusin", (event) => {
+        const button = tipped(event);
+        if (button?.matches(":focus-visible")) showTip(button);
+      });
+      document.addEventListener("focusout", (event) => tipped(event) && hideTip());
+      document.addEventListener("pointerdown", hideTip);
+      // kit:overlays end
+
+      // kit:bar
+      function stick(bar) {
+        const mark = () => bar.toggleAttribute("data-stuck", scrollY > 0 && bar.getBoundingClientRect().top <= 0);
+        addEventListener("scroll", mark, { passive: true });
+        mark();
+        new ResizeObserver(() => {
+          document.documentElement.style.setProperty("--bar-height", `${bar.offsetHeight + 8}px`);
+        }).observe(bar);
+      }
+      // kit:bar end
+
+      const compare = window.compare;
+      const external = `<svg width="12" height="12" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5.5 4.5h6v6M11.5 4.5l-7 7" /></svg>`;
+
+      const { reference, rebuild, scale } = compare;
+      const states = compare.states;
+      const modes = [...$("mode").options].map((option) => option.value);
+      const stage = $("stage");
+      const frames = [...stage.querySelectorAll(".frame")];
+      const canvases = [...stage.querySelectorAll(".canvas")];
+      const images = { reference: $("image-reference"), rebuild: $("image-rebuild") };
+      const motion = matchMedia("(prefers-reduced-motion: no-preference)");
+      const easeInOutQuart = "cubic-bezier(0.77, 0, 0.175, 1)";
+      const view = { zoom: 1, x: 0, y: 0 };
+      let frame = { width: 0, height: 0, natural: 0 };
+      let current = 0;
+      let mode = "side";
+
+      document.title = `${compare.title} · Match`;
+      $("title").textContent = compare.title;
+
+      function isUrl(value) {
+        return /^https?:\/\//.test(value);
+      }
+
+      const source = isUrl(reference.source)
+        ? h("a", { href: reference.source, target: "_blank", rel: "noreferrer", html: external })
+        : null;
+      source?.prepend(new URL(reference.source).host);
+      $("brief").append(
+        `${reference.label} on ${reference.platform} from `,
+        source ?? reference.source,
+        ", rebuilt in ",
+        h("code", {}, rebuild.file),
+      );
+      $("caption-reference").textContent = reference.label;
+      $("caption-rebuild").textContent = rebuild.label;
+
+      function instantly(change) {
+        document.documentElement.setAttribute("data-instant", "");
+        change();
+        stage.getBoundingClientRect();
+        document.documentElement.removeAttribute("data-instant");
+      }
+
+      const preloaded = states.map((state) => {
+        const pair = { reference: new Image(), rebuild: new Image() };
+        pair.reference.src = state.reference;
+        pair.rebuild.src = state.rebuild;
+        pair.ready = Promise.all([pair.reference.decode(), pair.rebuild.decode()]).catch(() => {});
+        return pair;
+      });
+
+      $("state").append(...states.map((state, index) => h("option", { value: index }, state.name)));
+      $("state").addEventListener("change", (event) => showState(Number(event.target.value)));
+
+      function showState(index) {
+        if (index < 0 || index >= states.length) return;
+        current = index;
+        const state = states[index];
+        $("state").value = String(index);
+        images.reference.src = state.reference;
+        images.rebuild.src = state.rebuild;
+        images.reference.alt = `${reference.label}, ${state.name}`;
+        images.rebuild.alt = `${rebuild.label}, ${state.name}`;
+        writeHash();
+        preloaded[index].ready.then(() => {
+          if (current !== index) return;
+          fit();
+          for (const image of Object.values(images)) image.setAttribute("data-loaded", "");
+        });
+      }
+
+      function fit() {
+        const image = preloaded[current].reference;
+        if (!image.naturalWidth) return;
+        const gap = parseFloat(getComputedStyle(stage).columnGap);
+        const width = Math.min(image.naturalWidth / scale, (stage.clientWidth - gap) / 2);
+        const next = { width, height: (width * image.naturalHeight) / image.naturalWidth, natural: image.naturalWidth };
+        const changed = next.width !== frame.width || next.natural !== frame.natural;
+        frame = next;
+        stage.style.setProperty("--frame-width", `${width}px`);
+        stage.style.setProperty("--frame-ratio", `${image.naturalWidth} / ${image.naturalHeight}`);
+        if (changed) zoomOut();
+      }
+
+      new ResizeObserver(fit).observe(stage);
+
+      function zoomFactor() {
+        const factor = frame.natural / frame.width;
+        return factor > 1.01 ? factor : 2;
+      }
+
+      function applyView() {
+        view.x = Math.min(0, Math.max(frame.width - frame.width * view.zoom, view.x));
+        view.y = Math.min(0, Math.max(frame.height - frame.height * view.zoom, view.y));
+        for (const canvas of canvases) {
+          canvas.style.transform = `translate(${view.x}px, ${view.y}px) scale(${view.zoom})`;
+        }
+        stage.toggleAttribute("data-zoomed", view.zoom > 1);
+        $("zoom").setAttribute("aria-pressed", String(view.zoom > 1));
+      }
+
+      function zoomIn(x, y) {
+        view.zoom = zoomFactor();
+        view.x = x - x * view.zoom;
+        view.y = y - y * view.zoom;
+        applyView();
+      }
+
+      function zoomOut() {
+        view.zoom = 1;
+        view.x = 0;
+        view.y = 0;
+        applyView();
+      }
+
+      function toggleZoom(x = frame.width / 2, y = frame.height / 2) {
+        if (view.zoom > 1) zoomOut();
+        else zoomIn(x, y);
+      }
+
+      function pan(x, y) {
+        view.x += x;
+        view.y += y;
+        applyView();
+      }
+
+      $("zoom").addEventListener("click", () => toggleZoom());
+
+      for (const target of frames) {
+        target.addEventListener("pointerdown", (event) => {
+          if (event.button !== 0) return;
+          const rect = target.getBoundingClientRect();
+          const start = { x: event.clientX, y: event.clientY, viewX: view.x, viewY: view.y, moved: false };
+          target.setPointerCapture(event.pointerId);
+
+          function move(event) {
+            const dx = event.clientX - start.x;
+            const dy = event.clientY - start.y;
+            if (!start.moved && Math.hypot(dx, dy) < 4) return;
+            start.moved = true;
+            if (view.zoom === 1) return;
+            stage.setAttribute("data-panning", "");
+            view.x = start.viewX + dx;
+            view.y = start.viewY + dy;
+            applyView();
+          }
+
+          function end(event) {
+            target.removeEventListener("pointermove", move);
+            target.removeEventListener("pointerup", end);
+            target.removeEventListener("pointercancel", end);
+            stage.removeAttribute("data-panning");
+            if (event.type === "pointerup" && !start.moved) {
+              toggleZoom(event.clientX - rect.left, event.clientY - rect.top);
+            }
+          }
+
+          target.addEventListener("pointermove", move);
+          target.addEventListener("pointerup", end);
+          target.addEventListener("pointercancel", end);
+        });
+      }
+
+      const handle = $("handle");
+
+      function setWipe(value) {
+        const percent = Math.round(Math.min(1, Math.max(0, value)) * 1000) / 10;
+        stage.style.setProperty("--wipe", `${percent}%`);
+        handle.setAttribute("aria-valuenow", String(Math.round(percent)));
+        handle.setAttribute("aria-valuetext", `${Math.round(percent)}% ${reference.label}`);
+        handle.wipe = percent / 100;
+      }
+
+      handle.addEventListener("pointerdown", (event) => {
+        if (event.button !== 0) return;
+        event.preventDefault();
+        handle.focus({ preventScroll: true });
+        const rect = handle.parentElement.querySelector(".frame").getBoundingClientRect();
+        handle.setPointerCapture(event.pointerId);
+        stage.setAttribute("data-wiping", "");
+        const move = (event) => setWipe((event.clientX - rect.left) / rect.width);
+
+        function end() {
+          handle.removeEventListener("pointermove", move);
+          handle.removeEventListener("pointerup", end);
+          handle.removeEventListener("pointercancel", end);
+          stage.removeAttribute("data-wiping");
+        }
+
+        handle.addEventListener("pointermove", move);
+        handle.addEventListener("pointerup", end);
+        handle.addEventListener("pointercancel", end);
+      });
+
+      handle.addEventListener("keydown", (event) => {
+        const steps = { ArrowLeft: -0.05, ArrowRight: 0.05, ArrowDown: -0.05, ArrowUp: 0.05 };
+        if (event.key in steps) setWipe(handle.wipe + steps[event.key]);
+        else if (event.key === "Home") setWipe(0);
+        else if (event.key === "End") setWipe(1);
+        else return;
+        event.preventDefault();
+        event.stopPropagation();
+      });
+
+      function setOpacity(value) {
+        stage.style.setProperty("--opacity", String(value / 100));
+        $("opacity").value = String(value);
+        $("opacity").style.setProperty("--fill", `${value}%`);
+        $("opacity-value").textContent = `${value}%`;
+      }
+
+      $("opacity").addEventListener("input", (event) => setOpacity(Number(event.target.value)));
+
+      function setMode(next, animate = true) {
+        if (!modes.includes(next) || next === mode) return;
+        const moving = animate && (mode === "side") !== (next === "side") && motion.matches;
+        const parts = [...stage.querySelectorAll(".caption, .frame, .handle")];
+        const before = moving ? parts.map((part) => part.getBoundingClientRect()) : [];
+        const focused = document.activeElement;
+        mode = next;
+        stage.dataset.mode = next;
+        $("mode").value = next;
+        $("opacity-control").hidden = next !== "overlay";
+        if ((next !== "slider" && handle.contains(focused)) || (next !== "overlay" && $("opacity-control").contains(focused))) {
+          $("mode").focus({ preventScroll: true });
+        }
+        writeHash();
+        if (!moving) return;
+        parts.forEach((part, index) => {
+          const after = part.getBoundingClientRect();
+          const x = before[index].left - after.left;
+          const y = before[index].top - after.top;
+          if (x === 0 && y === 0) return;
+          part.animate([{ translate: `${x}px ${y}px` }, { translate: "0 0" }], {
+            duration: 240,
+            easing: easeInOutQuart,
+            composite: "add",
+          });
+        });
+      }
+
+      $("mode").addEventListener("change", (event) => setMode(event.target.value));
+
+      if (compare.values?.length) {
+        const row = (cells, props = {}) =>
+          h("div", { class: "row", role: "row", ...props }, ...cells.map((cell) => h("span", { role: "cell", ...cell.props }, cell.text)));
+        $("values").append(
+          row(
+            [{ text: "Property" }, { text: reference.label }, { text: rebuild.label }, { text: "Status", props: { class: "status" } }],
+            { class: "row row-head" },
+          ),
+          ...compare.values.map((value) =>
+            row([
+              { text: value.property, props: { class: "property" } },
+              { text: value.reference },
+              { text: value.rebuild },
+              { text: value.status, props: { class: "status", "data-status": value.status } },
+            ]),
+          ),
+        );
+      } else {
+        $("values-section").hidden = true;
+      }
+
+      if (compare.differences?.length) {
+        $("differences").append(...compare.differences.map((line) => h("li", {}, line)));
+      } else {
+        $("differences").replaceWith(h("p", { class: "empty" }, "No Differences Left"));
+      }
+
+      stick($("bar"));
+
+      function differencesText() {
+        const values = compare.values ?? [];
+        const list = (status) =>
+          values
+            .filter((value) => value.status === status)
+            .map((value) => `- ${value.property}: reference "${value.reference}", rebuild "${value.rebuild}"`);
+        const differences = compare.differences ?? [];
+        const sections = [
+          [
+            `Differences left in ${compare.title}`,
+            `Reference: ${reference.label}, ${reference.source}, ${reference.platform}`,
+            `Rebuild: ${rebuild.label}, ${rebuild.file}`,
+          ].join("\n"),
+          differences.length ? differences.map((line, index) => `${index + 1}. ${line}`).join("\n") : "No differences left.",
+        ];
+        const differing = list("Differs");
+        const unverified = list("Not Verified");
+        if (differing.length) sections.push(["Values that differ:", ...differing].join("\n"));
+        if (unverified.length) sections.push(["Values not verified:", ...unverified].join("\n"));
+        return `${sections.join("\n\n")}\n`;
+      }
+
+      $("copy").addEventListener("click", () => copy(differencesText(), $("copy")));
+
+      const panning = { ArrowLeft: [1, 0], ArrowRight: [-1, 0], ArrowUp: [0, 1], ArrowDown: [0, -1] };
+
+      document.addEventListener("keydown", (event) => {
+        if (event.metaKey || event.ctrlKey || event.altKey) return;
+        if (event.target.closest("input, textarea, select, [contenteditable]")) return;
+        if (view.zoom > 1 && event.key in panning) {
+          const distance = event.shiftKey ? 160 : 40;
+          const [x, y] = panning[event.key];
+          instantly(() => pan(x * distance, y * distance));
+        } else if (event.shiftKey && event.code === "KeyC") copyDifferences();
+        else if (event.shiftKey) return;
+        else if (/^[1-4]$/.test(event.key)) instantly(() => setMode(modes[Number(event.key) - 1], false));
+        else if (event.key === "ArrowLeft") showState(current - 1);
+        else if (event.key === "ArrowRight") showState(current + 1);
+        else if (event.key.toLowerCase() === "z") instantly(() => toggleZoom());
+        else if (event.key === "Escape" && view.zoom > 1) instantly(zoomOut);
+        else return;
+        event.preventDefault();
+      });
+
+      function writeHash() {
+        const params = new URLSearchParams();
+        if (current > 0) params.set("state", states[current].name);
+        if (mode !== "side") params.set("mode", mode);
+        const hash = params.toString();
+        history.replaceState(null, "", hash ? `#${hash}` : location.pathname + location.search);
+      }
+
+      function readHash() {
+        const params = new URLSearchParams(location.hash.slice(1));
+        const index = states.findIndex((state) => state.name === params.get("state"));
+        showState(Math.max(0, index));
+        setMode(params.get("mode"), false);
+      }
+
+      setWipe(0.5);
+      setOpacity(50);
+      readHash();
+    </script>
+  </body>
+</html>

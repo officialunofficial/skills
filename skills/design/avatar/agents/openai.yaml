@@ -1,0 +1,5 @@
+interface:
+  display_name: "Avatar"
+  short_description: "Objects as living two-eyed characters"
+policy:
+  allow_implicit_invocation: false

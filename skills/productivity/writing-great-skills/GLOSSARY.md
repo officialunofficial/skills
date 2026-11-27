@@ -1,5 +1,13 @@
 # Glossary — Building Great Skills
 
+## Contents
+
+- Predictability
+- Invocation
+- Information Hierarchy
+- Steering
+- Pruning
+
 The domain model for what makes a skill great. A skill exists to squeeze determinism out of a stochastic system; the root virtue is **Predictability**, and every term below is a lever on it. This is the disclosed reference for [`writing-great-skills`](SKILL.md).
 
 The terms are grouped by axis: **Invocation** (how a skill is reached), **Information Hierarchy** (how its content is arranged), **Steering** (how the agent's runtime behaviour is shaped), and **Pruning** (how it is kept lean). Each **failure mode** sits beside the lever that cures it, tagged _failure mode_.

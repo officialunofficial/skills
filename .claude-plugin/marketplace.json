@@ -1,14 +1,25 @@
 {
   "name": "officialunofficial-skills",
-  "description": "Small, composable agent skills for real engineering.",
+  "description": "Agent skills from Official Unofficial: engineering, design, productivity and kit.",
   "owner": {
-    "name": "Official Unofficial, Inc."
+    "name": "Official Unofficial, Inc.",
+    "url": "https://github.com/officialunofficial"
   },
   "plugins": [
     {
       "name": "officialunofficial-skills",
       "source": ".",
-      "description": "Small, composable agent skills for real engineering."
+      "description": "Small, composable agent skills for real engineering and interface design.",
+      "category": "development",
+      "keywords": [
+        "engineering",
+        "design",
+        "tdd",
+        "code-review",
+        "animation",
+        "ui",
+        "kit"
+      ]
     }
   ]
 }

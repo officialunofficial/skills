@@ -1,0 +1,3 @@
+interface:
+  display_name: "Blank Page"
+  short_description: "Turn a one-line motion brief into a referenced, beat-by-beat prompt"

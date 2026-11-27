@@ -1,5 +1,15 @@
 # Fuzzing harnesses — scaffolding per stack
 
+## Contents
+
+- Rust — cargo-fuzz (libFuzzer)
+- Go — native testing fuzzing
+- JVM — Jazzer
+- Python — Atheris
+- C / C++ — libFuzzer or AFL++
+- JavaScript / TypeScript — fast-check (property-based)
+- Cross-cutting
+
 Reference for [`to-fuzz`](SKILL.md). Pick the tool that matches the project; if the repo already
 fuzzes with one, use that. Each target follows the same shape: decode the fuzzer's bytes into the
 entry point's input, then assert the oracle.

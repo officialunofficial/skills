@@ -1,0 +1,2509 @@
+<!doctype html>
+<!--
+  Icon sheet. Copy this file to .icons/<set>/index.html and write sheet.js beside it:
+
+  window.sheet = {
+    title: "Board Icons",
+    source: "skills/gather/board.html",
+    sizes: [16, 20, 24, 48],
+    icons: [
+      { name: "Bookmark", file: "skills/gather/board.html:1333", svg: "<svg viewBox=\"0 0 16 16\" ...>...</svg>" },
+      { name: "Search", file: "skills/gather/board.html:1406", svg: "<svg ...>...</svg>", new: true },
+      { name: "Pond", file: "skills/gather/board.html:1411", svg: "<svg ...>...</svg>", brand: true }
+    ]
+  };
+
+  Paste each icon's markup exactly as the project ships it. Names take Title Case. Mark drawn glyphs `new: true`
+  and logos `brand: true`. Brand marks are listed but never measured. `sizes` is optional.
+
+  The sheet measures every existing icon, derives the spec from the whole set and lints each icon against it.
+  An existing icon off the spec is an outlier, not a finding. New icons are also checked for the morph form.
+  The grid filters by view, style and size. Review shows Pixels, Weight and Morph. Clicking an icon opens a dialog
+  to inspect, customise, morph and copy prompts. Copy Spec writes icon-spec.md. Copy Findings lists what the new
+  icons miss. Icons pasted or dropped on the page are measured and linted for that session only.
+-->
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#ffffff" media="(prefers-color-scheme: light)" />
+    <meta name="theme-color" content="#080808" media="(prefers-color-scheme: dark)" />
+    <title>Icons</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400..600&display=swap"
+    />
+    <style>
+      :root {
+        /* kit:tokens */
+        --gray-1: light-dark(#ffffff, #080808);
+        --gray-2: light-dark(#fafafa, #111111);
+        --gray-3: light-dark(#f2f2f2, #1a1a1a);
+        --gray-4: light-dark(#ebebeb, #222222);
+        --gray-5: light-dark(#e3e3e3, #2a2a2a);
+        --gray-10: light-dark(#6b6b6b, #8f8f8f);
+        --gray-11: light-dark(#575757, #b4b4b4);
+        --gray-12: light-dark(#080808, #ffffff);
+        --blue: #02bbff;
+        --red: light-dark(#d93036, #ff6369);
+        --green: light-dark(#2b9a66, #3dd68c);
+        --accent: var(--blue);
+        --danger: var(--red);
+        --success: var(--green);
+        --text-primary: var(--gray-12);
+        --text-secondary: color-mix(in oklab, var(--gray-12) 80%, var(--gray-11));
+        --text-tertiary: var(--gray-11);
+        --text-quaternary: var(--gray-10);
+        --text-on-accent: light-dark(#ffffff, #080808);
+        --border-primary: color-mix(in oklab, var(--gray-12) 7%, transparent);
+        --border-secondary: color-mix(in oklab, var(--gray-12) 12%, transparent);
+        --background-primary: var(--gray-1);
+        --background-secondary: var(--gray-2);
+        --background-tertiary: light-dark(rgb(8 8 8 / 5%), rgb(255 255 255 / 8%));
+        --background-hover: light-dark(rgb(8 8 8 / 8%), rgb(255 255 255 / 13%));
+        --background-raised: light-dark(#ffffff, #1a1a1a);
+        --background-control: light-dark(#ffffff, #222222);
+        --background-overlay: light-dark(#ffffff, #111111);
+        --fill-hover: light-dark(rgb(8 8 8 / 4%), rgb(255 255 255 / 6%));
+        --shadow-border: 0 0 0 1px light-dark(rgb(0 0 0 / 7%), rgb(255 255 255 / 7%));
+        --shadow-default:
+          inset 0 0 0 0.5px light-dark(transparent, rgb(255 255 255 / 7%)),
+          0 0 0 0.5px light-dark(rgb(0 0 0 / 6%), transparent),
+          0 1px 1px -1px light-dark(rgb(0 0 0 / 10%), transparent),
+          0 1px 2px 0 light-dark(rgb(0 0 0 / 5%), transparent);
+        --shadow-large:
+          0 0 0 0.5px light-dark(oklab(0.802 0 0 / 0.297), transparent),
+          0 0 0 1px light-dark(transparent, oklab(0.463 0 0 / 0.303)),
+          0 2px 3px -2px light-dark(rgb(0 0 0 / 6.3%), rgb(0 0 0 / 15%)),
+          0 3px 12px -4px light-dark(rgb(0 0 0 / 10%), transparent),
+          0 4px 16px -8px light-dark(rgb(0 0 0 / 5%), transparent),
+          0 3px 8px -2px light-dark(transparent, rgb(0 0 0 / 40%)),
+          0 4px 12px -4px light-dark(transparent, rgb(0 0 0 / 50%));
+        --shadow-extra-large:
+          inset 0 0 0 0.5px light-dark(transparent, rgb(255 255 255 / 7%)),
+          0 0 0 0.5px light-dark(rgb(0 0 0 / 6%), transparent),
+          0 8px 40px 0 rgb(0 0 0 / 5%),
+          0 12px 32px -16px rgb(0 0 0 / 15%);
+        --font-sans: Inter, -apple-system, BlinkMacSystemFont, sans-serif;
+        --font-mono: ui-monospace, "SF Mono", Menlo, monospace;
+        --font-weight-400: "wght" 400, "opsz" 14;
+        --font-weight-500: "wght" 500, "opsz" 14;
+        --ease-out: cubic-bezier(0.23, 1, 0.32, 1);
+        --ease-in-out: cubic-bezier(0.77, 0, 0.175, 1);
+        --ease-drawer: cubic-bezier(0.32, 0.72, 0, 1);
+        --duration-snappy: 220ms;
+        --duration-exit: 160ms;
+        --radius-control: 8px;
+        --radius-menu: 12px;
+        --radius-panel: 16px;
+        /* kit:tokens end */
+      }
+
+      /* kit:page */
+      :root {
+        color-scheme: light dark;
+      }
+
+      *,
+      *::before,
+      *::after {
+        box-sizing: border-box;
+      }
+
+      * {
+        padding: 0;
+        margin: 0;
+        font: inherit;
+        font-variation-settings: inherit;
+        color: inherit;
+        text-decoration: none;
+        border: 0;
+      }
+
+      ol,
+      ul {
+        list-style: none;
+      }
+
+      img,
+      svg,
+      canvas,
+      video {
+        display: block;
+        max-width: 100%;
+      }
+
+      [hidden] {
+        display: none !important;
+      }
+
+      button {
+        cursor: pointer;
+        user-select: none;
+        background: none;
+      }
+
+      button,
+      a,
+      select {
+        touch-action: manipulation;
+      }
+
+      code {
+        font-family: var(--font-mono);
+        font-size: 0.9em;
+      }
+
+      html {
+        font-family: var(--font-sans);
+        font-size: 14px;
+        line-height: 20px;
+        font-variation-settings: var(--font-weight-400);
+        font-optical-sizing: none;
+        font-feature-settings: "calt", "ccmp", "locl", "kern", "cv01", "ss03";
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+        -webkit-tap-highlight-color: transparent;
+        color: var(--text-primary);
+        background: var(--background-primary);
+        scroll-padding-block-start: var(--bar-height, 72px);
+      }
+
+      * {
+        scrollbar-width: none;
+      }
+
+      ::-webkit-scrollbar {
+        display: none;
+      }
+
+      ::selection {
+        background: color-mix(in oklab, var(--accent) 28%, transparent);
+      }
+
+      :focus-visible {
+        outline: 2px solid var(--accent);
+        outline-offset: 2px;
+        border-radius: 4px;
+      }
+
+      h1,
+      h2,
+      h3 {
+        text-wrap: balance;
+      }
+
+      p {
+        text-wrap: pretty;
+      }
+
+      @media (width <= 640px) {
+        input:not([type="range"]),
+        textarea,
+        select {
+          font-size: 16px;
+        }
+      }
+
+      @media (prefers-reduced-motion: reduce) {
+        *,
+        *::before,
+        *::after,
+        ::backdrop {
+          transition-duration: 0s !important;
+          transition-delay: 0s !important;
+        }
+      }
+      /* kit:page end */
+
+      body { overflow: hidden; }
+      .quiet { color: var(--text-tertiary); }
+      .num { font-variant-numeric: tabular-nums; }
+
+      .button {
+        display: inline-flex; align-items: center; justify-content: center; gap: 6px;
+        height: 28px; padding: 0 12px; font-size: 13px; font-variation-settings: var(--font-weight-500); white-space: nowrap;
+        color: var(--text-primary); background: var(--background-control); border: 1px solid transparent; border-radius: var(--radius-control);
+        box-shadow: var(--shadow-default); transition: background-color 120ms var(--ease-out);
+      }
+      .button:hover, .button:active { background: color-mix(in oklab, var(--gray-12) 3%, var(--background-control)); }
+      .icon-button { display: grid; place-items: center; width: 28px; height: 28px; border-radius: var(--radius-control); color: var(--text-tertiary); transition: background-color 120ms var(--ease-out), color 120ms var(--ease-out); }
+      .icon-button:hover, .icon-button[aria-pressed="true"] { color: var(--text-primary); background: var(--background-tertiary); }
+
+      /* App shell */
+      .app { position: relative; display: grid; grid-template-columns: 208px 1fr; height: 100vh; overflow: hidden; }
+      .sidebar { display: flex; flex-direction: column; gap: 18px; min-height: 0; padding: 12px 10px 12px 12px; }
+      .brand { display: flex; align-items: center; gap: 8px; height: 28px; padding: 0 8px; font-variation-settings: var(--font-weight-500); }
+      .side-label { padding: 0 8px; margin-bottom: 4px; font-size: 13px; color: var(--text-quaternary); }
+      .nav { display: grid; gap: 1px; }
+      .nav button { display: flex; align-items: center; gap: 8px; height: 28px; padding: 0 8px; border-radius: var(--radius-control); color: var(--text-tertiary); text-align: left; transition: background-color 120ms var(--ease-out), color 120ms var(--ease-out); }
+      .nav button:hover { color: var(--text-primary); }
+      .nav button[aria-pressed="true"] { color: var(--text-primary); background: var(--background-tertiary); font-variation-settings: var(--font-weight-500); }
+      .nav .count { margin-left: auto; font-size: 13px; color: var(--text-quaternary); font-variant-numeric: tabular-nums; font-variation-settings: var(--font-weight-400); }
+      .nav .dot { width: 5px; height: 5px; margin-left: auto; border-radius: 50%; background: var(--danger); }
+
+      .main { position: relative; display: grid; grid-template-rows: auto auto 1fr; min-width: 0; min-height: 0; padding: 12px 12px 0 2px; }
+      .topbar { display: flex; align-items: center; gap: 8px; }
+      .search { position: relative; flex: 1; display: flex; align-items: center; gap: 8px; height: 28px; padding: 0 5px 0 9px; background: var(--background-control); border: 1px solid transparent; border-radius: var(--radius-control); box-shadow: var(--shadow-default); color: var(--text-quaternary); }
+      .search input { flex: 1; min-width: 0; height: 100%; background: none; outline: none; color: var(--text-primary); }
+      .search input::placeholder { color: var(--text-quaternary); }
+      .search:has(input:focus-visible) { outline: 2px solid var(--accent); outline-offset: 1px; }
+      .kbd { display: grid; place-items: center; min-width: 18px; height: 18px; padding: 0 4px; font-family: var(--font-mono); font-size: 11px; color: var(--text-quaternary); border-radius: 5px; box-shadow: inset 0 0 0 1px var(--border-secondary); }
+      .crumbs { display: flex; gap: 6px; padding: 16px 2px 10px; font-size: 13px; color: var(--text-quaternary); }
+      .crumbs span:last-child { color: var(--text-primary); }
+      .content { min-height: 0; overflow: auto; padding: 2px 2px 120px; scrollbar-width: thin; }
+
+      /* Tiles */
+      .tiles { display: grid; grid-template-columns: repeat(auto-fill, minmax(76px, 1fr)); gap: 8px; }
+      .surface { --ink: #080808; --ink-quiet: #6b6b6b; --line: rgb(0 0 0 / 0.07); --raised: #ffffff; color: var(--ink); background: #ffffff; }
+      .surface[data-theme="dark"] { --ink: #ffffff; --ink-quiet: #8f8f8f; --line: rgb(255 255 255 / 0.08); --raised: #1a1a1a; background: #080808; }
+      .tile {
+        position: relative; display: grid; place-items: center; aspect-ratio: 1; border-radius: 12px;
+        box-shadow: 0 0 0 1px var(--line);
+        transition: box-shadow 150ms var(--ease-out), background-color 200ms var(--ease-out), color 200ms var(--ease-out);
+      }
+      .tile:hover { box-shadow: 0 0 0 1px color-mix(in oklab, var(--ink) 16%, transparent); }
+      .tile[aria-expanded="true"] { box-shadow: 0 0 0 2px var(--accent); }
+      .badge { position: absolute; top: 5px; right: 5px; display: inline-flex; align-items: center; height: 16px; padding: 0 5px; font-size: 11px; font-variation-settings: var(--font-weight-500); border-radius: 5px; color: var(--accent); background: color-mix(in oklab, var(--accent) 12%, transparent); }
+      .badge[data-status="Fails"], .badge[data-status="Outlier"] { color: var(--danger); background: color-mix(in oklab, var(--danger) 12%, transparent); }
+      .tile-name { position: absolute; bottom: 6px; left: 4px; right: 4px; overflow: hidden; font-size: 11px; line-height: 14px; white-space: nowrap; text-overflow: ellipsis; text-align: center; color: var(--ink-quiet); opacity: 0; transition: opacity 150ms var(--ease-out); }
+      .tile:hover .tile-name, .tile:focus-visible .tile-name { opacity: 1; }
+      .empty { padding: 48px 0; text-align: center; color: var(--text-tertiary); }
+
+      /* Spec view */
+      .spec-view { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; max-width: 920px; }
+      .card { background: var(--background-raised); border-radius: 12px; box-shadow: var(--shadow-large); }
+      .spec-view .card { padding: 16px 18px; }
+      .card-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; font-variation-settings: var(--font-weight-500); }
+      .rows { display: grid; padding: 2px 14px; background: var(--background-tertiary); border-radius: 10px; }
+      .kv { display: flex; align-items: baseline; justify-content: space-between; gap: 24px; padding: 8px 0; }
+      .kv + .kv { box-shadow: 0 -1px 0 var(--border-primary); }
+      .kv > :last-child { text-align: right; }
+      .findings { display: grid; list-style: none; }
+      .finding { display: grid; grid-template-columns: auto 1fr; gap: 10px; padding: 8px 0; align-items: baseline; }
+      .finding + .finding { box-shadow: 0 -1px 0 var(--border-primary); }
+      .finding code { color: var(--text-quaternary); font-size: 11px; }
+      .mark { width: 5px; height: 5px; border-radius: 50%; background: var(--danger); translate: 0 -2px; }
+      .none { color: var(--text-tertiary); }
+
+      /* Inspector */
+      .insp { display: grid; gap: 10px; min-height: 0; }
+      .insp[data-layout="row"] { grid-template-columns: 1fr 340px; }
+      .insp[data-layout="stack"] { grid-template-rows: auto 1fr; }
+      .stage { position: relative; display: grid; grid-template-rows: auto 1fr auto; min-height: 0; overflow: hidden; border-radius: 16px; transition: background-color 200ms var(--ease-out), color 200ms var(--ease-out); }
+      .stage[data-theme="light"] { background: #f2f2f2; }
+      .stage-top { display: flex; align-items: center; justify-content: space-between; padding: 10px; }
+      .stage-top .icon-button { color: var(--ink-quiet); }
+      .stage-top .icon-button:hover { color: var(--ink); background: color-mix(in oklab, var(--ink) 6%, transparent); }
+      .stage-count { font-size: 13px; color: var(--ink-quiet); font-variant-numeric: tabular-nums; }
+      .stage-view { position: relative; display: grid; place-items: center; padding: 0 24px 34px; }
+      .stage:has(.timeline:not([hidden])) .stage-view { padding-bottom: 0; }
+      .timeline {
+        display: flex; align-items: center; gap: 6px; height: 52px; margin: 0 10px 10px; padding: 0 8px;
+        font-size: 13px; color: var(--ink-quiet); background: var(--raised); border: 1px solid transparent; border-radius: 14px;
+        box-shadow: 0 0 0 1px var(--line), 0 1px 1px rgb(0 0 0 / 0.04), 0 2px 4px rgb(0 0 0 / 0.03), 0 4px 8px rgb(0 0 0 / 0.02);
+      }
+      .timeline[hidden] { display: none; }
+      .timeline .icon-button { flex: none; color: var(--ink); }
+      .timeline .icon-button:hover { background: color-mix(in oklab, var(--ink) 6%, transparent); }
+      .timeline .icon-button:disabled { color: var(--ink-quiet); background: none; cursor: default; }
+      .timeline .segmented { flex: none; background: color-mix(in oklab, var(--ink) 6%, transparent); }
+      .timeline .segmented button { height: 22px; padding: 0 8px; color: var(--ink-quiet); }
+      .timeline .segmented button[aria-pressed="true"] { color: var(--ink); background: var(--raised); box-shadow: 0 0 0 1px var(--line), 0 1px 2px rgb(0 0 0 / 0.06); }
+      .steps { flex: 1; display: flex; align-items: center; min-width: 0; padding: 6px 4px; overflow-x: auto; scrollbar-width: none; }
+      .step-wrap { position: relative; flex: none; }
+      .step { display: grid; place-items: center; width: 32px; height: 32px; color: var(--ink); background: var(--raised); border-radius: 8px; box-shadow: 0 0 0 1px var(--line); transition: box-shadow 150ms var(--ease-out); }
+      .step[data-current] { box-shadow: 0 0 0 1.5px var(--ink); }
+      .step-remove { position: absolute; top: -5px; right: -5px; display: grid; place-items: center; width: 16px; height: 16px; color: var(--raised); background: var(--ink); border-radius: 50%; opacity: 0; transition: opacity 120ms var(--ease-out); }
+      .step-remove::before { position: absolute; inset: -4px; content: ""; }
+      .step-remove svg { width: 10px; height: 10px; }
+      .step-wrap:hover .step-remove, .step:focus-visible + .step-remove { opacity: 1; }
+      @media (hover: none) { .step-remove { opacity: 1; } }
+      .step-link { position: relative; flex: 1 1 0; display: grid; align-items: center; min-width: 28px; max-width: 120px; height: 32px; padding: 0 4px; }
+      .step-line { position: relative; display: block; height: 2px; overflow: hidden; background: color-mix(in oklab, var(--ink) 14%, transparent); border-radius: 1px; }
+      .step-link[data-kind="fade"] .step-line { background: repeating-linear-gradient(90deg, color-mix(in oklab, var(--ink) 24%, transparent) 0 3px, transparent 3px 6px); }
+      .step-fill { position: absolute; inset: 0 auto 0 0; background: var(--ink); }
+      .step-kind { position: absolute; top: 50%; left: 50%; max-width: calc(100% - 8px); padding: 0 5px; overflow: hidden; translate: -50% -50%; font-size: 11px; line-height: 16px; white-space: nowrap; text-overflow: ellipsis; color: var(--ink-quiet); background: var(--raised); border-radius: 4px; }
+      .step-link[data-kind="spin"] .step-kind, .step-link[data-kind="drawn"] .step-kind { color: var(--ink); }
+      .step-link[aria-pressed="true"] .step-kind { box-shadow: 0 0 0 1px color-mix(in oklab, var(--ink) 24%, transparent); }
+      .picker {
+        position: absolute; right: 10px; bottom: 70px; z-index: 1; display: grid; grid-template-columns: repeat(6, 36px); gap: 4px;
+        max-height: 240px; padding: 8px; overflow: auto; color: var(--ink); background: var(--raised); border: 1px solid transparent; border-radius: 12px;
+        box-shadow: 0 0 0 1px var(--line), 0 4px 12px rgb(0 0 0 / 0.08), 0 12px 32px rgb(0 0 0 / 0.1);
+      }
+      .picker[hidden] { display: none; }
+      .picker-item { display: grid; place-items: center; width: 36px; height: 36px; color: var(--ink); border-radius: 8px; }
+      .picker-item:hover { background: color-mix(in oklab, var(--ink) 6%, transparent); }
+      .picker-item:disabled { opacity: 0.35; cursor: default; }
+      .transition { display: flex; align-items: center; justify-content: space-between; gap: 8px; width: 100%; font-size: 13px; text-align: left; }
+      .stage-glyph { position: relative; display: grid; width: var(--size); height: var(--size); }
+      .stage-glyph > * { grid-area: 1 / 1; width: var(--size) !important; height: var(--size) !important; }
+      .keylines { position: absolute; inset: 0; pointer-events: none; opacity: 0; transition: opacity 200ms var(--ease-out); }
+      .keylines[data-on] { opacity: 1; }
+      .panel { display: flex; flex-direction: column; gap: 14px; min-height: 0; overflow: hidden; padding: 16px; background: var(--background-raised); border-radius: 16px; box-shadow: var(--shadow-large); }
+      .panel-head { display: flex; align-items: center; gap: 8px; }
+      .panel-title { min-width: 0; overflow: hidden; font-variation-settings: var(--font-weight-500); white-space: nowrap; text-overflow: ellipsis; }
+      .panel-head .icon-button { margin: -6px -6px -6px auto; }
+      .chip { display: inline-flex; flex: none; align-items: center; height: 20px; white-space: nowrap; padding: 0 7px; font-size: 12px; font-variation-settings: var(--font-weight-500); border-radius: 6px; background: var(--background-tertiary); color: var(--text-tertiary); }
+      .chip[data-status="Fails"], .chip[data-status="Outlier"] { color: var(--danger); background: color-mix(in oklab, var(--danger) 12%, transparent); }
+      .chip[data-new] { color: var(--accent); background: color-mix(in oklab, var(--accent) 12%, transparent); }
+      .field { display: flex; align-items: center; justify-content: space-between; gap: 16px; min-height: 34px; }
+      .field-label { color: var(--text-tertiary); }
+      .segmented { display: inline-flex; padding: 2px; background: var(--background-tertiary); border-radius: 9px; }
+      .segmented button { height: 24px; padding: 0 10px; font-size: 13px; font-variation-settings: var(--font-weight-500); color: var(--text-tertiary); border-radius: 7px; transition: color 150ms var(--ease-out), background-color 150ms var(--ease-out), box-shadow 150ms var(--ease-out); }
+      .segmented button[aria-pressed="true"] { color: var(--text-primary); background: var(--background-raised); box-shadow: var(--shadow-default); }
+      .bars { display: grid; gap: 6px; }
+      .bar { position: relative; display: flex; justify-content: space-between; align-items: center; height: 36px; padding: 0 12px; overflow: hidden; border-radius: 10px; background: var(--background-tertiary); }
+      .bar-fill { position: absolute; inset: 0 auto 0 0; background: var(--background-tertiary); transition: width 240ms var(--ease-out); }
+      .bar-range { position: absolute; top: 0; bottom: 0; box-shadow: inset 1px 0 0 var(--border-secondary), inset -1px 0 0 var(--border-secondary); }
+      .bar > span { position: relative; }
+      .section-title { margin-bottom: 4px; font-variation-settings: var(--font-weight-500); }
+      .panel-foot { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: auto; }
+      .panel-foot .button { height: 32px; }
+
+      .tabs { display: grid; grid-template-columns: repeat(4, 1fr); }
+      .tabs button { padding: 0; }
+      .tab-body { flex: 1; display: flex; flex-direction: column; gap: 16px; min-height: 0; margin: 0 -16px; padding: 2px 16px 4px; overflow: auto; scrollbar-width: thin; }
+      .slider { cursor: ew-resize; touch-action: none; user-select: none; }
+      .slider .bar-fill { background: var(--background-hover); transition: none; }
+      .slider:focus-visible { outline-offset: 2px; }
+      .slider[aria-disabled="true"] { cursor: default; color: var(--text-quaternary); }
+      .slider[aria-disabled="true"] .bar-fill { display: none; }
+      .swatches { display: flex; align-items: center; gap: 8px; }
+      .swatch-button, .color-input { position: relative; width: 20px; height: 20px; border-radius: 50%; box-shadow: inset 0 0 0 1px var(--border-secondary); }
+      .swatch-button::before { position: absolute; inset: -4px; content: ""; }
+      .swatch-button[aria-pressed="true"] { box-shadow: 0 0 0 2px var(--background-raised), 0 0 0 3.5px var(--text-primary); }
+      .color-input { padding: 0; cursor: pointer; appearance: none; background: conic-gradient(#d93036, #e8590c, #f5c400, #2f9e44, #0077b6, #7048e8, #d93036); }
+      .color-input::-webkit-color-swatch-wrapper { padding: 0; }
+      .color-input::-webkit-color-swatch { border: 0; opacity: 0; }
+      .controls { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+      .live-note { font-size: 13px; color: var(--text-tertiary); }
+      .select, .input { width: 100%; min-width: 0; height: 28px; padding: 0 9px; font-size: 13px; color: var(--text-primary); background: var(--background-control); border: 1px solid transparent; border-radius: var(--radius-control); box-shadow: var(--shadow-default); outline: none; }
+      .select:focus-visible, .input:focus-visible { outline: 2px solid var(--accent); outline-offset: 1px; }
+      .input::placeholder { color: var(--text-quaternary); }
+      .field .select { width: 168px; }
+      .topbar .dropdown { width: auto; flex: none; padding-right: 6px; }
+      .textarea { height: auto; padding: 8px 9px; font-family: var(--font-mono); font-size: 12px; line-height: 16px; resize: vertical; }
+      .error { font-size: 13px; color: var(--danger); }
+      .error:empty { display: none; }
+      .verdict { display: grid; gap: 8px; padding: 12px; background: var(--background-tertiary); border-radius: 10px; }
+      .verdict-head { display: flex; align-items: center; gap: 8px; font-size: 13px; }
+      .verdict p, .verdict ul { font-size: 13px; color: var(--text-tertiary); }
+      .verdict ul { padding-left: 16px; list-style: disc; }
+      .disclosure summary { width: fit-content; font-size: 13px; color: var(--text-tertiary); cursor: pointer; }
+      .disclosure summary:hover { color: var(--text-primary); }
+      .paste { display: grid; gap: 8px; margin-top: 10px; }
+      .paste .button { justify-self: end; }
+      .prompt { display: grid; gap: 10px; padding: 12px; background: var(--background-tertiary); border-radius: 10px; }
+      .prompt-head { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; }
+      .prompt-title { font-variation-settings: var(--font-weight-500); }
+      .prompt-note { font-size: 13px; color: var(--text-tertiary); }
+      .prompt pre { max-height: 160px; margin-top: 8px; padding: 8px 10px; overflow: auto; font-family: var(--font-mono); font-size: 11px; line-height: 16px; white-space: pre-wrap; color: var(--text-secondary); background: var(--background-raised); border-radius: 8px; box-shadow: inset 0 0 0 1px var(--border-primary); }
+      .stage-glyph.playing > .glyph { visibility: hidden; }
+      .player { display: grid; }
+      .player > * { grid-area: 1 / 1; }
+      .content[data-drop] { outline: 2px dashed var(--accent); outline-offset: -2px; border-radius: 12px; }
+      .popover { inset: 52px 12px auto auto; width: 340px; margin: 0; padding: 14px; color: var(--text-primary); background: var(--background-overlay); border-radius: 14px; box-shadow: var(--shadow-extra-large); }
+      .popover:popover-open { display: grid; gap: 10px; }
+      .popover-title { font-variation-settings: var(--font-weight-500); }
+      .popover-note { margin-top: -6px; font-size: 13px; color: var(--text-tertiary); }
+      .popover-foot { display: flex; justify-content: flex-end; }
+
+      /* Dialog */
+      dialog.modal { margin: auto; padding: 0; max-width: none; max-height: none; overflow: visible; background: none; color: inherit; }
+      dialog.modal::backdrop { background: rgb(0 0 0 / 0.28); }
+      .modal-box { width: min(940px, 100vw - 64px); height: min(640px, 100vh - 64px); padding: 10px; background: var(--background-overlay); border-radius: 24px; box-shadow: var(--shadow-extra-large); }
+      .modal-box > .insp { height: 100%; }
+
+      /* Review views and the measurements table */
+      .tiles[data-large] { grid-template-columns: repeat(auto-fill, minmax(112px, 1fr)); }
+      .tiles[data-large] .tile-name { opacity: 1; }
+      .blur svg { filter: blur(2px); }
+      .spec-view .card-wide { grid-column: 1 / -1; }
+      .card-note { margin: -4px 0 12px; font-size: 13px; color: var(--text-tertiary); }
+      .card-head .card-note { margin: 0; font-variation-settings: var(--font-weight-400); }
+      .table { display: grid; grid-template-columns: minmax(0, 1.6fr) repeat(4, minmax(0, 1fr)) auto; column-gap: 16px; font-size: 13px; }
+      .table-row { display: grid; grid-column: 1 / -1; grid-template-columns: subgrid; align-items: baseline; padding: 7px 0; }
+      .table-row + .table-row { box-shadow: 0 -1px 0 var(--border-primary); }
+      .table-head { color: var(--text-quaternary); }
+      .link { text-align: left; text-decoration: underline; text-decoration-color: var(--border-secondary); text-underline-offset: 3px; }
+      .link:hover { text-decoration-color: currentColor; }
+      .status { justify-self: end; color: var(--text-tertiary); white-space: nowrap; }
+      .status[data-status="Fails"], .status[data-status="Outlier"] { color: var(--danger); }
+      .verdict-body { display: grid; gap: 6px; }
+
+    </style>
+  </head>
+  <body>
+    <div id="app"></div>
+
+    <script>
+      document.write(`<script src="sheet.js?${Date.now()}"><\/script>`);
+    </script>
+    <script>
+      const sheet = window.sheet;
+      const $ = (id) => document.getElementById(id);
+      const SIZES = sheet.sizes ?? [16, 20, 24, 48];
+      const GRID_STEPS = [1, 0.5, 0.25, 0.125];
+      const ALLOWED = new Set(["svg", "path", "line", "polyline", "polygon", "rect", "circle", "ellipse"]);
+      const GEOMETRY = ["x", "y", "width", "height", "rx", "ry", "cx", "cy", "r", "x1", "y1", "x2", "y2"];
+      const COVERAGE_SCALE = 10;
+
+      function h(tag, props = {}, ...children) {
+        const node = document.createElement(tag);
+        for (const [key, value] of Object.entries(props)) {
+          if (key === "html") node.innerHTML = value;
+          else if (key.startsWith("on")) node.addEventListener(key.slice(2), value);
+          else node.setAttribute(key, value);
+        }
+        node.append(...children.filter((child) => child != null));
+        return node;
+      }
+
+      function parse(markup) {
+        const template = document.createElement("template");
+        template.innerHTML = markup.trim();
+        return template.content.querySelector("svg");
+      }
+
+      function sized(markup, size) {
+        const svg = parse(markup).cloneNode(true);
+        svg.setAttribute("width", size);
+        svg.setAttribute("height", size);
+        svg.setAttribute("aria-hidden", "true");
+        return svg;
+      }
+
+      const round = (value, step = 0.01) => Math.round(value / step) * step;
+      const format = (value) => String(round(value));
+      const mode = (values) => {
+        const counts = new Map();
+        for (const value of values) counts.set(value, (counts.get(value) ?? 0) + 1);
+        return [...counts].sort((a, b) => b[1] - a[1])[0]?.[0];
+      };
+
+      const workspace = h("div", { "aria-hidden": "true", style: "position:absolute;left:-9999px;top:0" });
+      document.body.append(workspace);
+
+      function numbersOf(element) {
+        const numbers = [];
+        for (const name of GEOMETRY) {
+          if (element.hasAttribute(name)) numbers.push(parseFloat(element.getAttribute(name)));
+        }
+        if (element.hasAttribute("points")) {
+          numbers.push(...element.getAttribute("points").trim().split(/[\s,]+/).map(Number));
+        }
+        if (element.tagName === "path") {
+          for (const segment of element.getAttribute("d").match(/[a-z][^a-z]*/gi) ?? []) {
+            const values = (segment.slice(1).match(NUMBER) ?? []).map(Number);
+            const letter = segment[0].toLowerCase();
+            const handles = { c: [6, 4], s: [4, 2], q: [4, 2] }[letter];
+            if (letter === "a") numbers.push(...values.filter((_, index) => ![3, 4].includes(index % 7)));
+            else if (handles) numbers.push(...values.filter((_, index) => index % handles[0] >= handles[1]));
+            else numbers.push(...values);
+          }
+        }
+        return numbers;
+      }
+
+      const NUMBER = /-?(?:\d+\.?\d*|\.\d+)(?:e-?\d+)?/gi;
+
+      function morphShape(d) {
+        const tokens = d.match(/[a-z]|-?(?:\d+\.?\d*|\.\d+)(?:e-?\d+)?/gi) ?? [];
+        if (tokens[0] !== "M" || tokens.length < 3 || isNaN(tokens[1]) || isNaN(tokens[2])) return null;
+        let segments = 0;
+        for (let index = 3; index < tokens.length; index += 7) {
+          if (tokens[index] !== "C" || tokens.slice(index + 1, index + 7).filter((token) => !isNaN(token)).length !== 6) return null;
+          segments += 1;
+        }
+        return segments;
+      }
+
+      function morphOf(svg) {
+        const painted = [...svg.querySelectorAll("*")];
+        const paths = painted.filter((element) => element.tagName === "path");
+        const shapes = paths.map((path) => morphShape(path.getAttribute("d")));
+        return {
+          others: [...new Set(painted.filter((element) => element.tagName !== "path").map((element) => element.tagName))],
+          slots: paths.length,
+          shapes,
+          d: paths.map((path) => path.getAttribute("d")),
+        };
+      }
+
+      function radiiOf(element) {
+        const radii = [];
+        if (element.tagName === "rect" && element.hasAttribute("rx")) radii.push(parseFloat(element.getAttribute("rx")));
+        if (element.tagName === "path") {
+          for (const segment of element.getAttribute("d").match(/a[^a-z]*/gi) ?? []) {
+            const values = (segment.slice(1).match(/-?(?:\d+\.?\d*|\.\d+)/g) ?? []).map(Number);
+            for (let index = 0; index < values.length; index += 7) radii.push(values[index]);
+          }
+        }
+        return radii;
+      }
+
+      const ARITY = { l: 2, t: 2, h: 1, v: 1, c: 6, s: 4, q: 4, a: 7, m: 2 };
+
+      function endsOf(element) {
+        const tag = element.tagName;
+        if (tag === "line") return { open: true, corners: false };
+        if (tag === "polyline") return { open: true, corners: element.points.length > 2 };
+        if (tag === "polygon") return { open: false, corners: true };
+        if (tag === "rect") return { open: false, corners: !parseFloat(element.getAttribute("rx") || 0) };
+        if (tag !== "path") return { open: false, corners: false };
+        let open = false;
+        let corners = false;
+        for (const subpath of element.getAttribute("d").split(/(?=[Mm])/)) {
+          let segments = 0;
+          for (const command of subpath.match(/[a-z][^a-z]*/gi) ?? []) {
+            const letter = command[0].toLowerCase();
+            if (letter === "z") continue;
+            const values = command.slice(1).match(/-?(?:\d+\.?\d*|\.\d+)/g) ?? [];
+            const count = letter === "h" || letter === "v" ? values.length : Math.floor(values.length / ARITY[letter]);
+            segments += letter === "m" ? count - 1 : count;
+          }
+          const closed = /z\s*$/i.test(subpath);
+          if (!closed) open = true;
+          if (closed || segments > 1) corners = true;
+        }
+        return { open, corners };
+      }
+
+      function edgeKind(element, side, extreme, half) {
+        const tag = element.tagName;
+        if (tag === "circle" || tag === "ellipse") return "round";
+        if (tag === "rect") return parseFloat(element.getAttribute("rx") || 0) * 2 >= parseFloat(element.getAttribute("width")) ? "round" : "straight";
+        if (typeof element.getTotalLength !== "function") return "straight";
+        const length = element.getTotalLength();
+        const step = Math.max(length / 2000, 0.005);
+        const axis = side === "left" || side === "right" ? "x" : "y";
+        const target = side === "left" || side === "top" ? extreme + half : extreme - half;
+        let run = 0;
+        let atEnd = false;
+        let previous = null;
+        for (let at = 0; at <= length; at += step) {
+          const point = element.getPointAtLength(at);
+          const jump = previous && Math.hypot(point.x - previous.x, point.y - previous.y) > step * 4;
+          if (Math.abs(point[axis] - target) < 0.02) {
+            run += step;
+            if (at === 0 || at + step > length || jump) atEnd = true;
+          }
+          previous = point;
+        }
+        if (atEnd && run < 0.2) return "cap";
+        return run < 1.5 ? "round" : "straight";
+      }
+
+      function coverage(markup, viewBox) {
+        const width = viewBox[2] * COVERAGE_SCALE;
+        const height = viewBox[3] * COVERAGE_SCALE;
+        const svg = sized(markup, width);
+        svg.setAttribute("height", height);
+        svg.setAttribute("xmlns", "http://www.w3.org/2000/svg");
+        const source = svg.outerHTML.replaceAll("currentColor", "#000");
+        return new Promise((resolve) => {
+          const image = new Image();
+          image.onload = () => {
+            const canvas = h("canvas", { width, height });
+            const context = canvas.getContext("2d", { willReadFrequently: true });
+            context.drawImage(image, 0, 0);
+            const data = context.getImageData(0, 0, width, height).data;
+            let ink = 0;
+            for (let index = 3; index < data.length; index += 4) ink += data[index] / 255;
+            resolve(ink / (width * height));
+          };
+          image.onerror = () => resolve(null);
+          image.src = `data:image/svg+xml,${encodeURIComponent(source)}`;
+        });
+      }
+
+      async function measure(icon) {
+        const svg = sized(icon.svg, 16);
+        workspace.append(svg);
+        const viewBox = (svg.getAttribute("viewBox") ?? "0 0 16 16").split(/[\s,]+/).map(Number);
+        const elements = [...svg.querySelectorAll("*")];
+        const painted = elements.filter((element) => element.getBBox && !["g", "defs", "title", "desc"].includes(element.tagName));
+        const style = (element, name) => getComputedStyle(element).getPropertyValue(name);
+        const strokes = painted.filter((element) => style(element, "stroke") !== "none");
+        const fills = painted.filter((element) => style(element, "fill") !== "none");
+        const stroke = strokes.length ? parseFloat(style(strokes[0], "stroke-width")) : 0;
+        const edges = { left: [Infinity], top: [Infinity], right: [-Infinity], bottom: [-Infinity] };
+        for (const element of painted) {
+          const box = element.getBBox();
+          const half = style(element, "stroke") === "none" ? 0 : parseFloat(style(element, "stroke-width")) / 2;
+          const sides = { left: box.x - half, top: box.y - half, right: box.x + box.width + half, bottom: box.y + box.height + half };
+          for (const side of ["left", "top"]) if (sides[side] < edges[side][0]) edges[side] = [sides[side], element, half];
+          for (const side of ["right", "bottom"]) if (sides[side] > edges[side][0]) edges[side] = [sides[side], element, half];
+        }
+        const insets = {
+          left: edges.left[0] - viewBox[0],
+          top: edges.top[0] - viewBox[1],
+          right: viewBox[0] + viewBox[2] - edges.right[0],
+          bottom: viewBox[1] + viewBox[3] - edges.bottom[0],
+        };
+        const tightest = Object.entries(insets).sort((a, b) => a[1] - b[1])[0];
+        const [, edgeElement, edgeHalf] = edges[tightest[0]];
+        const edge = edgeKind(edgeElement, tightest[0], edges[tightest[0]][0], edgeHalf);
+        const numbers = painted.flatMap(numbersOf);
+        const ends = strokes.map(endsOf);
+        const pixel = painted.length >= 6 && !strokes.length && numbers.every((value) => Number.isInteger(value)) &&
+          painted.every((element) => element.tagName === "rect" && !element.hasAttribute("rx"));
+        const result = {
+          icon,
+          viewBox: viewBox.join(" "),
+          kind: pixel ? "Pixel" : strokes.length ? (fills.length ? "Filled" : "Outline") : "Filled",
+          stroke,
+          caps: ends.some((end) => end.open) ? style(strokes[0], "stroke-linecap") : null,
+          joins: ends.some((end) => end.corners) ? style(strokes[0], "stroke-linejoin") : null,
+          inset: tightest[1],
+          edge,
+          numbers,
+          radii: painted.flatMap(radiiOf),
+          tags: [...new Set(elements.map((element) => element.tagName))],
+          decimals: Math.max(0, ...(icon.svg.match(/\d\.\d+/g) ?? []).map((value) => value.split(".")[1].length)),
+          transform: /\stransform=/.test(icon.svg),
+          hex: /#[0-9a-f]{3,8}\b|rgb\(/i.test(icon.svg),
+          ids: /\s(id|class|style)=/.test(icon.svg),
+          masks: elements.some((element) => ["clipPath", "mask", "filter", "image", "text", "use"].includes(element.tagName)) ||
+            /\s(clip-path|mask|filter)=/.test(icon.svg),
+          coverage: await coverage(icon.svg, viewBox),
+          morph: morphOf(svg),
+        };
+        svg.remove();
+        return result;
+      }
+
+      const onStep = (value, step) => Math.abs(value / step - Math.round(value / step)) < 1e-6;
+
+      function gridOf(entries) {
+        if (!entries.length) return 0.5;
+        for (const step of GRID_STEPS) {
+          const on = entries.filter((entry) => entry.numbers.every((value) => onStep(value, step))).length;
+          if (on / entries.length >= 0.8) return step;
+        }
+        return GRID_STEPS.at(-1);
+      }
+
+      function derive(measured) {
+        const existing = measured.filter((entry) => !entry.icon.new);
+        const viewBox = mode(existing.map((entry) => entry.viewBox));
+        const base = existing.filter((entry) => entry.viewBox === viewBox);
+        const outline = base.filter((entry) => entry.kind === "Outline");
+        const insets = base.map((entry) => round(entry.inset, 0.25));
+        const padding = mode(insets.filter((value) => value >= 0)) ?? 0;
+        const roundEdges = base.filter((entry) => entry.edge === "round" && entry.inset < padding);
+        const overshoot = roundEdges.length ? Math.max(...roundEdges.map((entry) => padding - entry.inset)) : 0;
+        const ranges = {};
+        for (const entry of base) {
+          if (entry.coverage == null) continue;
+          const range = (ranges[entry.kind] ??= [Infinity, -Infinity]);
+          range[0] = Math.min(range[0], entry.coverage);
+          range[1] = Math.max(range[1], entry.coverage);
+        }
+        const drawn = measured.filter((entry) => entry.icon.new);
+        return {
+          morph: {
+            slots: Math.max(0, ...drawn.map((entry) => entry.morph.slots)),
+            segments: Math.max(0, ...drawn.flatMap((entry) => entry.morph.shapes.filter(Boolean))),
+          },
+          count: base.length,
+          viewBox,
+          stroke: mode(outline.map((entry) => entry.stroke)) ?? 0,
+          caps: mode(outline.map((entry) => entry.caps).filter(Boolean)),
+          joins: mode(outline.map((entry) => entry.joins).filter(Boolean)),
+          radii: [...new Set(base.flatMap((entry) => entry.radii))].sort((a, b) => a - b),
+          grid: gridOf(base),
+          padding,
+          overshoot: round(overshoot, 0.25),
+          ranges,
+          tags: [...new Set(base.flatMap((entry) => entry.tags))].filter((tag) => ALLOWED.has(tag)),
+        };
+      }
+
+      function lint(entry, spec) {
+        const misses = [];
+        const add = (rule, text) => misses.push({ rule, text });
+        const offGrid = [...new Set(entry.numbers.filter((value) => !onStep(value, spec.grid)))];
+        const blocked = entry.tags.filter((tag) => !ALLOWED.has(tag));
+        if (entry.viewBox !== spec.viewBox) add("icons-lint-the-spec", `viewBox ${entry.viewBox}, the set uses ${spec.viewBox}`);
+        if (entry.kind !== "Pixel" && entry.stroke && entry.stroke !== spec.stroke) add("icons-lint-the-spec", `stroke ${entry.stroke}, the set uses ${spec.stroke}`);
+        if (entry.caps && spec.caps && entry.caps !== spec.caps) add("icons-lint-the-spec", `${entry.caps} caps, the set uses ${spec.caps}`);
+        if (entry.joins && spec.joins && entry.joins !== spec.joins) add("icons-lint-the-spec", `${entry.joins} joins, the set uses ${spec.joins}`);
+        if (offGrid.length) add("icons-on-the-grid", `${offGrid.slice(0, 6).join(", ")} off the ${spec.grid} grid`);
+        if (entry.hex) add("icons-on-the-grid", "a literal colour, not currentColor");
+        if (blocked.length) add("icons-on-the-grid", `${blocked.join(", ")} element`);
+        const floor = entry.edge === "round" ? spec.padding - spec.overshoot : spec.padding;
+        if (entry.inset < floor - 1e-6) add("icons-lint-the-spec", `ink ${format(entry.inset)} from the edge, the floor is ${format(floor)} for a ${entry.edge} edge`);
+        const strays = entry.radii.filter((value) => spec.radii.length && !spec.radii.includes(value));
+        if (strays.length) add("icons-lint-the-spec", `radius ${[...new Set(strays)].join(", ")}, the set uses ${spec.radii.join(", ")}`);
+        const range = spec.ranges[entry.kind];
+        if (range && entry.coverage != null && (entry.coverage < range[0] - 0.005 || entry.coverage > range[1] + 0.005)) {
+          add("icons-lint-the-spec", `${percent(entry.coverage)} ink, ${entry.kind.toLowerCase()} icons in the set run ${percent(range[0])} to ${percent(range[1])}`);
+        }
+        if (entry.decimals > 3) add("icons-lint-the-spec", `${entry.decimals} decimals, the limit is 3`);
+        if (entry.transform) add("icons-lint-the-spec", "a transform");
+        if (entry.ids || entry.masks) add("icons-lint-the-spec", "an id, class, style, mask or clip path");
+        if (entry.icon.new) {
+          const { others, slots, shapes } = entry.morph;
+          const { slots: wanted, segments } = spec.morph;
+          if (others.length) add("icons-morph-form", `${others.join(", ")} element, the morph form is paths only`);
+          if (slots !== wanted) add("icons-morph-form", `${slots} paths, every new icon has ${wanted}`);
+          if (shapes.some((shape) => shape === null)) add("icons-morph-form", "a path that is not M followed by explicit C segments");
+          const counts = [...new Set(shapes.filter(Boolean))].filter((count) => count !== segments);
+          if (counts.length) add("icons-morph-form", `${counts.join(", ")} segments in a path, every path has ${segments}`);
+        }
+        return misses;
+      }
+
+      const percent = (value) => `${(value * 100).toFixed(1)}%`;
+
+      function statusOf(entry, misses, spec) {
+        if (misses.length) return entry.icon.new ? "Fails" : "Outlier";
+        if (entry.icon.new && !spec.ranges[entry.kind]) return "Not Verified";
+        return "Pass";
+      }
+
+      function rasterise(markup, viewBox, color) {
+        const [, , width, height] = viewBox.split(" ").map(Number);
+        const svg = sized(markup, width);
+        svg.setAttribute("height", height);
+        svg.setAttribute("xmlns", "http://www.w3.org/2000/svg");
+        const canvas = h("canvas", { width, height, style: `width:${width * 3}px;height:${height * 3}px` });
+        const image = new Image();
+        image.onload = () => canvas.getContext("2d").drawImage(image, 0, 0);
+        image.src = `data:image/svg+xml,${encodeURIComponent(svg.outerHTML.replaceAll("currentColor", color))}`;
+        return canvas;
+      }
+
+      function bezier(x1, y1, x2, y2) {
+        const at = (t, a, b) => 3 * a * t * (1 - t) ** 2 + 3 * b * t * t * (1 - t) + t ** 3;
+        return (x) => {
+          let low = 0;
+          let high = 1;
+          for (let step = 0; step < 24; step += 1) {
+            const mid = (low + high) / 2;
+            if (at(mid, x1, x2) < x) low = mid;
+            else high = mid;
+          }
+          return at((low + high) / 2, y1, y2);
+        };
+      }
+
+      const easeInOut = bezier(0.77, 0, 0.175, 1);
+      const reduced = matchMedia("(prefers-reduced-motion: reduce)");
+      const MORPH_MS = 240;
+      const HOLD_MS = 1200;
+      function specLines(spec) {
+        const ranges = Object.entries(spec.ranges).map(([kind, [low, high]]) => `${kind} ${percent(low)} to ${percent(high)}`).join(", ");
+        return [
+          ["viewBox", spec.viewBox],
+          ["Stroke", spec.stroke ? `${spec.stroke}, currentColor` : "None, filled"],
+          ["Caps and Joins", spec.caps ? `${spec.caps}, ${spec.joins}` : "None"],
+          ["Corner Radii", spec.radii.length ? spec.radii.join(", ") : "None"],
+          ["Grid", `Every coordinate a multiple of ${spec.grid}`],
+          ["Padding", `${spec.padding} from ink to the viewBox edge`],
+          ["Round Overshoot", spec.overshoot ? `${spec.overshoot} past the padding` : "None measured"],
+          ["Ink Coverage", ranges || "Not measured"],
+          ["Elements", spec.tags.filter((tag) => tag !== "svg").join(", ")],
+          ["Morph Form", spec.morph.slots ? `${spec.morph.slots} paths of M and ${spec.morph.segments} C segments` : "No new icons yet"],
+        ];
+      }
+
+      function specMarkdown(spec, measured) {
+        const names = measured.filter((entry) => !entry.icon.new && entry.viewBox === spec.viewBox).map((entry) => `\`${entry.icon.name}\``);
+        return [
+          "# Icon spec",
+          "",
+          `Measured from all ${spec.count} icons on \`${spec.viewBox}\` in \`${sheet.source}\`: ${names.join(", ")}.`,
+          "",
+          "| Property | Value |",
+          "| --- | --- |",
+          ...specLines(spec).map(([property, value]) => `| ${property} | ${value} |`),
+          "",
+        ].join("\n");
+      }
+
+      function findingsText(findings) {
+        if (!findings.length) return `No findings in ${sheet.title}.\n`;
+        return `${findings.map((finding) => `${finding.file ?? finding.name} - [${finding.rule}] ${finding.name}: ${finding.text}`).join("\n")}\n`;
+      }
+
+      const INK = { light: "#080808", dark: "#ffffff" };
+      const EASE_OUT = "cubic-bezier(0.215, 0.61, 0.355, 1)";
+      const EASE_DRAWER = "cubic-bezier(0.32, 0.72, 0, 1)";
+      const pageTheme = () => (matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light");
+
+      const svgIcon = (markup) => h("span", { html: markup, "aria-hidden": "true" });
+      const CHROME = {
+        search: `<svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><circle cx="7" cy="7" r="4.5"/><path d="M10.5 10.5l3 3"/></svg>`,
+        close: `<svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><path d="M4 4l8 8M12 4l-8 8"/></svg>`,
+        prev: `<svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M10 3.5 5.5 8l4.5 4.5"/></svg>`,
+        next: `<svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M6 3.5 10.5 8 6 12.5"/></svg>`,
+        contrast: `<svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="8" cy="8" r="5.75"/><path d="M8 2.25a5.75 5.75 0 0 1 0 11.5Z" fill="currentColor" stroke="none"/></svg>`,
+        play: `<svg width="14" height="14" viewBox="0 0 16 16" fill="currentColor"><path d="M5 3.6v8.8a.75.75 0 0 0 1.14.64l7.1-4.4a.75.75 0 0 0 0-1.28l-7.1-4.4A.75.75 0 0 0 5 3.6Z"/></svg>`,
+        plus: `<svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><path d="M8 3.5v9M3.5 8h9"/></svg>`,
+        pause: `<svg width="14" height="14" viewBox="0 0 16 16" fill="currentColor"><rect x="4" y="3" width="3" height="10" rx="1"/><rect x="9" y="3" width="3" height="10" rx="1"/></svg>`,
+      };
+
+      const nameFromFile = (file) => file.replace(/\.svg$/i, "").split(/[-_\s]+/).filter(Boolean).map((word) => word[0].toUpperCase() + word.slice(1)).join(" ");
+
+      function segmented(label, options, value, onChange) {
+        const buttons = options.map((option) => {
+          const button = h("button", { type: "button", "aria-pressed": String(option === value) }, option);
+          button.addEventListener("click", () => {
+            for (const other of buttons) other.setAttribute("aria-pressed", String(other === button));
+            onChange(option);
+          });
+          return button;
+        });
+        return h("div", { class: "field" }, h("span", { class: "field-label" }, label), h("div", { class: "segmented", role: "group", "aria-label": label }, ...buttons));
+      }
+
+      function dropdown(label, options, value, onChange) {
+        const select = h("select", { class: "select dropdown", "aria-label": label },
+          ...options.map((option) => h("option", { value: option.value }, option.label)));
+        select.value = value;
+        select.addEventListener("change", () => onChange(select.value));
+        return select;
+      }
+
+      function specRows(spec) {
+        return h("div", { class: "rows" },
+          ...specLines(spec).map(([key, value]) => h("div", { class: "kv" }, h("span", { class: "quiet" }, key), h("span", {}, value))));
+      }
+
+      function findingList(findings, empty, named = true) {
+        if (!findings.length) return h("p", { class: "none" }, empty);
+        return h("ol", { class: "findings" },
+          ...findings.map((finding) => h("li", { class: "finding" },
+            h("span", { class: "mark" }),
+            h("span", {}, named ? h("b", { style: "font-variation-settings:var(--font-weight-500)" }, `${finding.name} `) : null, `${finding.text} `, h("code", {}, finding.rule)))));
+      }
+
+      function copyButton(label, text) {
+        const button = h("button", { class: "button", type: "button" }, label);
+        button.addEventListener("click", async () => {
+          button.textContent = await navigator.clipboard.writeText(text()).then(() => "Copied", () => "Copy Failed");
+          setTimeout(() => (button.textContent = label), 1400);
+        });
+        return button;
+      }
+
+      function keylines(spec, size) {
+        const [, , w] = spec.viewBox.split(" ").map(Number);
+        const unit = size / w;
+        const lines = [];
+        for (let at = 0; at <= w; at += 1) {
+          const p = at * unit;
+          const opacity = at === 0 || at === w ? 0.3 : 0.12;
+          lines.push(`<line x1="${p}" y1="0" x2="${p}" y2="${size}" stroke-opacity="${opacity}"/><line x1="0" y1="${p}" x2="${size}" y2="${p}" stroke-opacity="${opacity}"/>`);
+        }
+        const pad = spec.padding * unit;
+        return `<svg class="keylines" width="${size}" height="${size}" viewBox="0 0 ${size} ${size}" fill="none" stroke="var(--accent)" aria-hidden="true">${lines.join("")}<rect x="${pad}" y="${pad}" width="${size - pad * 2}" height="${size - pad * 2}" stroke-dasharray="4 4" stroke-opacity="0.8"/></svg>`;
+      }
+
+      /* Stage: morph between morph-form icons, cross-fade otherwise */
+
+      function morphable(a, b) {
+        const shape = (entry) => entry.morph.shapes.every((count) => count) && !entry.morph.others.length;
+        return a !== b && a.viewBox === b.viewBox && shape(a) && shape(b) && a.morph.slots === b.morph.slots &&
+          a.morph.shapes.every((count, index) => count === b.morph.shapes[index]);
+      }
+
+      function createStage(size) {
+        const holder = h("div", { class: "stage-glyph", style: `--size:${size}px` });
+        let current = null;
+        let currentEntry = null;
+        let currentKey = null;
+        let frame = 0;
+        let player = null;
+        const glyph = (node) => (node.classList.add("glyph"), node);
+
+        function show(entry, markup, render, key) {
+          if (entry === currentEntry && key === currentKey) return;
+          cancelAnimationFrame(frame);
+          if (entry === currentEntry && current && (render ? current.tagName === "CANVAS" : current.tagName === "svg")) {
+            const next = glyph(render ? render() : sized(markup, size));
+            current.replaceWith(next);
+            current = next;
+            currentKey = key;
+            return;
+          }
+          currentKey = key;
+          if (current?.tagName === "svg" && currentEntry && !render && morphable(currentEntry, entry) && !reduced.matches) {
+            const paths = [...current.querySelectorAll("path")];
+            const from = paths.map((path) => path.getAttribute("d"));
+            const to = entry.morph.d;
+            const tracks = paths.map((path, index) => ({
+              path, template: from[index].split(NUMBER), a: (from[index].match(NUMBER) ?? []).map(Number), b: (to[index].match(NUMBER) ?? []).map(Number),
+            }));
+            const target = parse(markup);
+            const fillFrom = current.getAttribute("fill") === "none" ? 0 : 1;
+            const fillTo = target.getAttribute("fill") === "none" ? 0 : 1;
+            current.setAttribute("fill", target.getAttribute("fill") !== "none" ? target.getAttribute("fill") : current.getAttribute("fill") !== "none" ? current.getAttribute("fill") : "currentColor");
+            const began = performance.now();
+            const step = (now) => {
+              const t = Math.min(1, (now - began) / MORPH_MS);
+              const k = easeInOut(t);
+              for (const { path, template, a, b } of tracks) {
+                path.setAttribute("d", template.map((part, i) => (i < a.length ? part + +(a[i] + (b[i] - a[i]) * k).toFixed(3) : part)).join(""));
+              }
+              current.setAttribute("fill-opacity", fillFrom + (fillTo - fillFrom) * k);
+              if (t < 1) frame = requestAnimationFrame(step);
+              else {
+                const next = glyph(sized(markup, size));
+                current.replaceWith(next);
+                current = next;
+              }
+            };
+            frame = requestAnimationFrame(step);
+            currentEntry = entry;
+            return;
+          }
+          const next = glyph(render ? render() : sized(markup, size));
+          const previous = current;
+          if (previous) {
+            if (reduced.matches) previous.remove();
+            else previous.animate(
+              [{ opacity: 1, scale: 1, filter: "blur(0px)" }, { opacity: 0, scale: 0.8, filter: "blur(4px)" }],
+              { duration: 150, easing: EASE_OUT, fill: "forwards" },
+            ).finished.then(() => previous.remove());
+          }
+          holder.append(next);
+          if (previous && !reduced.matches) {
+            next.animate([{ opacity: 0, scale: 0.8, filter: "blur(4px)" }, { opacity: 1, scale: 1, filter: "blur(0px)" }], { duration: 200, easing: EASE_OUT });
+          }
+          current = next;
+          currentEntry = entry;
+        }
+
+        function overlay(node) {
+          player?.remove();
+          player = node;
+          holder.classList.toggle("playing", Boolean(node));
+          if (node) holder.append(node);
+        }
+
+        return { holder, show, overlay };
+      }
+
+      function formIssues(entry) {
+        const { others, shapes } = entry.morph;
+        const name = entry.icon.name;
+        if (others.length) return [`${name} uses ${others.join(", ")}, the morph form is paths only`];
+        if (!shapes.length) return [`${name} has no paths`];
+        if (shapes.some((shape) => shape === null)) return [`${name} has a path that is not M followed by explicit C segments`];
+        return [];
+      }
+
+      /* Conversion: any icon to cubic subpaths, so any two icons can preview a morph */
+
+      const SVG_NS = "http://www.w3.org/2000/svg";
+
+      function arcToCubics(x1, y1, rx, ry, angle, large, sweep, x2, y2) {
+        if (!rx || !ry) return [[x1, y1, x2, y2, x2, y2]];
+        const phi = (angle * Math.PI) / 180;
+        const cos = Math.cos(phi);
+        const sin = Math.sin(phi);
+        const dx = (x1 - x2) / 2;
+        const dy = (y1 - y2) / 2;
+        const x1p = cos * dx + sin * dy;
+        const y1p = -sin * dx + cos * dy;
+        rx = Math.abs(rx);
+        ry = Math.abs(ry);
+        const lambda = (x1p * x1p) / (rx * rx) + (y1p * y1p) / (ry * ry);
+        if (lambda > 1) {
+          rx *= Math.sqrt(lambda);
+          ry *= Math.sqrt(lambda);
+        }
+        const numerator = rx * rx * ry * ry - rx * rx * y1p * y1p - ry * ry * x1p * x1p;
+        const denominator = rx * rx * y1p * y1p + ry * ry * x1p * x1p;
+        const coefficient = (large === sweep ? -1 : 1) * Math.sqrt(Math.max(0, numerator / denominator));
+        const cxp = (coefficient * rx * y1p) / ry;
+        const cyp = (-coefficient * ry * x1p) / rx;
+        const cx = cos * cxp - sin * cyp + (x1 + x2) / 2;
+        const cy = sin * cxp + cos * cyp + (y1 + y2) / 2;
+        const angleOf = (ux, uy, vx, vy) => Math.atan2(ux * vy - uy * vx, ux * vx + uy * vy);
+        const theta = angleOf(1, 0, (x1p - cxp) / rx, (y1p - cyp) / ry);
+        let delta = angleOf((x1p - cxp) / rx, (y1p - cyp) / ry, (-x1p - cxp) / rx, (-y1p - cyp) / ry);
+        if (!sweep && delta > 0) delta -= 2 * Math.PI;
+        if (sweep && delta < 0) delta += 2 * Math.PI;
+        const parts = Math.max(1, Math.ceil(Math.abs(delta) / (Math.PI / 2) - 1e-9));
+        const step = delta / parts;
+        const k = (4 / 3) * Math.tan(step / 4);
+        const point = (t) => [cx + rx * Math.cos(t) * cos - ry * Math.sin(t) * sin, cy + rx * Math.cos(t) * sin + ry * Math.sin(t) * cos];
+        const tangent = (t) => [-rx * Math.sin(t) * cos - ry * Math.cos(t) * sin, -rx * Math.sin(t) * sin + ry * Math.cos(t) * cos];
+        const segments = [];
+        for (let index = 0; index < parts; index += 1) {
+          const t1 = theta + index * step;
+          const t2 = t1 + step;
+          const [px1, py1] = point(t1);
+          const [px2, py2] = point(t2);
+          const [tx1, ty1] = tangent(t1);
+          const [tx2, ty2] = tangent(t2);
+          segments.push([px1 + k * tx1, py1 + k * ty1, px2 - k * tx2, py2 - k * ty2, px2, py2]);
+        }
+        segments.at(-1)[4] = x2;
+        segments.at(-1)[5] = y2;
+        return segments;
+      }
+
+      function pathSlots(d) {
+        const slots = [];
+        let at = 0;
+        let command = "";
+        let x = 0;
+        let y = 0;
+        let sx = 0;
+        let sy = 0;
+        let slot = null;
+        let last = null;
+        const skip = () => { while (at < d.length && /[\s,]/.test(d[at])) at += 1; };
+        const number = () => {
+          skip();
+          const match = /^[-+]?(?:\d+\.?\d*|\.\d+)(?:e[-+]?\d+)?/i.exec(d.slice(at));
+          if (!match) return null;
+          at += match[0].length;
+          return parseFloat(match[0]);
+        };
+        const flag = () => {
+          skip();
+          const char = d[at];
+          if (char !== "0" && char !== "1") return null;
+          at += 1;
+          return char === "1";
+        };
+        const numbers = (count) => {
+          const values = [];
+          for (let index = 0; index < count; index += 1) values.push(number());
+          return values.includes(null) ? null : values;
+        };
+        const cubic = (segment) => {
+          if (!slot) {
+            slot = { start: [x, y], segs: [], closed: false };
+            slots.push(slot);
+          }
+          slot.segs.push(segment);
+          [x, y] = [segment[4], segment[5]];
+        };
+        const line = (px, py) => cubic([x, y, px, py, px, py]);
+
+        while (at < d.length) {
+          skip();
+          if (at >= d.length) break;
+          if (/[a-z]/i.test(d[at])) command = d[at++];
+          else if (!command) break;
+          const upper = command.toUpperCase();
+          const ox = command === upper ? 0 : x;
+          const oy = command === upper ? 0 : y;
+          if (upper === "Z") {
+            if (slot) {
+              if (Math.hypot(x - sx, y - sy) > 1e-6) line(sx, sy);
+              slot.closed = true;
+            }
+            [x, y] = [sx, sy];
+            slot = null;
+            last = null;
+            command = "";
+            continue;
+          }
+          if (upper === "M") {
+            const values = numbers(2);
+            if (!values) break;
+            [x, y] = [values[0] + ox, values[1] + oy];
+            [sx, sy] = [x, y];
+            slot = { start: [x, y], segs: [], closed: false };
+            slots.push(slot);
+            command = command === upper ? "L" : "l";
+            last = null;
+            continue;
+          }
+          if (upper === "L" || upper === "H" || upper === "V") {
+            const values = numbers(upper === "L" ? 2 : 1);
+            if (!values) break;
+            if (upper === "L") line(values[0] + ox, values[1] + oy);
+            else if (upper === "H") line(values[0] + ox, y);
+            else line(x, values[0] + oy);
+            last = null;
+            continue;
+          }
+          if (upper === "C" || upper === "S") {
+            const values = numbers(upper === "C" ? 6 : 4);
+            if (!values) break;
+            const first = upper === "C" ? [values[0] + ox, values[1] + oy] : last?.[0] === "C" ? [2 * x - last[1], 2 * y - last[2]] : [x, y];
+            const rest = upper === "C" ? values.slice(2) : values;
+            const segment = [...first, rest[0] + ox, rest[1] + oy, rest[2] + ox, rest[3] + oy];
+            last = ["C", segment[2], segment[3]];
+            cubic(segment);
+            continue;
+          }
+          if (upper === "Q" || upper === "T") {
+            const values = numbers(upper === "Q" ? 4 : 2);
+            if (!values) break;
+            const [qx, qy] = upper === "Q" ? [values[0] + ox, values[1] + oy] : last?.[0] === "Q" ? [2 * x - last[1], 2 * y - last[2]] : [x, y];
+            const [ex, ey] = upper === "Q" ? [values[2] + ox, values[3] + oy] : [values[0] + ox, values[1] + oy];
+            last = ["Q", qx, qy];
+            cubic([x + (2 / 3) * (qx - x), y + (2 / 3) * (qy - y), ex + (2 / 3) * (qx - ex), ey + (2 / 3) * (qy - ey), ex, ey]);
+            continue;
+          }
+          if (upper === "A") {
+            const radii = numbers(3);
+            const large = flag();
+            const sweep = flag();
+            const end = numbers(2);
+            if (!radii || large == null || sweep == null || !end) break;
+            for (const segment of arcToCubics(x, y, radii[0], radii[1], radii[2], large, sweep, end[0] + ox, end[1] + oy)) cubic(segment);
+            last = null;
+            continue;
+          }
+          break;
+        }
+        return slots;
+      }
+
+      function elementSlots(node) {
+        const value = (name) => parseFloat(node.getAttribute(name) || 0);
+        const tag = node.tagName;
+        if (tag === "path") return pathSlots(node.getAttribute("d") ?? "");
+        if (tag === "line") return pathSlots(`M${value("x1")} ${value("y1")}L${value("x2")} ${value("y2")}`);
+        if (tag === "polyline" || tag === "polygon") {
+          const points = (node.getAttribute("points") ?? "").trim().split(/[\s,]+/).map(Number);
+          let d = "";
+          for (let index = 0; index + 1 < points.length; index += 2) d += `${index ? "L" : "M"}${points[index]} ${points[index + 1]}`;
+          return pathSlots(tag === "polygon" ? `${d}Z` : d);
+        }
+        if (tag === "rect") {
+          const [x, y, width, height] = [value("x"), value("y"), value("width"), value("height")];
+          let rx = node.hasAttribute("rx") ? value("rx") : value("ry");
+          let ry = node.hasAttribute("ry") ? value("ry") : rx;
+          rx = Math.min(rx, width / 2);
+          ry = Math.min(ry, height / 2);
+          if (!rx || !ry) return pathSlots(`M${x} ${y}H${x + width}V${y + height}H${x}Z`);
+          const arc = (ex, ey) => `A${rx} ${ry} 0 0 1 ${ex} ${ey}`;
+          return pathSlots(`M${x + rx} ${y}H${x + width - rx}${arc(x + width, y + ry)}V${y + height - ry}${arc(x + width - rx, y + height)}H${x + rx}${arc(x, y + height - ry)}V${y + ry}${arc(x + rx, y)}Z`);
+        }
+        if (tag === "circle" || tag === "ellipse") {
+          const [cx, cy] = [value("cx"), value("cy")];
+          const rx = tag === "circle" ? value("r") : value("rx");
+          const ry = tag === "circle" ? value("r") : value("ry");
+          const arc = (ex, ey) => `A${rx} ${ry} 0 0 1 ${ex} ${ey}`;
+          return pathSlots(`M${cx} ${cy - ry}${arc(cx + rx, cy)}${arc(cx, cy + ry)}${arc(cx - rx, cy)}${arc(cx, cy - ry)}Z`);
+        }
+        return null;
+      }
+
+      function iconForm(markup) {
+        const svg = parse(markup);
+        const viewBox = (svg.getAttribute("viewBox") ?? "0 0 16 16").split(/[\s,]+/).map(Number);
+        const slots = [];
+        const unsupported = [];
+        for (const node of svg.querySelectorAll("*")) {
+          if (["g", "title", "desc", "defs"].includes(node.tagName)) continue;
+          const found = elementSlots(node);
+          if (found) slots.push(...found);
+          else unsupported.push(node.tagName);
+        }
+        return { viewBox, slots: slots.filter((slot) => slot.segs.length), unsupported: [...new Set(unsupported)] };
+      }
+
+      const anchorsOf = (slot) => [slot.start, ...slot.segs.map((segment) => [segment[4], segment[5]])];
+      const isClosed = (slot) => slot.closed || Math.hypot(slot.start[0] - slot.segs.at(-1)[4], slot.start[1] - slot.segs.at(-1)[5]) < 1e-6;
+
+      function slotLength(slot) {
+        let length = 0;
+        let [px, py] = slot.start;
+        for (const [x1, y1, x2, y2, x, y] of slot.segs) {
+          length += Math.hypot(x1 - px, y1 - py) + Math.hypot(x2 - x1, y2 - y1) + Math.hypot(x - x2, y - y2);
+          [px, py] = [x, y];
+        }
+        return length;
+      }
+
+      function centroidOf(slot) {
+        const anchors = anchorsOf(slot);
+        return [anchors.reduce((sum, [x]) => sum + x, 0) / anchors.length, anchors.reduce((sum, [, y]) => sum + y, 0) / anchors.length];
+      }
+
+      function splitCubic([x0, y0], [x1, y1, x2, y2, x3, y3]) {
+        const mid = (a, b) => (a + b) / 2;
+        const [ax, ay, bx, by, cx, cy] = [mid(x0, x1), mid(y0, y1), mid(x1, x2), mid(y1, y2), mid(x2, x3), mid(y2, y3)];
+        const [dx, dy, ex, ey] = [mid(ax, bx), mid(ay, by), mid(bx, cx), mid(by, cy)];
+        const [fx, fy] = [mid(dx, ex), mid(dy, ey)];
+        return [[ax, ay, dx, dy, fx, fy], [ex, ey, cx, cy, x3, y3]];
+      }
+
+      function subdivide(slot, count) {
+        const segs = slot.segs.map((segment) => segment.slice());
+        while (segs.length < count) {
+          let best = 0;
+          let longest = -1;
+          segs.forEach((segment, index) => {
+            const from = index ? [segs[index - 1][4], segs[index - 1][5]] : slot.start;
+            const length = slotLength({ start: from, segs: [segment] });
+            if (length > longest) [best, longest] = [index, length];
+          });
+          const from = best ? [segs[best - 1][4], segs[best - 1][5]] : slot.start;
+          segs.splice(best, 1, ...splitCubic(from, segs[best]));
+        }
+        return { ...slot, segs };
+      }
+
+      function reversed(slot) {
+        const anchors = anchorsOf(slot);
+        const segs = slot.segs.map(([x1, y1, x2, y2], index) => [x2, y2, x1, y1, anchors[index][0], anchors[index][1]]).reverse();
+        return { start: anchors.at(-1), segs, closed: slot.closed };
+      }
+
+      function rotated(slot, by) {
+        if (!by) return slot;
+        const previous = slot.segs[by - 1];
+        return { start: [previous[4], previous[5]], segs: [...slot.segs.slice(by), ...slot.segs.slice(0, by)], closed: true };
+      }
+
+      const collapsed = (point, count) => ({ start: point.slice(), segs: Array.from({ length: count }, () => [...point, ...point, ...point]), closed: false });
+
+      function travelOf(a, b) {
+        const from = anchorsOf(a);
+        const to = anchorsOf(b);
+        return from.reduce((sum, [x, y], index) => sum + Math.hypot(to[index][0] - x, to[index][1] - y), 0) / from.length;
+      }
+
+      function nearestAnchor(slots, [x, y]) {
+        let best = slots[0].start;
+        let distance = Infinity;
+        for (const point of slots.flatMap(anchorsOf)) {
+          const next = Math.hypot(point[0] - x, point[1] - y);
+          if (next < distance) [best, distance] = [point, next];
+        }
+        return best;
+      }
+
+      function convertPair(aMarkup, bMarkup) {
+        const a = iconForm(aMarkup);
+        const b = iconForm(bMarkup);
+        if (a.unsupported.length || b.unsupported.length || !a.slots.length || !b.slots.length) return null;
+        const [ax, ay, aw, ah] = a.viewBox;
+        const [bx, by, bw, bh] = b.viewBox;
+        const fit = ([x, y]) => [ax + ((x - bx) * aw) / bw, ay + ((y - by) * ah) / bh];
+        const fitted = b.slots.map((slot) => ({
+          start: fit(slot.start),
+          segs: slot.segs.map((segment) => [...fit(segment.slice(0, 2)), ...fit(segment.slice(2, 4)), ...fit(segment.slice(4))]),
+          closed: slot.closed,
+        }));
+        const byLength = (slots) => [...slots].sort((one, two) => slotLength(two) - slotLength(one));
+        const from = byLength(a.slots);
+        const to = byLength(fitted);
+        const count = Math.max(from.length, to.length);
+        const pairs = [];
+        for (let index = 0; index < count; index += 1) {
+          const one = from[index];
+          const two = to[index];
+          const segments = Math.max(one?.segs.length ?? 0, two?.segs.length ?? 0);
+          const start = one ? subdivide(one, segments) : collapsed(nearestAnchor(from, centroidOf(two)), segments);
+          const base = two ? subdivide(two, segments) : collapsed(nearestAnchor(to, centroidOf(one)), segments);
+          const candidates = [base, reversed(base)];
+          if (two && isClosed(base)) {
+            for (let by = 1; by < segments; by += 1) candidates.push(rotated(base, by), reversed(rotated(base, by)));
+          }
+          let best = candidates[0];
+          for (const candidate of candidates) if (travelOf(start, candidate) < travelOf(start, best)) best = candidate;
+          pairs.push([start, best]);
+        }
+        return {
+          from: pairs.map(([one]) => one),
+          to: pairs.map(([, two]) => two),
+          travel: pairs.reduce((sum, [one, two]) => sum + travelOf(one, two), 0) / pairs.length,
+        };
+      }
+
+      function slotsD(slots) {
+        const f = (value) => +value.toFixed(3);
+        return slots.map((slot) => `M${f(slot.start[0])} ${f(slot.start[1])}${slot.segs.map((segment) => `C${segment.map(f).join(" ")}`).join("")}`).join("");
+      }
+
+      function lerpSlots(from, to, k) {
+        const mix = (a, b) => a + (b - a) * k;
+        return from.map((slot, index) => ({
+          start: [mix(slot.start[0], to[index].start[0]), mix(slot.start[1], to[index].start[1])],
+          segs: slot.segs.map((segment, at) => segment.map((value, i) => mix(value, to[index].segs[at][i]))),
+        }));
+      }
+
+      const SPIN_ANGLES = [45, -45, 90, -90, 135, -135, 180];
+
+      function spinBetween(aMarkup, bMarkup) {
+        const a = iconForm(aMarkup);
+        const b = iconForm(bMarkup);
+        if (a.unsupported.length || b.unsupported.length || a.viewBox.join() !== b.viewBox.join()) return null;
+        const segments = (form) => form.slots.reduce((sum, slot) => sum + slot.segs.length, 0);
+        if (!a.slots.length || segments(a) !== segments(b)) return null;
+        const unique = (points) => points.filter((point, index) => points.findIndex((other) => Math.hypot(other[0] - point[0], other[1] - point[1]) < 0.02) === index);
+        const from = unique(a.slots.flatMap(anchorsOf));
+        const to = unique(b.slots.flatMap(anchorsOf));
+        if (from.length !== to.length) return null;
+        const [vx, vy, vw, vh] = a.viewBox;
+        const [cx, cy] = [vx + vw / 2, vy + vh / 2];
+        const same = (one, two) => one.every((point) => two.some((other) => Math.hypot(other[0] - point[0], other[1] - point[1]) < 0.02));
+        if (same(from, to)) return null;
+        for (const angle of SPIN_ANGLES) {
+          const radians = (angle * Math.PI) / 180;
+          const turned = from.map(([x, y]) => [
+            cx + (x - cx) * Math.cos(radians) - (y - cy) * Math.sin(radians),
+            cy + (x - cx) * Math.sin(radians) + (y - cy) * Math.cos(radians),
+          ]);
+          if (same(turned, to)) return angle;
+        }
+        return null;
+      }
+
+      function drawnIssues(a, b) {
+        const issues = [...formIssues(a), ...formIssues(b)];
+        if (a.viewBox !== b.viewBox) issues.unshift(`${a.icon.name} is on ${a.viewBox}, ${b.icon.name} is on ${b.viewBox}`);
+        if (!issues.length) {
+          if (a.morph.slots !== b.morph.slots) issues.push(`${a.icon.name} has ${a.morph.slots} paths, ${b.icon.name} has ${b.morph.slots}`);
+          else a.morph.shapes.forEach((count, index) => {
+            if (count !== b.morph.shapes[index]) issues.push(`path ${index + 1} has ${count} segments in ${a.icon.name} and ${b.morph.shapes[index]} in ${b.icon.name}`);
+          });
+        }
+        return issues;
+      }
+
+      function drawnTravel(a, b) {
+        let distance = 0;
+        let points = 0;
+        a.morph.d.forEach((d, index) => {
+          const from = (d.match(NUMBER) ?? []).map(Number);
+          const to = (b.morph.d[index].match(NUMBER) ?? []).map(Number);
+          for (let i = 0; i + 1 < from.length; i += 2) {
+            distance += Math.hypot(to[i] - from[i], to[i + 1] - from[i + 1]);
+            points += 1;
+          }
+        });
+        return points ? distance / points : 0;
+      }
+
+      function planMorph(a, b, aMarkup, bMarkup) {
+        const angle = spinBetween(aMarkup, bMarkup);
+        if (angle != null) return { kind: "spin", angle };
+        if (morphable(a, b)) return { kind: "drawn", travel: drawnTravel(a, b) };
+        const issues = drawnIssues(a, b);
+        const converted = convertPair(aMarkup, bMarkup);
+        if (converted) return { kind: "converted", converted, travel: converted.travel, issues };
+        const blocked = [a, b].flatMap((entry) => {
+          const { unsupported } = iconForm(entry === a ? aMarkup : bMarkup);
+          return unsupported.length ? [`${entry.icon.name} uses ${unsupported.join(", ")}, which the sheet cannot convert`] : [];
+        });
+        return { kind: "fade", issues: blocked.length ? blocked : issues };
+      }
+
+      function createPlayer(plan, a, b, aMarkup, bMarkup, size, color) {
+        const node = h("div", { class: "player" });
+        if (plan.kind === "spin") {
+          const svg = sized(aMarkup, size);
+          node.append(svg);
+          return { node, frame: (t) => { svg.style.rotate = `${plan.angle * easeInOut(t)}deg`; } };
+        }
+        if (plan.kind === "drawn") {
+          const svg = sized(aMarkup, size);
+          const paths = [...svg.querySelectorAll("path")];
+          const tracks = paths.map((path, index) => ({
+            path,
+            template: a.morph.d[index].split(NUMBER),
+            from: (a.morph.d[index].match(NUMBER) ?? []).map(Number),
+            to: (b.morph.d[index].match(NUMBER) ?? []).map(Number),
+          }));
+          const fillFrom = parse(aMarkup).getAttribute("fill") === "none" ? 0 : 1;
+          const fillTo = parse(bMarkup).getAttribute("fill") === "none" ? 0 : 1;
+          if (fillFrom !== fillTo) svg.setAttribute("fill", color ?? "currentColor");
+          node.append(svg);
+          return {
+            node,
+            frame(t) {
+              const k = easeInOut(t);
+              for (const { path, template, from, to } of tracks) {
+                path.setAttribute("d", template.map((part, i) => (i < from.length ? part + +(from[i] + (to[i] - from[i]) * k).toFixed(3) : part)).join(""));
+              }
+              if (fillFrom !== fillTo) svg.setAttribute("fill-opacity", fillFrom + (fillTo - fillFrom) * k);
+            },
+          };
+        }
+        if (plan.kind === "converted") {
+          const svg = sized(aMarkup, size);
+          const rootA = parse(aMarkup);
+          const rootB = parse(bMarkup);
+          const ink = color ?? "currentColor";
+          const paint = (entry) => ({ fill: entry.kind === "Outline" ? 0 : 1, stroke: entry.stroke ? 1 : 0 });
+          const [from, to] = [paint(a), paint(b)];
+          svg.replaceChildren();
+          for (const name of ["fill", "stroke", "fill-rule", "stroke-width", "stroke-linecap", "stroke-linejoin"]) svg.removeAttribute(name);
+          svg.setAttribute("fill", ink);
+          svg.setAttribute("stroke", ink);
+          svg.setAttribute("fill-rule", "evenodd");
+          svg.setAttribute("stroke-width", a.stroke || b.stroke || 1.5);
+          svg.setAttribute("stroke-linecap", rootA.getAttribute("stroke-linecap") ?? rootB.getAttribute("stroke-linecap") ?? "round");
+          svg.setAttribute("stroke-linejoin", rootA.getAttribute("stroke-linejoin") ?? rootB.getAttribute("stroke-linejoin") ?? "round");
+          const path = document.createElementNS(SVG_NS, "path");
+          svg.append(path);
+          node.append(svg);
+          return {
+            node,
+            frame(t) {
+              const k = easeInOut(t);
+              path.setAttribute("d", slotsD(lerpSlots(plan.converted.from, plan.converted.to, k)));
+              svg.setAttribute("fill-opacity", from.fill + (to.fill - from.fill) * k);
+              svg.setAttribute("stroke-opacity", from.stroke + (to.stroke - from.stroke) * k);
+            },
+          };
+        }
+        const one = sized(aMarkup, size);
+        const two = sized(bMarkup, size);
+        node.append(one, two);
+        return {
+          node,
+          frame(t) {
+            const k = easeInOut(t);
+            one.style.cssText = `opacity:${1 - k};scale:${1 - 0.2 * k};filter:blur(${4 * k}px)`;
+            two.style.cssText = `opacity:${k};scale:${0.8 + 0.2 * k};filter:blur(${4 * (1 - k)}px)`;
+          },
+        };
+      }
+
+      /* Customising: overrides apply to every icon until reset */
+
+      function customise(markup, custom) {
+        const svg = parse(markup).cloneNode(true);
+        const nodes = [svg, ...svg.querySelectorAll("*")];
+        const stroked = nodes.some((node) => node.hasAttribute("stroke") && node.getAttribute("stroke") !== "none");
+        if (stroked) {
+          for (const [name, value] of [["stroke-width", custom.stroke], ["stroke-linecap", custom.caps], ["stroke-linejoin", custom.joins]]) {
+            if (value == null) continue;
+            svg.setAttribute(name, value);
+            for (const node of nodes) if (node !== svg && node.hasAttribute(name)) node.setAttribute(name, value);
+          }
+        }
+        for (const name of ["width", "height", "aria-hidden"]) svg.removeAttribute(name);
+        const out = svg.outerHTML;
+        return custom.color ? out.replaceAll("currentColor", custom.color) : out;
+      }
+
+      function exportSvg(markup, size) {
+        const svg = parse(markup).cloneNode(true);
+        svg.setAttribute("xmlns", "http://www.w3.org/2000/svg");
+        svg.setAttribute("width", size);
+        svg.setAttribute("height", size);
+        return svg.outerHTML;
+      }
+
+      function rasterAt(markup, px, color, size) {
+        const svg = sized(markup, px);
+        svg.setAttribute("xmlns", "http://www.w3.org/2000/svg");
+        const canvas = h("canvas", { width: px, height: px, style: `width:${size}px;height:${size}px;image-rendering:pixelated` });
+        const image = new Image();
+        image.onload = () => canvas.getContext("2d").drawImage(image, 0, 0);
+        image.src = `data:image/svg+xml,${encodeURIComponent(svg.outerHTML.replaceAll("currentColor", color))}`;
+        return canvas;
+      }
+
+      const SWATCHES = [
+        { label: "Ink", value: null },
+        { label: "Blue", value: "#0077b6" },
+        { label: "Red", value: "#d93036" },
+        { label: "Green", value: "#2f9e44" },
+        { label: "Orange", value: "#e8590c" },
+        { label: "Violet", value: "#7048e8" },
+      ];
+
+      function slider({ label, min, max, step, value, display, disabled, onInput }) {
+        const fill = h("div", { class: "bar-fill" });
+        const out = h("span", { class: "num" });
+        const node = h("div", {
+          class: "bar slider", role: "slider", tabindex: disabled ? "-1" : "0", "aria-label": label,
+          "aria-valuemin": min, "aria-valuemax": max, ...(disabled ? { "aria-disabled": "true" } : {}),
+        }, fill, h("span", {}, label), out);
+        let current = value;
+        const set = (next, emit) => {
+          current = +Math.min(max, Math.max(min, Math.round(next / step) * step)).toFixed(4);
+          fill.style.width = `${((current - min) / (max - min)) * 100}%`;
+          out.textContent = display(current);
+          node.setAttribute("aria-valuenow", current);
+          node.setAttribute("aria-valuetext", display(current));
+          if (emit) onInput(current);
+        };
+        set(value, false);
+        if (!disabled) {
+          const fromPointer = (event) => {
+            const box = node.getBoundingClientRect();
+            set(min + ((event.clientX - box.left) / box.width) * (max - min), true);
+          };
+          node.addEventListener("pointerdown", (event) => { node.setPointerCapture(event.pointerId); fromPointer(event); });
+          node.addEventListener("pointermove", (event) => { if (node.hasPointerCapture(event.pointerId)) fromPointer(event); });
+          node.addEventListener("keydown", (event) => {
+            const keys = { ArrowRight: step, ArrowUp: step, ArrowLeft: -step, ArrowDown: -step, PageUp: step * 4, PageDown: -step * 4 };
+            const jump = { Home: min, End: max }[event.key];
+            if (!(event.key in keys) && jump == null) return;
+            event.preventDefault();
+            event.stopPropagation();
+            set(jump ?? current + keys[event.key], true);
+          });
+        }
+        return { node, set: (next) => set(next, false) };
+      }
+
+      function field(label, control) {
+        return h("div", { class: "field" }, h("span", { class: "field-label" }, label), control);
+      }
+
+      /* Prompts for an agent */
+
+      const specBlock = (spec) => specLines(spec).map(([key, value]) => `- ${key}: ${value}`).join("\n");
+      const fence = (svg) => `\`\`\`svg\n${svg}\n\`\`\``;
+      const located = (icon) => (icon.added ? "the icon sheet, pasted and not yet in a file" : `\`${icon.file}\``);
+      const morphShapeOf = (spec, a, b) => ({
+        slots: spec.morph.slots || Math.max(a.morph.slots, b?.morph.slots ?? 0, 1),
+        segments: spec.morph.segments || 4,
+      });
+
+      function prompts({ result, measured, markup, target, verdict, spec, sibling }) {
+        const { icon } = result;
+        const form = morphShapeOf(spec, result.entry, target);
+        const list = [];
+        if (measured.misses.length) {
+          list.push({
+            title: "Fix The Findings",
+            note: `${measured.misses.length} ${measured.misses.length === 1 ? "finding" : "findings"} against the spec.`,
+            text: [
+              `Fix the ${icon.name} icon at ${located(icon)} so it passes the icon spec for ${sheet.title}.`,
+              "",
+              "Findings:",
+              ...measured.misses.map((miss) => `- [${miss.rule}] ${miss.text}`),
+              "",
+              `The spec, measured from the ${spec.count} icons in \`${sheet.source}\`:`,
+              specBlock(spec),
+              "",
+              "Current markup:",
+              "",
+              fence(markup),
+              "",
+              "Change only this icon and keep its silhouette. Then reopen the icon sheet and confirm the findings are gone.",
+            ].join("\n"),
+          });
+        }
+        list.push({
+          title: "Redraw To Spec",
+          note: "Keeps what it means and redraws how it is built.",
+          text: [
+            `Redraw the ${icon.name} icon at ${located(icon)} on the icon spec for ${sheet.title}. Keep what it means and fix how it is drawn.`,
+            "",
+            `The spec, measured from the ${spec.count} icons in \`${sheet.source}\`:`,
+            specBlock(spec),
+            ...(icon.new ? ["", `Keep it in the morph form: ${form.slots} paths, each an M followed by ${form.segments} explicit C segments.`] : []),
+            "",
+            "Current markup:",
+            "",
+            fence(markup),
+            "",
+            "Return one <svg> that uses currentColor. Then reopen the icon sheet and confirm it passes.",
+          ].join("\n"),
+        });
+        if (target) {
+          list.push({
+            title: `Morph Into ${target.icon.name}`,
+            note: { drawn: "They morph today. Asks for a tighter pairing.", spin: "One shape turned. Asks for one form and a rotation." }[verdict.kind] ?? "Not in the morph form yet. Asks for it.",
+            text: [
+              `Make ${icon.name} and ${target.icon.name} morph into each other on the icon sheet for ${sheet.title}.`,
+              "",
+              `Draw both in the morph form: ${form.slots} paths, each an M followed by ${form.segments} explicit C segments, and no other elements.`,
+              "Path 1 in one icon becomes path 1 in the other, so order the paths by the part each one turns into, and start each path at the point it should travel from.",
+              "",
+              ...(verdict.kind === "drawn"
+                ? [`They already share the form and points travel ${format(verdict.travel)} units on average. Reorder starts and segments so they travel less and nothing crosses mid-way.`]
+                : verdict.kind === "spin"
+                  ? [`${target.icon.name} is ${icon.name} turned ${verdict.angle}°. Draw them as one morph form and rotate the whole icon between them instead of moving points.`]
+                  : ["Why they do not morph as drawn:", ...verdict.issues.map((issue) => `- ${issue}`)]),
+              "",
+              `${icon.name} at ${located(icon)}:`,
+              "",
+              fence(markup),
+              "",
+              `${target.icon.name} at ${located(target.icon)}:`,
+              "",
+              fence(target.icon.svg),
+              "",
+              "Keep both on the spec:",
+              specBlock(spec),
+              "",
+              "Then open the icon sheet, put both in the Morph sequence and click the step between them to check the middle.",
+            ].join("\n"),
+          });
+        }
+        const name = sibling.trim() || "<name>";
+        list.push({
+          title: "Draw A Sibling",
+          note: `A new icon drawn to match ${icon.name}.`,
+          sibling: true,
+          text: [
+            `Draw a new icon named ${name} for ${sheet.title} in \`${sheet.source}\`, to sit beside ${icon.name}.`,
+            "",
+            "Match the spec:",
+            specBlock(spec),
+            "",
+            `Draw it in the morph form, ${form.slots} paths of M and ${form.segments} C segments, so it morphs into the other new icons. Use ${icon.name} as the reference for weight and padding:`,
+            "",
+            fence(markup),
+            "",
+            "Add it to the sheet as a new icon, then reopen the sheet and confirm it passes.",
+          ].join("\n"),
+        });
+        return list;
+      }
+
+      function promptCard(prompt, siblingInput) {
+        return h("div", { class: "prompt" },
+          h("div", { class: "prompt-head" },
+            h("div", {}, h("p", { class: "prompt-title" }, prompt.title), h("p", { class: "prompt-note" }, prompt.note)),
+            copyButton("Copy", () => prompt.text)),
+          prompt.sibling ? siblingInput : null,
+          h("details", { class: "disclosure" }, h("summary", {}, "Preview"), h("pre", {}, prompt.text)));
+      }
+
+      /* The inspector, shared by every variant */
+
+      function createInspector(data, { layout, size, onClose, onStep }) {
+        const { spec } = data;
+        const TABS = ["Inspect", "Customise", "Morph", "Prompts"];
+        const view = { tab: "Inspect", theme: pageTheme(), grid: false, pixels: false };
+        const custom = { size: 20, stroke: null, caps: null, joins: null, color: null };
+        const morph = { sequence: [], pos: 0, segment: 0, playing: false, slow: false, raf: 0 };
+        const MAX_STEPS = 8;
+        const KIND = { spin: "Spins", drawn: "Morphs", converted: "Converted", fade: "Cross-Fades" };
+        let result = null;
+        let measured = null;
+        let sibling = "";
+        let token = 0;
+        let players = [];
+        let shownPlayer = null;
+        let liveNote = null;
+
+        const stageGlyph = createStage(size);
+        const lines = h("div", { html: keylines(spec, size), style: "position:absolute;inset:0" });
+        stageGlyph.holder.append(lines);
+        const count = h("span", { class: "stage-count" });
+        const iconButton = (label, icon, action) => {
+          const node = h("button", { class: "icon-button", type: "button", "aria-label": label, title: label }, svgIcon(icon));
+          node.addEventListener("click", action);
+          return node;
+        };
+        const playButton = h("button", { class: "icon-button", type: "button" });
+        playButton.addEventListener("click", () => (morph.playing ? pause() : play()));
+        const steps = h("div", { class: "steps" });
+        const addButton = h("button", { class: "icon-button", type: "button", "aria-label": "Add To Sequence", title: "Add To Sequence", "aria-expanded": "false" }, svgIcon(CHROME.plus));
+        addButton.addEventListener("click", () => (picker.hidden ? openPicker() : closePicker()));
+        const picker = h("div", { class: "picker", role: "group", "aria-label": "Add To Sequence", hidden: "" });
+        picker.addEventListener("keydown", (event) => {
+          if (event.key !== "Escape") return;
+          event.preventDefault();
+          event.stopPropagation();
+          closePicker();
+          addButton.focus();
+        });
+        const speed = h("div", { class: "segmented", role: "group", "aria-label": "Speed" }, ...[["1×", "Normal Speed"], ["¼×", "Quarter Speed"]].map(([label, name]) => {
+          const button = h("button", { type: "button", "aria-label": name, title: name, "aria-pressed": String((label === "¼×") === morph.slow) }, label);
+          button.addEventListener("click", () => {
+            morph.slow = label === "¼×";
+            for (const other of speed.children) other.setAttribute("aria-pressed", String(other === button));
+          });
+          return button;
+        }));
+        const timeline = h("div", { class: "timeline", role: "group", "aria-label": "Morph Sequence", hidden: "" }, playButton, steps, addButton, speed);
+        const stage = h("div", { class: "stage surface", "data-theme": view.theme },
+          h("div", { class: "stage-top" },
+            h("div", { style: "display:flex;gap:2px" }, iconButton("Previous Icon", CHROME.prev, () => onStep(-1)), iconButton("Next Icon", CHROME.next, () => onStep(1))),
+            count),
+          h("div", { class: "stage-view" }, stageGlyph.holder),
+          timeline,
+          picker);
+        stage.addEventListener("pointerdown", (event) => {
+          if (!picker.hidden && !picker.contains(event.target) && !addButton.contains(event.target)) closePicker();
+        });
+        const showPlaying = () => {
+          const label = morph.playing ? "Pause" : "Play";
+          playButton.replaceChildren(svgIcon(morph.playing ? CHROME.pause : CHROME.play));
+          playButton.setAttribute("aria-label", label);
+          playButton.title = label;
+        };
+        showPlaying();
+
+        const head = h("div", { class: "panel-head" });
+        const tabButtons = TABS.map((tab) => {
+          const button = h("button", { type: "button", "aria-pressed": String(tab === view.tab) }, tab);
+          button.addEventListener("click", () => {
+            view.tab = tab;
+            for (const other of tabButtons) other.setAttribute("aria-pressed", String(other === button));
+            if (tab === "Morph" && !reduced.matches) morph.playing = true;
+            renderBody();
+            refreshStage();
+          });
+          return button;
+        });
+        const tabs = h("div", { class: "segmented tabs", role: "group", "aria-label": "Inspector View" }, ...tabButtons);
+        const body = h("div", { class: "tab-body" });
+        const foot = h("div", { class: "panel-foot" },
+          copyButton("Copy SVG", () => exportSvg(customised(), custom.size)),
+          copyButton("Copy Prompt", () => promptList()[0].text));
+        const panel = h("aside", { class: "panel" }, head, tabs, body, foot);
+        const node = h("div", { class: "insp", "data-layout": layout }, stage, panel);
+        const maxInk = Math.max(...Object.values(spec.ranges).map(([, high]) => high)) * 1.4;
+
+        const customised = () => customise(result.icon.svg, custom);
+        const markupOf = (entry) => customise(entry.icon.svg, custom);
+        const planBetween = (a, b) => planMorph(a, b, markupOf(a), markupOf(b));
+        const firstTarget = () => morph.sequence[1] ?? null;
+        const isCustom = () => custom.stroke != null || custom.caps != null || custom.joins != null || custom.color != null;
+        const promptList = () => prompts({
+          result, measured, markup: customised(), target: firstTarget(),
+          verdict: firstTarget() ? planBetween(result.entry, firstTarget()) : null, spec, sibling,
+        });
+
+        function seedSequence() {
+          const known = new Set(data.results.map((other) => other.entry));
+          const kept = morph.sequence.slice(1).filter((entry) => entry !== result.entry && known.has(entry));
+          const others = data.results.filter((other) => other !== result);
+          const fallback = (others.find((other) => morphable(result.entry, other.entry)) ?? others[0])?.entry;
+          morph.sequence = [result.entry, ...(kept.length ? kept : fallback ? [fallback] : [])];
+          morph.pos = 0;
+          morph.segment = 0;
+        }
+
+        async function remeasure() {
+          const mine = ++token;
+          if (!isCustom()) {
+            measured = { entry: result.entry, misses: result.misses, status: result.status };
+          } else {
+            const entry = await measure({ ...result.icon, svg: customised() });
+            if (mine !== token) return;
+            const misses = lint(entry, spec);
+            measured = { entry, misses, status: statusOf(entry, misses, spec) };
+          }
+          renderHead();
+          if (liveNote) liveNote.textContent = noteText();
+          if (view.tab === "Inspect") renderBody();
+        }
+
+        const noteText = () => {
+          const suffix = isCustom() ? " as customised" : "";
+          const misses = measured.misses.length;
+          return misses ? `${misses} ${misses === 1 ? "finding" : "findings"} against the spec${suffix}.` : `Passes the spec${suffix}.`;
+        };
+
+        function changed() {
+          refreshStage();
+          renderHead();
+          remeasure();
+        }
+
+        function renderHead() {
+          const { icon } = result;
+          head.replaceChildren(...[
+            h("span", { class: "panel-title" }, icon.name),
+            icon.new ? h("span", { class: "chip", "data-new": "" }, icon.added ? "Added" : "New") : null,
+            measured.status === "Pass" && !icon.new ? null : h("span", { class: "chip", "data-status": measured.status }, measured.status),
+            isCustom() ? h("span", { class: "chip" }, "Customised") : null,
+            iconButton("Close", CHROME.close, onClose)].filter(Boolean));
+        }
+
+        const bar = (label, value, display, max, range) => h("div", { class: "bar" },
+          h("div", { class: "bar-fill", style: `width:${Math.min(100, Math.max(0, value / max) * 100)}%` }),
+          range ? h("div", { class: "bar-range", title: "The set's range", style: `left:${(range[0] / max) * 100}%;width:${((range[1] - range[0]) / max) * 100}%` }) : null,
+          h("span", {}, label), h("span", { class: "num" }, display));
+
+        function renderInspect() {
+          const { entry, misses, status } = measured;
+          return [
+            h("div", {},
+              segmented("Fill", ["Light", "Dark"], view.theme === "light" ? "Light" : "Dark", (value) => { view.theme = value.toLowerCase(); refreshStage(); }),
+              segmented("Grid", ["Off", "On"], view.grid ? "On" : "Off", (value) => { view.grid = value === "On"; refreshStage(); }),
+              segmented("Pixels", ["Off", "On"], view.pixels ? "On" : "Off", (value) => { view.pixels = value === "On"; refreshStage(); })),
+            h("div", { class: "bars" },
+              bar("Stroke", entry.stroke, entry.stroke ? format(entry.stroke) : "None", 3),
+              bar("Inset", entry.inset, `${format(entry.inset)}, ${entry.edge}`, spec.padding * 2 || 4),
+              bar("Ink", entry.coverage ?? 0, entry.coverage == null ? "Not Verified" : percent(entry.coverage), maxInk, spec.ranges[entry.kind])),
+            h("div", {},
+              h("p", { class: "section-title" }, "Findings"),
+              findingList(misses, status === "Not Verified" ? "The set has no icons of this kind to compare." : "Passes the spec.", false)),
+          ];
+        }
+
+        function renderCustomise() {
+          const { entry } = result;
+          const root = parse(result.icon.svg);
+          const title = (value) => value[0].toUpperCase() + value.slice(1);
+          const swatches = SWATCHES.map((swatch) => {
+            const button = h("button", {
+              class: "swatch-button", type: "button", "aria-label": swatch.label, title: swatch.label,
+              "aria-pressed": String(custom.color === swatch.value), style: `background:${swatch.value ?? "var(--text-primary)"}`,
+            });
+            button.addEventListener("click", () => {
+              custom.color = swatch.value;
+              for (const other of swatchRow.querySelectorAll(".swatch-button")) other.setAttribute("aria-pressed", String(other === button));
+              changed();
+            });
+            return button;
+          });
+          const picker = h("input", { class: "color-input", type: "color", "aria-label": "Custom Colour", title: "Custom Colour", value: custom.color ?? "#080808" });
+          picker.addEventListener("input", () => {
+            custom.color = picker.value;
+            for (const other of swatchRow.querySelectorAll(".swatch-button")) other.setAttribute("aria-pressed", "false");
+            changed();
+          });
+          const swatchRow = h("div", { class: "swatches" }, ...swatches, picker);
+          liveNote = h("p", { class: "live-note", role: "status" }, noteText());
+          const reset = h("button", { class: "button", type: "button" }, "Reset");
+          reset.addEventListener("click", () => {
+            Object.assign(custom, { size: 20, stroke: null, caps: null, joins: null, color: null });
+            renderBody();
+            changed();
+          });
+          return [
+            h("div", { class: "bars" },
+              slider({
+                label: "Size", min: 12, max: 64, step: 1, value: custom.size, display: (value) => `${value}px`,
+                onInput: (value) => { custom.size = value; refreshStage(); },
+              }).node,
+              slider({
+                label: "Stroke", min: 0.5, max: 3, step: 0.25, value: custom.stroke ?? (entry.stroke || 1.5), disabled: !entry.stroke,
+                display: (value) => (entry.stroke ? format(value) : "None, filled"),
+                onInput: (value) => { custom.stroke = value; changed(); },
+              }).node),
+            entry.stroke ? h("div", {},
+              segmented("Caps", ["Round", "Butt", "Square"], title(custom.caps ?? root.getAttribute("stroke-linecap") ?? "butt"), (value) => { custom.caps = value.toLowerCase(); changed(); }),
+              segmented("Joins", ["Round", "Miter", "Bevel"], title(custom.joins ?? root.getAttribute("stroke-linejoin") ?? "miter"), (value) => { custom.joins = value.toLowerCase(); changed(); })) : null,
+            field("Colour", swatchRow),
+            h("div", { class: "controls" }, liveNote, reset),
+          ];
+        }
+
+        function verdictBody(plan, from, to) {
+          return {
+            spin: () => h("p", {}, `${to.icon.name} is ${from.icon.name} turned ${plan.angle}°, so it rotates instead of morphing.`),
+            drawn: () => h("p", {}, `Both are drawn in the morph form, so this is the morph that ships. Points travel ${format(plan.travel)} on average.`),
+            converted: () => h("div", { class: "verdict-body" },
+              h("p", {}, "Not drawn in the morph form yet, so the sheet converted both for this preview. The Morph Into prompt asks for the real one."),
+              h("ul", {}, ...plan.issues.map((issue) => h("li", {}, issue)))),
+            fade: () => h("ul", {}, ...plan.issues.map((issue) => h("li", {}, issue))),
+          }[plan.kind]();
+        }
+
+        function renderMorph() {
+          const { sequence } = morph;
+          const rows = sequence.slice(1).map((to, index) => {
+            const from = sequence[index];
+            const plan = planBetween(from, to);
+            const open = index === morph.segment;
+            const row = h("button", { class: "transition", type: "button", "aria-expanded": String(open) },
+              h("span", {}, `${from.icon.name} to ${to.icon.name}`),
+              h("span", { class: "chip", ...(plan.kind === "fade" || plan.kind === "converted" ? {} : { "data-new": "" }) }, KIND[plan.kind]));
+            row.addEventListener("click", () => selectSegment(index));
+            return h("div", { class: "verdict" }, row, open ? verdictBody(plan, from, to) : null);
+          });
+          const name = h("input", { class: "input", type: "text", placeholder: "Icon Name", "aria-label": "Icon Name" });
+          const markup = h("textarea", { class: "input textarea", rows: "5", spellcheck: "false", placeholder: "<svg viewBox=\"0 0 16 16\">", "aria-label": "SVG Markup" });
+          const error = h("p", { class: "error", role: "status" });
+          const add = h("button", { class: "button", type: "button" }, "Add To Sequence");
+          add.addEventListener("click", async () => {
+            const added = await data.addIcon(name.value, markup.value);
+            if (!added) { error.textContent = "Paste markup that starts with <svg."; return; }
+            insertStep(added.entry);
+          });
+          return [
+            h("p", { class: "live-note" }, rows.length
+              ? "Add icons with the plus under the stage. Each step says how one icon turns into the next."
+              : "Add an icon with the plus under the stage to see how this one turns into it."),
+            ...rows,
+            h("details", { class: "disclosure" },
+              h("summary", {}, "Paste An SVG"),
+              h("div", { class: "paste" }, name, markup, error, add)),
+          ];
+        }
+
+        function renderPrompts() {
+          const siblingInput = h("input", { class: "input", type: "text", placeholder: "New Icon Name", "aria-label": "New Icon Name", value: sibling });
+          const list = promptList();
+          const cards = list.map((prompt) => promptCard(prompt, siblingInput));
+          siblingInput.addEventListener("input", () => {
+            sibling = siblingInput.value;
+            const fresh = promptList().at(-1);
+            list[list.length - 1].text = fresh.text;
+            cards.at(-1).querySelector("pre").textContent = fresh.text;
+          });
+          return cards;
+        }
+
+        function renderBody() {
+          if (view.tab !== "Morph") pause();
+          liveNote = null;
+          const render = { Inspect: renderInspect, Customise: renderCustomise, Morph: renderMorph, Prompts: renderPrompts }[view.tab];
+          body.replaceChildren(...render().filter(Boolean));
+        }
+
+        function refreshStage() {
+          stage.dataset.theme = view.theme;
+          lines.firstElementChild.toggleAttribute("data-on", view.grid && view.tab !== "Morph");
+          timeline.hidden = view.tab !== "Morph";
+          if (view.tab !== "Morph") closePicker();
+          players = [];
+          shownPlayer = null;
+          if (view.tab === "Morph") {
+            players = morph.sequence.slice(1).map((to, index) => {
+              const from = morph.sequence[index];
+              return createPlayer(planBetween(from, to), from, to, markupOf(from), markupOf(to), size, custom.color);
+            });
+            renderTimeline();
+            if (players.length) {
+              paintFrame();
+              if (morph.playing) play();
+              return;
+            }
+          }
+          pause();
+          stageGlyph.overlay(null);
+          const markup = customised();
+          const ink = custom.color ?? INK[view.theme];
+          stageGlyph.show(result.entry, markup, view.pixels ? () => rasterAt(markup, custom.size, ink, size) : null,
+            `${view.pixels}:${custom.size}:${view.theme}:${markup}`);
+        }
+
+        function renderTimeline() {
+          const { sequence } = morph;
+          const nodes = [];
+          sequence.forEach((entry, index) => {
+            if (index > 0) {
+              const plan = planBetween(sequence[index - 1], entry);
+              const link = h("button", {
+                class: "step-link", type: "button", "data-kind": plan.kind, "aria-pressed": String(index - 1 === morph.segment),
+                "aria-label": `${sequence[index - 1].icon.name} to ${entry.icon.name}, ${KIND[plan.kind]}`, title: KIND[plan.kind],
+              }, h("span", { class: "step-line" }, h("span", { class: "step-fill" })), h("span", { class: "step-kind" }, KIND[plan.kind]));
+              link.addEventListener("click", () => selectSegment(index - 1));
+              nodes.push(link);
+            }
+            const key = h("button", { class: "step", type: "button", "aria-label": entry.icon.name, title: entry.icon.name }, sized(entry.icon.svg, 16));
+            key.addEventListener("click", () => jump(index));
+            const wrap = h("span", { class: "step-wrap" }, key);
+            if (index > 0) {
+              key.setAttribute("aria-keyshortcuts", "Delete");
+              key.addEventListener("keydown", (event) => {
+                if (event.key !== "Delete" && event.key !== "Backspace") return;
+                event.preventDefault();
+                removeStep(index, true);
+              });
+              const remove = h("button", { class: "step-remove", type: "button", tabindex: "-1", "aria-label": `Remove ${entry.icon.name}`, title: "Remove" }, svgIcon(CHROME.close));
+              remove.addEventListener("click", () => removeStep(index, false));
+              wrap.append(remove);
+            }
+            nodes.push(wrap);
+          });
+          steps.replaceChildren(...nodes);
+          addButton.disabled = sequence.length >= MAX_STEPS;
+          playButton.disabled = sequence.length < 2;
+        }
+
+        function paintFrame() {
+          const segment = Math.max(0, Math.min(Math.floor(morph.pos), players.length - 1));
+          const current = players[segment];
+          if (current !== shownPlayer) {
+            stageGlyph.overlay(current.node);
+            shownPlayer = current;
+          }
+          current.frame(morph.pos - segment);
+          steps.querySelectorAll(".step-fill").forEach((fill, index) => {
+            fill.style.width = `${index < segment ? 100 : index === segment ? (morph.pos - segment) * 100 : 0}%`;
+          });
+          steps.querySelectorAll(".step").forEach((key, index) => key.toggleAttribute("data-current", Math.round(morph.pos) === index));
+        }
+
+        function jump(index) {
+          pause();
+          morph.pos = index;
+          if (index < morph.sequence.length - 1) morph.segment = index;
+          renderBody();
+          renderTimeline();
+          if (players.length) paintFrame();
+        }
+
+        function selectSegment(index) {
+          pause();
+          morph.segment = index;
+          morph.pos = index + 0.5;
+          renderBody();
+          renderTimeline();
+          paintFrame();
+        }
+
+        function insertStep(entry) {
+          if (morph.sequence.length >= MAX_STEPS || morph.sequence.at(-1) === entry) return;
+          morph.sequence.push(entry);
+          morph.segment = morph.sequence.length - 2;
+          morph.pos = morph.segment;
+          morph.playing = !reduced.matches;
+          for (const item of picker.children) item.disabled = item.dataset.index === String(data.results.findIndex((other) => other.entry === entry));
+          if (morph.sequence.length >= MAX_STEPS) closePicker();
+          renderBody();
+          refreshStage();
+        }
+
+        function removeStep(index, refocus) {
+          morph.sequence.splice(index, 1);
+          morph.segment = Math.max(0, Math.min(morph.segment, morph.sequence.length - 2));
+          morph.pos = Math.min(morph.pos, Math.max(0, morph.sequence.length - 1));
+          renderBody();
+          refreshStage();
+          if (refocus) steps.querySelectorAll(".step")[index - 1]?.focus();
+        }
+
+        function openPicker() {
+          const last = morph.sequence.at(-1);
+          picker.replaceChildren(...data.results.map((other, index) => {
+            const item = h("button", { class: "picker-item", type: "button", "data-index": index, "aria-label": other.icon.name, title: other.icon.name }, sized(other.icon.svg, 16));
+            item.disabled = other.entry === last;
+            item.addEventListener("click", () => insertStep(other.entry));
+            return item;
+          }));
+          picker.hidden = false;
+          addButton.setAttribute("aria-expanded", "true");
+          picker.querySelector("button:not(:disabled)")?.focus();
+        }
+
+        function closePicker() {
+          picker.hidden = true;
+          addButton.setAttribute("aria-expanded", "false");
+        }
+
+        function play() {
+          cancelAnimationFrame(morph.raf);
+          const end = morph.sequence.length - 1;
+          if (end < 1) return pause();
+          morph.playing = true;
+          showPlaying();
+          let direction = morph.pos >= end ? -1 : 1;
+          let last = performance.now();
+          let hold = 0;
+          const tick = (now) => {
+            if (!node.isConnected || !node.checkVisibility()) return pause();
+            const elapsed = now - last;
+            last = now;
+            if (hold > 0) hold -= elapsed;
+            else {
+              const from = morph.pos;
+              const stop = direction > 0 ? Math.floor(from) + 1 : Math.ceil(from) - 1;
+              let next = reduced.matches ? stop : from + (direction * elapsed) / (MORPH_MS * (morph.slow ? 4 : 1));
+              if (direction > 0 ? next >= stop : next <= stop) {
+                next = stop;
+                hold = reduced.matches ? HOLD_MS : HOLD_MS / 2;
+              }
+              morph.pos = Math.min(end, Math.max(0, next));
+              if (morph.pos === end || morph.pos === 0) direction = morph.pos === end ? -1 : 1;
+            }
+            paintFrame();
+            morph.raf = requestAnimationFrame(tick);
+          };
+          morph.raf = requestAnimationFrame(tick);
+        }
+
+        function pause() {
+          cancelAnimationFrame(morph.raf);
+          morph.playing = false;
+          showPlaying();
+        }
+
+        return {
+          node,
+          show(next, position, total) {
+            result = next;
+            measured = { entry: next.entry, misses: next.misses, status: next.status };
+            if (position != null) count.textContent = `${position} of ${total}`;
+            seedSequence();
+            renderHead();
+            renderBody();
+            refreshStage();
+            if (isCustom()) remeasure();
+          },
+        };
+      }
+
+      /* The main page */
+
+      const VIEWS = { Icons: ["All", "New", "Issues", "Spec"], Review: ["Pixels", "Weight", "Morph"] };
+
+      function morphPairs(results, spec) {
+        const ready = results.filter((result) => result.icon.new && !lint(result.entry, spec).some((miss) => miss.rule === "icons-morph-form"));
+        const pairs = new Map();
+        for (const kind of new Set(ready.map((result) => result.entry.kind))) {
+          const group = ready.filter((result) => result.entry.kind === kind);
+          if (group.length < 2) continue;
+          group.forEach((result, index) => pairs.set(result, group[(index + 1) % group.length]));
+        }
+        return pairs;
+      }
+
+      function measurements(results, open) {
+        const head = ["Icon", "Kind", "Stroke", "Inset", "Ink", "Status"];
+        return h("div", { class: "table", role: "table", "aria-label": "Measurements" },
+          h("div", { class: "table-row table-head", role: "row" }, ...head.map((label) => h("span", { role: "columnheader" }, label))),
+          ...results.map((result) => {
+            const { entry } = result;
+            const name = h("button", { class: "link", type: "button" }, result.icon.name);
+            name.addEventListener("click", () => open(result));
+            return h("div", { class: "table-row", role: "row" },
+              h("span", { role: "cell" }, name, result.icon.new ? h("span", { class: "quiet" }, result.icon.added ? " Added" : " New") : null),
+              h("span", { role: "cell", class: "quiet" }, entry.kind),
+              h("span", { role: "cell", class: "quiet num" }, entry.stroke ? format(entry.stroke) : "None"),
+              h("span", { role: "cell", class: "quiet num" }, `${format(entry.inset)}, ${entry.edge[0].toUpperCase()}${entry.edge.slice(1)}`),
+              h("span", { role: "cell", class: "quiet num" }, entry.coverage == null ? "Not Verified" : percent(entry.coverage)),
+              h("span", { role: "cell", class: "status", "data-status": result.status, title: result.misses.map((miss) => miss.text).join("; ") }, result.status));
+          }));
+      }
+
+      function createApp(root, data) {
+        const { results, spec } = data;
+        const state = { view: "All", kind: "All", size: 20, theme: pageTheme(), query: "", open: -1 };
+        const kinds = [...new Set(results.map((result) => result.entry.kind))];
+        const counts = {
+          All: () => results.length,
+          New: () => results.filter((result) => result.icon.new).length,
+          Issues: () => results.filter((result) => result.misses.length).length,
+        };
+        const countNodes = Object.fromEntries(Object.keys(counts).map((key) => [key, h("span", { class: "count" })]));
+        let loop = 0;
+
+        const tiles = h("div", { class: "tiles" });
+        const content = h("div", { class: "content" });
+        const crumb = h("span", {}, "All");
+        const visible = () => results.filter((result) =>
+          (state.view !== "New" || result.icon.new) &&
+          (state.view !== "Issues" || result.misses.length) &&
+          (state.kind === "All" || result.entry.kind === state.kind) &&
+          result.icon.name.toLowerCase().includes(state.query.toLowerCase()));
+
+        const navButtons = [];
+        const navButton = (label, extra) => {
+          const button = h("button", { type: "button", "aria-pressed": String(state.view === label) }, label, extra);
+          button.addEventListener("click", () => {
+            state.view = label;
+            for (const other of navButtons) other.setAttribute("aria-pressed", String(other === button));
+            crumb.textContent = label;
+            paint();
+          });
+          navButtons.push(button);
+          return button;
+        };
+
+        function tile(result, glyph, caption) {
+          const index = results.indexOf(result);
+          const label = result.misses.length ? result.status : result.icon.added ? "Added" : result.icon.new ? "New" : null;
+          const node = h("button", {
+            class: "tile surface", type: "button", "data-theme": state.theme, "data-index": index,
+            "aria-label": `${caption ?? result.icon.name}${label ? `, ${label}` : ""}`, "aria-expanded": String(index === state.open),
+          },
+            glyph,
+            label ? h("span", { class: "badge", "data-status": result.misses.length ? result.status : "New" }, label) : null,
+            h("span", { class: "tile-name" }, caption ?? result.icon.name));
+          node.addEventListener("click", () => open(index));
+          return node;
+        }
+
+        function playAll(players) {
+          cancelAnimationFrame(loop);
+          let t = 0;
+          let direction = 1;
+          let hold = HOLD_MS;
+          let last = performance.now();
+          const tick = (now) => {
+            if (!content.contains(players[0]?.node)) return;
+            const elapsed = now - last;
+            last = now;
+            if (hold > 0) hold -= elapsed;
+            else if (reduced.matches) {
+              t = direction > 0 ? 1 : 0;
+              direction = -direction;
+              hold = HOLD_MS;
+            } else {
+              t = Math.min(1, Math.max(0, t + (direction * elapsed) / MORPH_MS));
+              if (t === 0 || t === 1) {
+                direction = -direction;
+                hold = HOLD_MS;
+              }
+            }
+            for (const player of players) player.frame(t);
+            loop = requestAnimationFrame(tick);
+          };
+          loop = requestAnimationFrame(tick);
+        }
+
+        function paint() {
+          for (const [key, node] of Object.entries(countNodes)) node.textContent = String(counts[key]());
+          cancelAnimationFrame(loop);
+          tiles.removeAttribute("data-large");
+          if (state.view === "Spec") {
+            const brands = sheet.icons.filter((icon) => icon.brand).map((icon) => icon.name);
+            content.replaceChildren(h("div", { class: "spec-view" },
+              h("div", { class: "card" },
+                h("div", { class: "card-head" }, "Spec", copyButton("Copy Spec", data.copySpec)),
+                h("p", { class: "card-note" }, `Measured from all ${spec.count} existing icons on ${spec.viewBox} in `, h("code", {}, sheet.source),
+                  brands.length ? `. Brand marks left out: ${brands.join(", ")}.` : "."),
+                specRows(spec)),
+              h("div", { class: "card" },
+                h("div", { class: "card-head" }, "Findings", copyButton("Copy Findings", data.copyFindings)),
+                findingList(data.findings, data.drawn ? "Every new icon passes the spec." : "No new icons yet.")),
+              h("div", { class: "card card-wide" },
+                h("div", { class: "card-head" }, "Measurements", h("span", { class: "card-note" }, "Ink is the rendered stroke and fill")),
+                measurements(results, (result) => open(results.indexOf(result))))));
+            return;
+          }
+          const shown = visible();
+          if (state.view === "Morph") {
+            const pairs = morphPairs(results, spec);
+            const players = [];
+            tiles.replaceChildren(...shown.filter((result) => pairs.has(result)).map((result) => {
+              const next = pairs.get(result);
+              const player = createPlayer({ kind: "drawn" }, result.entry, next.entry, result.icon.svg, next.icon.svg, 48);
+              players.push(player);
+              return tile(result, player.node, `${result.icon.name} to ${next.icon.name}`);
+            }));
+            tiles.setAttribute("data-large", "");
+            content.replaceChildren(players.length ? tiles : h("p", { class: "empty" }, "Morphs show once two new icons of one kind are in the morph form."));
+            if (players.length) playAll(players);
+            return;
+          }
+          tiles.replaceChildren(...shown.map((result) => {
+            if (state.view === "Pixels") {
+              const native = Number(result.entry.viewBox.split(" ")[2]) || 16;
+              return tile(result, rasterAt(result.icon.svg, native, INK[state.theme], native * 3));
+            }
+            if (state.view === "Weight") return tile(result, h("span", { class: "blur" }, sized(result.icon.svg, 48)));
+            return tile(result, sized(result.icon.svg, state.size));
+          }));
+          if (state.view === "Weight" || state.view === "Pixels") tiles.setAttribute("data-large", "");
+          content.replaceChildren(shown.length ? tiles : h("p", { class: "empty" }, "No icons match."));
+        }
+
+        const search = h("input", { type: "search", placeholder: "Search icons", "aria-label": "Search icons" });
+        search.addEventListener("input", () => { state.query = search.value; paint(); });
+        const themeButton = h("button", { class: "icon-button", type: "button", "aria-label": "Dark Tiles", "aria-pressed": String(state.theme === "dark"), title: "Dark Tiles" }, svgIcon(CHROME.contrast));
+        themeButton.addEventListener("click", () => {
+          state.theme = state.theme === "light" ? "dark" : "light";
+          themeButton.setAttribute("aria-pressed", String(state.theme === "dark"));
+          if (state.view === "Pixels") paint();
+          else for (const node of tiles.children) node.dataset.theme = state.theme;
+        });
+
+        const sidebar = h("nav", { class: "sidebar", "aria-label": "Views" },
+          h("div", { class: "brand" }, sheet.title),
+          h("div", {},
+            h("p", { class: "side-label" }, "Icons"),
+            h("div", { class: "nav" },
+              navButton("All", countNodes.All),
+              navButton("New", countNodes.New),
+              navButton("Issues", countNodes.Issues),
+              navButton("Spec", data.findings.length ? h("span", { class: "dot", title: "Findings" }) : null))),
+          h("div", {},
+            h("p", { class: "side-label" }, "Review"),
+            h("div", { class: "nav" }, ...VIEWS.Review.map((label) => navButton(label)))));
+
+        const styleSelect = dropdown("Style", [{ label: "All Styles", value: "All" }, ...kinds.map((kind) => ({ label: kind, value: kind }))], state.kind,
+          (value) => { state.kind = value; paint(); });
+        const sizeSelect = dropdown("Size", SIZES.map((size) => ({ label: `${size}px`, value: String(size) })), String(state.size),
+          (value) => { state.size = Number(value); paint(); });
+
+        const addName = h("input", { class: "input", type: "text", placeholder: "Icon Name", "aria-label": "Icon Name" });
+        const addMarkup = h("textarea", { class: "input textarea", rows: "6", spellcheck: "false", placeholder: "<svg viewBox=\"0 0 16 16\">", "aria-label": "SVG Markup" });
+        const addError = h("p", { class: "error", role: "status" });
+        const addSubmit = h("button", { class: "button", type: "button" }, "Add Icon");
+        const popover = h("div", { class: "popover", popover: "", id: "add-icon", role: "dialog", "aria-label": "Add An Icon" },
+          h("p", { class: "popover-title" }, "Add An Icon"),
+          h("p", { class: "popover-note" }, "Paste an SVG here, or drop .svg files on the grid."),
+          addName, addMarkup, addError,
+          h("div", { class: "popover-foot" }, addSubmit));
+        popover.addEventListener("keydown", (event) => {
+          if (event.key === "Escape") { event.preventDefault(); event.stopPropagation(); popover.hidePopover(); }
+        });
+        const reveal = (result) => {
+          if (!result) return;
+          state.view = "All";
+          for (const other of navButtons) other.setAttribute("aria-pressed", String(other.firstChild.textContent === "All"));
+          crumb.textContent = "All";
+          state.kind = styleSelect.value = "All";
+          state.query = search.value = "";
+          paint();
+          const index = results.indexOf(result);
+          tiles.querySelector(`[data-index="${index}"]`)?.scrollIntoView({ block: "nearest" });
+          open(index);
+        };
+        addSubmit.addEventListener("click", async () => {
+          const added = await data.addIcon(addName.value, addMarkup.value);
+          if (!added) { addError.textContent = "Paste markup that starts with <svg."; return; }
+          addName.value = addMarkup.value = addError.textContent = "";
+          popover.hidePopover();
+          reveal(added);
+        });
+        content.addEventListener("dragover", (event) => {
+          if (!event.dataTransfer.types.includes("Files")) return;
+          event.preventDefault();
+          content.setAttribute("data-drop", "");
+        });
+        content.addEventListener("dragleave", (event) => { if (!content.contains(event.relatedTarget)) content.removeAttribute("data-drop"); });
+        content.addEventListener("drop", async (event) => {
+          event.preventDefault();
+          content.removeAttribute("data-drop");
+          let last = null;
+          for (const file of event.dataTransfer.files) {
+            if (!file.name.toLowerCase().endsWith(".svg")) continue;
+            last = (await data.addIcon(nameFromFile(file.name), await file.text())) ?? last;
+          }
+          reveal(last);
+        });
+        document.addEventListener("paste", async (event) => {
+          if (event.target.closest?.("input, textarea")) return;
+          const text = event.clipboardData.getData("text");
+          if (!/^\s*<svg[\s>]/i.test(text)) return;
+          event.preventDefault();
+          reveal(await data.addIcon("", text));
+        });
+
+        const main = h("div", { class: "main" },
+          h("div", { class: "topbar" },
+            h("label", { class: "search" }, svgIcon(CHROME.search), search, h("span", { class: "kbd" }, "/")),
+            styleSelect,
+            sizeSelect,
+            h("button", { class: "button", type: "button", popovertarget: popover.id }, "Add Icon"),
+            copyButton("Copy Spec", data.copySpec),
+            copyButton("Copy Findings", data.copyFindings),
+            themeButton),
+          h("div", { class: "crumbs" }, h("span", {}, sheet.title), h("span", {}, "/"), crumb),
+          content);
+
+        root.append(h("div", { class: "app" }, sidebar, main, popover));
+        document.addEventListener("keydown", (event) => {
+          if (event.key === "/" && document.activeElement !== search && !event.target.closest("input, textarea, select")) {
+            event.preventDefault();
+            search.focus();
+          }
+        });
+
+        /* The inspector opens as a centred dialog */
+
+        const dialog = h("dialog", { class: "modal", "aria-label": "Icon Details" });
+        const box = h("div", { class: "modal-box" });
+        dialog.append(box);
+        document.body.append(dialog);
+        const tileFor = (index) => tiles.querySelector(`[data-index="${index}"]`);
+        const mark = () => {
+          for (const node of tiles.children) node.setAttribute("aria-expanded", String(Number(node.dataset.index) === state.open));
+        };
+        const inspector = createInspector(data, { layout: "row", size: 224, onClose: () => close(), onStep: (delta) => step(delta) });
+        box.append(inspector.node);
+
+        function select(index) {
+          state.open = index;
+          const list = visible();
+          const at = list.indexOf(results[index]);
+          inspector.show(results[index], at < 0 ? null : at + 1, list.length);
+          mark();
+        }
+
+        function step(delta) {
+          const list = visible();
+          if (!list.length) return;
+          const at = list.indexOf(results[state.open]);
+          const next = list[(at + delta + list.length) % list.length];
+          select(results.indexOf(next));
+        }
+
+        function open(index) {
+          select(index);
+          if (dialog.open) return;
+          dialog.showModal();
+          if (!reduced.matches) {
+            box.animate([{ opacity: 0, scale: 0.96 }, { opacity: 1, scale: 1 }], { duration: 200, easing: EASE_OUT });
+            dialog.animate([{ opacity: 0 }, { opacity: 1 }], { duration: 200, easing: EASE_OUT, pseudoElement: "::backdrop" });
+          }
+        }
+
+        let closing = false;
+        async function close() {
+          if (!dialog.open || closing) return;
+          closing = true;
+          if (!reduced.matches) {
+            await Promise.all([
+              box.animate([{ opacity: 1, scale: 1 }, { opacity: 0, scale: 0.97 }], { duration: 150, easing: EASE_OUT, fill: "forwards" }).finished,
+              dialog.animate([{ opacity: 1 }, { opacity: 0 }], { duration: 150, easing: EASE_OUT, pseudoElement: "::backdrop", fill: "forwards" }).finished,
+            ]);
+          }
+          dialog.close();
+          box.getAnimations().forEach((animation) => animation.cancel());
+          const node = tileFor(state.open);
+          state.open = -1;
+          mark();
+          node?.focus();
+          closing = false;
+        }
+
+        inspector.node.addEventListener("keydown", (event) => {
+          if (event.target.closest("input, textarea, select, [role=slider], .timeline, .picker")) return;
+          if (event.key === "ArrowRight" || event.key === "ArrowLeft") {
+            event.preventDefault();
+            step(event.key === "ArrowRight" ? 1 : -1);
+          }
+        });
+        dialog.addEventListener("cancel", (event) => { event.preventDefault(); close(); });
+        dialog.addEventListener("keydown", (event) => { if (event.key === "Escape") { event.preventDefault(); event.stopPropagation(); close(); } });
+        dialog.addEventListener("click", (event) => { if (event.target === dialog) close(); });
+
+        paint();
+        return {
+          paint,
+          refresh() {
+            paint();
+            if (state.open >= 0) select(state.open);
+          },
+        };
+      }
+
+      (async () => {
+        document.title = `${sheet.title} · Icons`;
+        const icons = sheet.icons.filter((icon) => !icon.brand).sort((a, b) => a.name.localeCompare(b.name));
+        const measured = [];
+        for (const icon of icons) measured.push(await measure(icon));
+        const spec = derive(measured);
+        const results = measured.map((entry) => {
+          const misses = lint(entry, spec);
+          return { entry, icon: entry.icon, misses, status: statusOf(entry, misses, spec) };
+        });
+        const findings = results.filter((result) => result.icon.new)
+          .flatMap((result) => result.misses.map((miss) => ({ ...miss, name: result.icon.name, file: result.icon.file })));
+        let app = null;
+        const data = {
+          results, spec, findings, drawn: icons.filter((icon) => icon.new).length,
+          copySpec: () => specMarkdown(spec, measured),
+          copyFindings: () => findingsText(findings),
+          async addIcon(name, markup) {
+            const svg = parse(markup ?? "");
+            if (!svg) return null;
+            const added = results.filter((result) => result.icon.added).length;
+            const icon = { name: name.trim() || `Pasted ${added + 1}`, svg: svg.outerHTML, new: true, added: true, file: "Pasted" };
+            const entry = await measure(icon);
+            const misses = lint(entry, spec);
+            const result = { entry, icon, misses, status: statusOf(entry, misses, spec) };
+            results.push(result);
+            findings.push(...misses.map((miss) => ({ ...miss, name: icon.name, file: icon.file })));
+            app.refresh();
+            return result;
+          },
+        };
+        app = createApp($("app"), data);
+        window.__icons = { spec, measured, findings, specMarkdown: () => specMarkdown(spec, measured) };
+      })();
+    </script>
+  </body>
+</html>

@@ -1,5 +1,15 @@
 # HTML Report Format
 
+## Contents
+
+- Scaffold
+- Header
+- Candidate card
+- Diagram patterns
+- Style guidance
+- Top recommendation section
+- Tone
+
 The architectural review ships as a single self-contained HTML file in the OS temp directory. Both Tailwind and Mermaid load from CDNs. Mermaid handles graph-shaped diagrams reliably; hand-built divs and inline SVG carry the more editorial visuals (mass diagrams, cross-sections). Mix the two — lean entirely on Mermaid and the whole thing starts to look generic.
 
 ## Scaffold
